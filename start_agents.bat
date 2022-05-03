@@ -1,0 +1,1 @@
+start java ./src/App.java

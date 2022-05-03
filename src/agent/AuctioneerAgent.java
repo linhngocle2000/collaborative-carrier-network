@@ -8,5 +8,4 @@ public class AuctioneerAgent extends Agent {
     protected void setup() {
         System.out.println("Hello! Auctioneer agent "+getAID().getName()+" is ready.");
     }
-
 }
