@@ -1,1 +1,1 @@
-start java ./src/App.java
+java -cp ./jade/lib/jade.jar ./src/App.java
