@@ -1,25 +1,10 @@
 import java.awt.*;
 import java.awt.event.*;
-import java.util.*;
-import java.util.Enumeration;
-import java.util.Date;
 import javax.swing.*;
 import javax.swing.border.*;
-import jade.gui.GuiEvent;
-
-import java.text.DateFormat;
-import java.text.*;
 
 public class App extends JFrame
 {
-	class Close implements ActionListener
-	{
-		public void actionPerformed(ActionEvent e)
-		{
-			errFrame.setVisible(false);
-		}
-	}
-
 	static public void main(String args[]) 
 	{
 		(new App()).setVisible(true);
@@ -31,7 +16,26 @@ public class App extends JFrame
 		setTitle(title);
 	}
 
+	// Background color for UI elements
 	Color background;
+
+	// Initial view
+	JButton buttonAuctioneer, buttonBidder;
+
+	// Java swing UI elements
+	JTextArea textArea1;
+	JLabel label1, label2, label3, label4, label5;
+	JButton buttonAddPerson, buttonRemovePerson, buttonOk, buttonExit;
+	JFrame errFrame;
+	JLabel textFieldErrMsg;
+	JScrollPane invitedScrollPane;
+	JScrollPane knownScrollPane;
+	JScrollPane appointmentScrollPane;
+	JPanel errPanel;
+	JViewport port;
+
+	// Database connection
+	DatabaseConnection db;
 
 	public App()
 	{
@@ -42,6 +46,46 @@ public class App extends JFrame
 		setLocation(50, 50);
 		setBackground(background);
 
+		createWelcomeUI();
+		// createUI();
+
+		this.addWindowListener(new WindowAdapter()
+		{
+			@Override
+			public void windowClosing(WindowEvent e) {
+				super.windowClosing(e);
+				dispose();
+			}
+		});
+
+		db = new DatabaseConnection();
+		db.Connect();
+	}
+
+	private void createWelcomeUI()
+	{
+		label1 = new JLabel("No auctions available", JLabel.CENTER);
+		label1.setVisible(true);
+
+		buttonAuctioneer = new JButton();
+		buttonAuctioneer.setText("Create an auction");
+		buttonAuctioneer.setVisible(true);
+
+		buttonBidder = new JButton();
+		buttonBidder.setText("Join an auction");
+		buttonBidder.setVisible(true);
+
+		JPanel panel = new JPanel();
+		panel.setBackground(background);
+		panel.add(label1);
+		panel.add(buttonAuctioneer);
+		panel.add(buttonBidder);
+
+		getContentPane().add(panel);
+		getContentPane().setBackground(background);
+	}
+
+	private void createUI() {
 		textArea1 = new JTextArea("", 0, 0);
 		textArea1.setLineWrap(true);
 		textArea1.setText("Agents will be listed here");
@@ -88,20 +132,15 @@ public class App extends JFrame
 		errFrame.getContentPane().setLayout(new BoxLayout(errFrame.getContentPane(), BoxLayout.Y_AXIS));
 		errFrame.getContentPane().add(Box.createRigidArea(new Dimension(0, 15)));
 		errFrame.getContentPane().add(textFieldErrMsg);
-		errButton = new JButton("Ok");
-		errButton.addActionListener(new Close());
-		errButton.setAlignmentX(JComponent.CENTER_ALIGNMENT);
 		errPanel = new JPanel();
 		errPanel.setLayout(new BoxLayout(errPanel, BoxLayout.X_AXIS));
 		errPanel.add(Box.createHorizontalGlue());
-		errPanel.add(errButton);
 		errPanel.add(Box.createHorizontalGlue());
 		errFrame.getContentPane().add(Box.createRigidArea(new Dimension(0, 15)));
 		errFrame.getContentPane().add(errPanel);
 		errFrame.getContentPane().add(Box.createRigidArea(new Dimension(0, 15)));
 
 		// PANELS
-
 		JPanel p1 = new JPanel();
 		p1.setBackground(background);
 		JPanel p2 = new JPanel();
@@ -138,7 +177,6 @@ public class App extends JFrame
 		p3.add(label2);
 		label2.setAlignmentX(JComponent.CENTER_ALIGNMENT);
 		p3.add(Box.createRigidArea(new Dimension(0, 5)));
-		// p3.add(calendar1);
 		p4.setLayout(new BoxLayout(p4, BoxLayout.Y_AXIS));
 		label4.setAlignmentX(JComponent.CENTER_ALIGNMENT);
 		p4.add(label4);
@@ -154,14 +192,10 @@ public class App extends JFrame
 		label1.setAlignmentX(JComponent.CENTER_ALIGNMENT);
 		p6.add(label1);
 		p6.add(Box.createRigidArea(new Dimension(0, 5)));
-		// p6.add(knownScrollPane);
-		// p6.setAlignmentX(JComponent.CENTER_ALIGNMENT);
 		p7.setLayout(new BoxLayout(p7, BoxLayout.Y_AXIS));
 		label3.setAlignmentX(JComponent.CENTER_ALIGNMENT);
 		p7.add(label3);
 		p7.add(Box.createRigidArea(new Dimension(0, 5)));
-		// p7.add(invitedScrollPane);
-		// p7.setAlignmentX(JComponent.CENTER_ALIGNMENT);
 		p8.setLayout(new BoxLayout(p8, BoxLayout.Y_AXIS));
 		p8.add(Box.createRigidArea(new Dimension(0, 5)));
 		p8.add(buttonAddPerson);
@@ -193,210 +227,15 @@ public class App extends JFrame
 		p1.add(Box.createRigidArea(new Dimension(0, 30)));
 		p1.add(p10);
 		p1.add(Box.createRigidArea(new Dimension(0, 20)));
-
+		
 		getContentPane().add(p1);
 		getContentPane().setBackground(background);
 
-		// {{INIT_MENUS
-		// }}
-
-		// {{REGISTER_LISTENERS
-		SymWindow aSymWindow = new SymWindow();
-		this.addWindowListener(aSymWindow);
-		SymMouse aSymMouse = new SymMouse();
-		buttonExit.addMouseListener(aSymMouse);
-		buttonOk.addMouseListener(aSymMouse);
-		buttonAddPerson.addMouseListener(aSymMouse);
-		buttonRemovePerson.addMouseListener(aSymMouse);
-		// }}
-	}
-
-	public void addNotify() {
-		// Record the size of the window prior to calling parents addNotify.
-		Dimension d = getSize();
-
-		super.addNotify();
-
-		if (fComponentsAdjusted)
-			return;
-
-	}
-
-	// Used for addNotify check.
-	boolean fComponentsAdjusted = false;
-
-	// MeetingSchedulerAgent myAgent;
-
-	// public App(MeetingSchedulerAgent a, Calendar selectedDate)
-	// {
-	// 	this();
-	// 	myAgent = a;
-	// 	calendar1.setCalendar(selectedDate);
-	// 	calendar2.setCalendar(selectedDate);
-	// 	Enumeration e = myAgent.getKnownPersons();
-	// 	knownModel.clear();
-	// 	int k = 0;
-	// 	while (e.hasMoreElements()) {
-	// 		knownModel.addElement(((Person) e.nextElement()).getName());
-	// 	}
-	// }
-
-	/**
-	 * Shows or hides the component depending on the boolean flag b.
-	 * 
-	 * @param b if true, show the component; otherwise, hide the component.
-	 * @see java.awt.Component#isVisible
-	 */
-	/**
-	 * public void setVisible(boolean b)
-	 * {
-	 * if(b)
-	 * setLocation(50, 50);
-	 * super.setVisible(b);
-	 * }
-	 **/
-
-	/**
-	 * public void addNotify() {
-	 * // Record the size of the window prior to calling parents addNotify.
-	 * Dimension d = getSize();
-	 * 
-	 * super.addNotify();
-	 * 
-	 * if (fComponentsAdjusted)
-	 * return;
-	 * 
-	 * // Adjust components according to the insets
-	 * setSize(insets().left + insets().right + d.width, insets().top +
-	 * insets().bottom + d.height);
-	 * Component components[] = getComponents();
-	 * for (int i = 0; i < components.length; i++)
-	 * {
-	 * Point p = components[i].getLocation();
-	 * p.translate(insets().left, insets().top);
-	 * components[i].setLocation(p);
-	 * }
-	 * fComponentsAdjusted = true;
-	 * }
-	 * 
-	 * // Used for addNotify check.
-	 * boolean fComponentsAdjusted = false;
-	 **/
-	// {{DECLARE_CONTROLS
-	JTextArea textArea1;
-	// JCalendar calendar1;
-	// JCalendar calendar2;
-	JLabel label2;
-	JLabel label4;
-	// JList listInvitedPersons;
-	// DefaultListModel knownModel;
-	// DefaultListModel invitedModel;
-	// JList listKnownPersons;
-	JLabel label1;
-	JLabel label3;
-	JButton buttonAddPerson;
-	JButton buttonRemovePerson;
-	JLabel label5;
-	JButton buttonOk;
-	JButton buttonExit;
-	JButton errButton;
-	JFrame errFrame;
-	JLabel textFieldErrMsg;
-	JScrollPane invitedScrollPane;
-	JScrollPane knownScrollPane;
-	JScrollPane appointmentScrollPane;
-	JPanel errPanel;
-	JViewport port;
-	String[] data;
-	// }}
-
-	// {{DECLARE_MENUS
-	// }}
-
-	class SymWindow extends java.awt.event.WindowAdapter 
-	{
-		public void windowClosing(java.awt.event.WindowEvent event) 
-		{
-			Object object = event.getSource();
-			if (object == App.this)
-			{
-				Frame1_WindowClosing(event);
+		buttonExit.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				dispose();
 			}
-		}
-	}
-
-	void Frame1_WindowClosing(java.awt.event.WindowEvent event) 
-	{
-		setVisible(false); // hide the Frame
-	}
-
-	class SymMouse extends java.awt.event.MouseAdapter 
-	{
-		public void mouseClicked(java.awt.event.MouseEvent event) 
-		{
-			Object object = event.getSource();
-			if (object == buttonExit)
-				buttonExit_MouseClicked(event);
-			else if (object == buttonOk)
-				buttonOk_MouseClicked(event);
-			else if (object == buttonAddPerson)
-				buttonAddPerson_MouseClicked(event);
-			else if (object == buttonRemovePerson)
-				buttonRemovePerson_MouseClicked(event);
-		}
-	}
-
-	void buttonExit_MouseClicked(java.awt.event.MouseEvent event)
-	{
-		// Invalidate the Frame
-		dispose();
-	}
-
-	void buttonOk_MouseClicked(java.awt.event.MouseEvent event)
-	{
-		Calendar c;
-		Date d;
-		// textFieldErrMsg.setVisible(false);
-
-		// {{CONNECTION
-		// Appointment a = new Appointment();
-		// a.setInviter(myAgent.getAID());
-		// a.setDescription(textArea1.getText());
-		// c = calendar1.getCalendar();
-		// d = c.getTime();
-		// // System.out.println("Prova : " + d.toString());
-		// a.setStartingOn(c.getTime());
-		// c = calendar2.getCalendar();
-		// a.setEndingWith(c.getTime());
-		// for (int i = 0; i < invitedModel.getSize(); i++)
-		// 	a.addInvitedPersons(myAgent.getPerson((String) invitedModel.get(i)));
-		// try {
-		// 	a.isValid();
-		// 	// System.err.println(" Fixing appointment "+a.toString());
-		// 	GuiEvent ev = new GuiEvent(this, myAgent.FIXAPPOINTMENT);
-		// 	ev.addParameter(a);
-		// 	myAgent.postGuiEvent(ev);
-		// 	dispose();
-		// } catch (Exception e) {
-		// 	showErrorMessage(e.getMessage());
-		// }
-	}
-
-	void showErrorMessage(String msg) 
-	{
-		textFieldErrMsg.setText(msg);
-		errFrame.setVisible(true);
-	}
-
-	void buttonAddPerson_MouseClicked(java.awt.event.MouseEvent event) {
-		// Add a string to the List... Get the current item text
-		// if (listKnownPersons.getSelectedValue() != null)
-		// 	invitedModel.addElement(knownModel.get(listKnownPersons.getSelectedIndex()));
-	}
-
-	void buttonRemovePerson_MouseClicked(java.awt.event.MouseEvent event) {
-		// Delete an item from the List... Get the current item index
-		// if (listInvitedPersons.getSelectedIndex() >= 0)
-		// 	invitedModel.remove(listInvitedPersons.getSelectedIndex());
+		});
 	}
 }
