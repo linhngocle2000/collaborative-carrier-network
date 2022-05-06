@@ -58,8 +58,8 @@ public class App extends JFrame
 			}
 		});
 
-		db = new DatabaseConnection();
-		db.Connect();
+		// db = new DatabaseConnection();
+		// db.Connect();
 	}
 
 	private void createWelcomeUI()
