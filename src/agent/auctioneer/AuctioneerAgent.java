@@ -1,6 +1,7 @@
 package agent.auctioneer;
 
 import jade.core.Agent;
+import jade.core.AgentState;
 import jade.core.AID;
 import jade.core.behaviours.CyclicBehaviour;
 import jade.core.behaviours.OneShotBehaviour;
@@ -34,7 +35,7 @@ public class AuctioneerAgent extends Agent {
    protected void setup() {
 
       // Printout a welcome message
-      System.out.println("Hello! Auctioneer-agent "+getAID().getName()+" is ready.");
+      System.out.println("Hello! Auctioneer-agent " + getAID().getName() + " is ready.");
 
       // Get the list of all available carriers
       addBehaviour(new UpdateCarriers());
@@ -86,7 +87,7 @@ public class AuctioneerAgent extends Agent {
     */
    public void endAuction() {
       String req = "\"Auction for " + load + " ended\"";
-
+      
       // Inform all available carrier agents about the closed auction
       addBehaviour(new InformAuction(this, req));
    }
@@ -202,13 +203,13 @@ public class AuctioneerAgent extends Agent {
     * Agent clean-up
     */
    protected void takeDown() {
-
+      // Calling dispose() here causes a DisposalInterrupted exception in the main window, so don't do it
       // Dispose the GUI if it is there
-      if (myGui != null) {
-         myGui.dispose();
-      }
+      // if (myGui != null) {
+      //    myGui.dispose();
+      // }
 
       // Printout a dismissal message
-      System.out.println("Auctioneer agent "+getAID().getName()+" terminating.");
+      System.out.println("Auctioneer agent " + getAID().getName() + " terminating.");
    }
 }
