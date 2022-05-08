@@ -51,6 +51,14 @@ public class CarrierAgent extends Agent {
    }
 
    /**
+    * This method is to get AID of auctioneer agent
+    * @return AID of auctioneer agent
+    */
+   public AID getAuctioneerAgent() {
+      return auctioneerAgent;
+   }
+
+   /**
     * This method is called by the GUI to send a join-request to auctioneer agent
     * @param request Request to join of format $Auction_name + " Join"
     */

@@ -109,9 +109,9 @@ public class CarrierAgentGuiImpl extends JFrame implements CarrierAgentGui{
         gridBagConstraints.insets = new java.awt.Insets(10, 3, 0, 3);
         rootPanel.add(exitButton, gridBagConstraints);
 
-        ButtonGroup group = new ButtonGroup();
-        group.add(joinButton);
-        group.add(exitButton);
+        ButtonGroup buttonGroup = new ButtonGroup();
+        buttonGroup.add(joinButton);
+        buttonGroup.add(exitButton);
 
         rootPanel.setBorder(new BevelBorder(BevelBorder.LOWERED));
 
@@ -136,29 +136,34 @@ public class CarrierAgentGuiImpl extends JFrame implements CarrierAgentGui{
             boolean join = joinButton.isSelected();
             boolean cancel = exitButton.isSelected();
 
-            // If an auction name is specified
-            if (title != null && title.length() > 0) {
-                // If request is "Join"
-                if (join) {
-                    // Send "Join" request to auctioneer agent
-                    myAgent.sendJoinRequest(title + " Join");
-                    notifyUser("Request sent: " + "Join auction " + title);
+            // If no auction is available
+            if (myAgent.getAuctioneerAgent() == null) {
+                JOptionPane.showMessageDialog(CarrierAgentGuiImpl.this, "No auction available at the moment", "WARNING", JOptionPane.WARNING_MESSAGE);
+            } else {
+                // If an auction name is specified
+                if (title != null && title.length() > 0) {
+                    // If request is "Join"
+                    if (join) {
+                        // Send "Join" request to auctioneer agent
+                        myAgent.sendJoinRequest(title + " Join");
+                        notifyUser("Request sent: " + "Join auction " + title);
+                    }
+                    // If request is "Exit"
+                    else if (cancel) {
+                        // Send "Exit" request to auctioneer agent
+                        myAgent.sendExitRequest(title + " Cancel");
+                        notifyUser("Request sent: " + "Exit auction " + title);
+                    }
+                    // No request is specified, show error message
+                    else {
+                        JOptionPane.showMessageDialog(CarrierAgentGuiImpl.this, "Request not specified", "WARNING", JOptionPane.WARNING_MESSAGE);
+                    }
                 }
-                // If request is "Exit"
-                else if (cancel) {
-                    // Send "Exit" request to auctioneer agent
-                    myAgent.sendExitRequest(title + " Cancel");
-                    notifyUser("Request sent: " + "Exit auction " + title);
-                }
-                // No request is specified, show error message
+                // No auction name specified, show error message
                 else {
-                    JOptionPane.showMessageDialog(CarrierAgentGuiImpl.this, "Request not specified", "WARNING", JOptionPane.WARNING_MESSAGE);
+                    JOptionPane.showMessageDialog(CarrierAgentGuiImpl.this, "No auction specified", "WARNING", JOptionPane.WARNING_MESSAGE);
                 }
-            }
-            // No auction name specified, show error message
-            else {
-                JOptionPane.showMessageDialog(CarrierAgentGuiImpl.this, "No auction specified", "WARNING", JOptionPane.WARNING_MESSAGE);
-            }
+        }
         });
 
         // Set reaction of GUI when reset-button is pressed
@@ -169,8 +174,7 @@ public class CarrierAgentGuiImpl extends JFrame implements CarrierAgentGui{
             titleTF.setText("");
 
             // Reset radio buttons
-            joinButton.setSelected(false);
-            exitButton.setSelected(false);
+            buttonGroup.clearSelection();
         });
 
         // Set reaction of GUI when exit-button is pressed
