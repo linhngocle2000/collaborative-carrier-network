@@ -109,7 +109,7 @@ public class AuctioneerAgentGuiImpl extends JFrame implements AuctioneerAgentGui
         endB = new JButton("End");
         endB.addActionListener(e -> {
             // If there is an auction to end
-            if (!myAgent.getLoad().equals("")) {
+            if (myAgent.getLoad() != null) {
                 // Reset text field
                 titleTF.setText("");
                 // Clear list of bidder
@@ -118,7 +118,7 @@ public class AuctioneerAgentGuiImpl extends JFrame implements AuctioneerAgentGui
                 myAgent.endAuction();
                 notifyUser("Auction: " + myAgent.getLoad() + " ended");
                 // Reset name of auction
-                myAgent.setLoad("");
+                myAgent.setLoad(null);
                 // Text field is editable
                 titleTF.setEditable(true);
             }

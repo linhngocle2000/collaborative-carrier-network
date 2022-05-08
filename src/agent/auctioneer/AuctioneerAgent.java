@@ -17,10 +17,10 @@ import java.util.Vector;
 public class AuctioneerAgent extends Agent {
 
    // Name of load to auction
-   private String load = "";
+   private String load = null;
 
    // List of bidders
-   private ArrayList<AID> bidders = new ArrayList<>();
+   private Vector<AID> bidders = new Vector<>();
 
    // List of available carriers
    private final Vector<AID> carrierAgents = new Vector<>();
@@ -72,7 +72,7 @@ public class AuctioneerAgent extends Agent {
     * This method is called by the GUI when the user starts an auction.
     */
    public void startAuction() {
-      String req = "\"Auction for " + load + " started\"";
+      String req = "Auction for " + load + " started";
 
       // Inform all available carrier agents about the new auction
       addBehaviour(new InformAuction(this, req));
@@ -85,7 +85,7 @@ public class AuctioneerAgent extends Agent {
     * This method is called by the GUI when the user ends an auction.
     */
    public void endAuction() {
-      String req = "\"Auction for " + load + " ended\"";
+      String req = "Auction for " + load + " ended";
 
       // Inform all available carrier agents about the closed auction
       addBehaviour(new InformAuction(this, req));
@@ -106,6 +106,7 @@ public class AuctioneerAgent extends Agent {
    public void setLoad(String loadToSet) {
       load = loadToSet;
    }
+
 
    /**
     * This method is called by the GUI to clear list of bidders when auction ended.
@@ -155,8 +156,6 @@ public class AuctioneerAgent extends Agent {
             String msgContent = msg.getContent();
             String auctionToJoin = msgContent.split(" ")[0];
             String request = msgContent.split(" ")[1];
-            // Print in GUI name of sender
-            myGui.notifyUser("Request from "+msg.getSender().getLocalName()+ " received.");
             // Name of auction in message is invalid
             if (!load.equals(auctionToJoin)) {
                // Send "invalid request" reply
@@ -168,12 +167,13 @@ public class AuctioneerAgent extends Agent {
                // Sender is already in bidders list, then no need to add
                if (bidders.contains(msg.getSender())) {
                   reply.setPerformative(ACLMessage.INFORM);
-                  reply.setContent("Auction already joined");
+                  reply.setContent("Already in bidders list");
                } else {
                   // else adds to bidders list
                   bidders.add(msg.getSender());
                   reply.setPerformative(ACLMessage.CONFIRM);
-                  reply.setContent("Auction joined");
+                  reply.setContent("Add to bidders list");
+                  myGui.notifyUser("Add " + msg.getSender().getLocalName() + " to bidders list");
                }
             }
             // Sender sends "Exit" request
@@ -181,12 +181,13 @@ public class AuctioneerAgent extends Agent {
                // If sender is not in list of bidder, send not-in-list message
                if (!bidders.contains(msg.getSender())) {
                   reply.setPerformative(ACLMessage.INFORM);
-                  reply.setContent("Auction not joined");
+                  reply.setContent("Not in bidders list");
                } else {
                   // Remove sender from list of bidders
                   bidders.remove(msg.getSender());
                   reply.setPerformative(ACLMessage.CONFIRM);
-                  reply.setContent("Auction exit");
+                  reply.setContent("Remove from bidders list");
+                  myGui.notifyUser("Remove " + msg.getSender().getLocalName() + " from bidders list");
                }
             }
             myAgent.send(reply);

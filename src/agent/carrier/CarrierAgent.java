@@ -147,9 +147,9 @@ public class CarrierAgent extends Agent {
    protected void takeDown() {
       // Calling dispose() here causes a DisposalInterrupted exception in the main window, so don't do it
       // Dispose the GUI if it is there
-      // if (myGui != null) {
-      //    myGui.dispose();
-      // }
+      if (myGui != null) {
+         myGui.dispose();
+      }
 
       // Unregister the carrier agent from the yellow pages
       try {
