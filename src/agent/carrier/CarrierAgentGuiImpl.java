@@ -147,13 +147,11 @@ public class CarrierAgentGuiImpl extends JFrame implements CarrierAgentGui{
                     if (join) {
                         // Send "Join" request to auctioneer agent
                         myAgent.sendJoinRequest(title + " Join");
-                        notifyUser("Request sent: " + "Join auction " + title);
                     }
                     // If request is "Exit"
                     else if (cancel) {
                         // Send "Exit" request to auctioneer agent
-                        myAgent.sendExitRequest(title + " Cancel");
-                        notifyUser("Request sent: " + "Exit auction " + title);
+                        myAgent.sendExitRequest(title + " Exit");
                     }
                     // No request is specified, show error message
                     else {

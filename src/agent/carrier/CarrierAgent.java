@@ -85,7 +85,7 @@ public class CarrierAgent extends Agent {
          if (msg != null) {
 
             // Print message content and sender in GUI
-            myGui.notifyUser("Message: " + msg.getContent() + " from " + msg.getSender().getLocalName());
+            myGui.notifyUser("Message: \"" + msg.getContent() + "\" from " + msg.getSender().getLocalName());
             auctioneerAgent = msg.getSender();
          }
          // No message received, then block behaviour
