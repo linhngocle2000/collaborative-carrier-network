@@ -119,7 +119,8 @@ public class CarrierAgentGuiImpl extends JFrame implements CarrierAgentGui{
 
         // Set size and position of logTA in the GUI
         logTA = new JTextArea();
-        logTA.setEnabled(false);
+        logTA.setEditable(false);
+        logTA.setForeground(Color.GRAY);
         JScrollPane jsp = new JScrollPane(logTA);
         jsp.setMinimumSize(new Dimension(300, 205));
         jsp.setPreferredSize(new Dimension(300, 205));
