@@ -27,21 +27,6 @@ public class App extends JFrame {
 	// Background color for UI elements
 	Color background;
 
-	// Initial view
-	JButton buttonAuctioneer, buttonBidder;
-
-	// Java swing UI elements
-	JTextArea textArea1;
-	JLabel label1, label2, label3, label4, label5;
-	JButton buttonAddPerson, buttonRemovePerson, buttonOk, buttonExit;
-	JFrame errFrame;
-	JLabel textFieldErrMsg;
-	JScrollPane invitedScrollPane;
-	JScrollPane knownScrollPane;
-	JScrollPane appointmentScrollPane;
-	JPanel errPanel;
-	JViewport port;
-
 	// Database connection
 	// DatabaseConnection db;
 
@@ -88,42 +73,137 @@ public class App extends JFrame {
 
 	private void createWelcomeUI()
 	{
-		// label1 = new JLabel("No auctions available", JLabel.CENTER);
-		// label1.setVisible(true);
+		// Root panel
+		JPanel rootPanel = new JPanel();
+		rootPanel.setLayout(new GridBagLayout());
+		rootPanel.setMinimumSize(new Dimension(330, 100));
+		rootPanel.setPreferredSize(new Dimension(330, 100));
+		rootPanel.setBackground(background);
 
-		buttonAuctioneer = new JButton();
-		buttonAuctioneer.setText("Create an auction");
-		buttonAuctioneer.setVisible(true);
-		buttonAuctioneer.addActionListener(e -> {
-			try {
-				// Create profile
-				Profile prof = new ProfileImpl();
-				prof.setParameter(Profile.CONTAINER_NAME, "TestContainer");
-				// prof.setParameter(Profile.MAIN_HOST, "localhost"); // The address of host needs to be read from the database or user input
+		// Label for error messages
+		JLabel errorLabel = new JLabel();
+		errorLabel.setForeground(new Color(1f, 0f, 0f));
+		errorLabel.setHorizontalAlignment(SwingConstants.CENTER);
 
-				// Create new main container
-				ContainerController container = runtime.createMainContainer(prof);
-				containers.add(container);
+		GridBagConstraints constraints = new GridBagConstraints();
+		constraints.gridx = 0;
+		constraints.gridy = 8;
+		constraints.gridwidth = GridBagConstraints.REMAINDER;
+		constraints.anchor = java.awt.GridBagConstraints.CENTER;
+		constraints.insets = new java.awt.Insets(10, 3, 0, 3);
+		rootPanel.add(errorLabel, constraints);
 
-				// Instantiate agent
-				AuctioneerAgent agent = new AuctioneerAgent();
-				AgentController controller = container.acceptNewAgent("Nick", agent);
-				controller.start();
-			} catch (Exception ex) {
-				ex.printStackTrace();
-				System.out.println("Could not create auction :(");
-			}
-		});
 
-		buttonBidder = new JButton();
-		buttonBidder.setText("Join an auction");
-		buttonBidder.setVisible(true);
+		// Join label
+		JLabel joinLabel = new JLabel("Join an auction");
+		Font font = joinLabel.getFont();
+		joinLabel.setFont(font.deriveFont(Font.BOLD, 14));
+		joinLabel.setHorizontalAlignment(SwingConstants.CENTER);
+		
+		constraints = new GridBagConstraints();
+		constraints.gridx = 0;
+		constraints.gridy = 0;
+		constraints.gridwidth = GridBagConstraints.REMAINDER;
+		constraints.anchor = java.awt.GridBagConstraints.CENTER;
+		constraints.insets = new java.awt.Insets(10, 3, 0, 3);
+		rootPanel.add(joinLabel, constraints);
+
+		// Join name label
+		JLabel joinNameLabel = new JLabel("Your name");
+		joinNameLabel.setHorizontalAlignment(SwingConstants.LEFT);
+
+		constraints = new GridBagConstraints();
+		constraints.gridx = 0;
+		constraints.gridy = 1;
+		constraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
+		constraints.insets = new java.awt.Insets(10, 3, 0, 3);
+		rootPanel.add(joinNameLabel, constraints);
+
+		// Join name text field
+		JTextField joinNameText = new JTextField();
+		joinNameText.setPreferredSize(new Dimension(150, 20));
+
+		constraints = new GridBagConstraints();
+		constraints.gridx = 0;
+		constraints.gridy = 2;
+		constraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
+		constraints.insets = new java.awt.Insets(0, 3, 0, 3);
+		rootPanel.add(joinNameText, constraints);
+
+		// Join host label
+		JLabel joinHostLabel = new JLabel("Host");
+		joinHostLabel.setHorizontalAlignment(SwingConstants.LEFT);
+
+		constraints = new GridBagConstraints();
+		constraints.gridx = 1;
+		constraints.gridy = 1;
+		constraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
+		constraints.insets = new java.awt.Insets(10, 3, 0, 3);
+		rootPanel.add(joinHostLabel, constraints);
+
+		// Join host text field
+		JTextField joinHostText = new JTextField();
+		joinHostText.setPreferredSize(new Dimension(150, 20));
+
+		constraints = new GridBagConstraints();
+		constraints.gridx = 1;
+		constraints.gridy = 2;
+		constraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
+		constraints.insets = new java.awt.Insets(0, 3, 0, 3);
+		rootPanel.add(joinHostText, constraints);
+
+		// Join port label
+		JLabel joinPortLabel = new JLabel("Port");
+		joinPortLabel.setHorizontalAlignment(SwingConstants.LEFT);
+
+		constraints = new GridBagConstraints();
+		constraints.gridx = 2;
+		constraints.gridy = 1;
+		constraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
+		constraints.insets = new java.awt.Insets(10, 3, 0, 3);
+		rootPanel.add(joinPortLabel, constraints);
+
+		// Join port text field
+		JTextField joinPortText = new JTextField();
+		joinPortText.setPreferredSize(new Dimension(50, 20));
+
+		constraints = new GridBagConstraints();
+		constraints.gridx = 2;
+		constraints.gridy = 2;
+		constraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
+		constraints.insets = new java.awt.Insets(0, 3, 0, 3);
+		rootPanel.add(joinPortText, constraints);
+
+		// Join button
+		JButton buttonBidder = new JButton();
+		buttonBidder.setText("Join");
 		buttonBidder.addActionListener(e -> {
 			try {
+				errorLabel.setText("");
+
+				String name = joinNameText.getText();
+				if (name == null || name.trim().length() == 0) {
+					throw new Exception("Enter a name to join an auction");
+				}
+
+				String host = joinHostText.getText();
+				if (host == null || host.trim().length() == 0) {
+					throw new Exception("Enter a host to join an auction");
+				}
+
+				String port = joinPortText.getText();
+				if (port == null || port.trim().length() == 0) {
+					throw new Exception("Enter a port to join an auction");
+				}
+
+				// Parse int to throw an exception if port is not an int
+				Integer.parseInt(port);
+				
 				// Create profile
 				Profile prof = new ProfileImpl();
-				prof.setParameter(Profile.CONTAINER_NAME, "TestContainer");
-				prof.setParameter(Profile.MAIN_HOST, "localhost"); // The address of host needs to be read from the database or user input
+				prof.setParameter(Profile.CONTAINER_NAME, "Carrier_" + name);
+				prof.setParameter(Profile.MAIN_HOST, host.trim());
+				prof.setParameter(Profile.MAIN_PORT, port.trim());
 
 				// Create new main container
 				ContainerController container = runtime.createAgentContainer(prof);
@@ -131,20 +211,165 @@ public class App extends JFrame {
 
 				// Instantiate agent
 				CarrierAgent agent = new CarrierAgent();
-				AgentController controller = container.acceptNewAgent("Amy", agent);
+				AgentController controller = container.acceptNewAgent(name.trim(), agent);
 				controller.start();
+			} catch (NumberFormatException ex) {
+				errorLabel.setText("Enter a valid port number");
 			} catch (Exception ex) {
+				errorLabel.setText(ex.getMessage());
 				ex.printStackTrace();
 				System.out.println("Could not join auction :(");
 			}
 		});
 
-		JPanel panel = new JPanel();
-		panel.setBackground(background);
-		panel.add(buttonAuctioneer);
-		panel.add(buttonBidder);
+		constraints = new GridBagConstraints();
+		constraints.gridx = 0;
+		constraints.gridy = 3;
+		constraints.gridwidth = GridBagConstraints.REMAINDER;
+		constraints.anchor = java.awt.GridBagConstraints.CENTER;
+		constraints.insets = new java.awt.Insets(10, 3, 10, 3);
+		rootPanel.add(buttonBidder, constraints);
 
-		getContentPane().add(panel);
+		// Auction label
+		JLabel auctionLabel = new JLabel("Create an auction");
+		font = joinLabel.getFont();
+		auctionLabel.setFont(font.deriveFont(Font.BOLD, 14));
+		auctionLabel.setHorizontalAlignment(SwingConstants.CENTER);
+
+		constraints = new GridBagConstraints();
+		constraints.gridx = 0;
+		constraints.gridy = 4;
+		constraints.gridwidth = GridBagConstraints.REMAINDER;
+		constraints.anchor = java.awt.GridBagConstraints.CENTER;
+		constraints.insets = new java.awt.Insets(30, 3, 0, 3);
+		rootPanel.add(auctionLabel, constraints);
+
+		// Your name label
+		JLabel yourNameLabel = new JLabel("Your name");
+		yourNameLabel.setHorizontalAlignment(SwingConstants.LEFT);
+
+		constraints = new GridBagConstraints();
+		constraints.gridx = 0;
+		constraints.gridy = 5;
+		constraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
+		constraints.insets = new java.awt.Insets(10, 3, 0, 3);
+		rootPanel.add(yourNameLabel, constraints);
+
+		// Your name text field
+		JTextField yourNameText = new JTextField();
+		yourNameText.setPreferredSize(new Dimension(150, 20));
+
+		constraints = new GridBagConstraints();
+		constraints.gridx = 0;
+		constraints.gridy = 6;
+		constraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
+		constraints.insets = new java.awt.Insets(0, 3, 0, 3);
+		rootPanel.add(yourNameText, constraints);
+
+		// Auction name label
+		JLabel createNameLabel = new JLabel("Auction name");
+		createNameLabel.setHorizontalAlignment(SwingConstants.LEFT);
+
+		constraints = new GridBagConstraints();
+		constraints.gridx = 1;
+		constraints.gridy = 5;
+		constraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
+		constraints.insets = new java.awt.Insets(10, 3, 0, 3);
+		rootPanel.add(createNameLabel, constraints);
+		
+		// Auction name text field
+		JTextField createNameText = new JTextField();
+		createNameText.setPreferredSize(new Dimension(150, 20));
+
+		constraints = new GridBagConstraints();
+		constraints.gridx = 1;
+		constraints.gridy = 6;
+		constraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
+		constraints.insets = new java.awt.Insets(0, 3, 0, 3);
+		rootPanel.add(createNameText, constraints);
+		
+		// Auction port label
+		JLabel createPortLabel = new JLabel("Port");
+		createPortLabel.setHorizontalAlignment(SwingConstants.LEFT);
+
+		constraints = new GridBagConstraints();
+		constraints.gridx = 2;
+		constraints.gridy = 5;
+		constraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
+		constraints.insets = new java.awt.Insets(10, 3, 0, 3);
+		rootPanel.add(createPortLabel, constraints);
+
+		// Auction port text field
+		JTextField createPortText = new JTextField();
+		createPortText.setPreferredSize(new Dimension(50, 20));
+
+		constraints = new GridBagConstraints();
+		constraints.gridx = 2;
+		constraints.gridy = 6;
+		constraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
+		constraints.insets = new java.awt.Insets(0, 3, 0, 3);
+		rootPanel.add(createPortText, constraints);
+
+		// Auction button
+		JButton buttonAuctioneer = new JButton();
+		buttonAuctioneer.setText("Create an auction");
+		buttonAuctioneer.setVisible(true);
+		buttonAuctioneer.addActionListener(e -> {
+			try {
+				errorLabel.setText("");
+
+				String name = yourNameText.getText();
+				if (name == null || name.trim().length() == 0) {
+					throw new Exception("Enter your name to create an auction");
+				}
+				name = name.trim();
+
+				String auctionName = createNameText.getText();
+				if (auctionName == null || auctionName.trim().length() == 0) {
+					throw new Exception("Enter an auction name to create an auction");
+				}
+				auctionName = auctionName.trim();
+
+				String port = createPortText.getText();
+				if (port == null || port.trim().length() == 0) {
+					throw new Exception("Enter a port to create an auction");
+				}
+				port = port.trim();
+
+				// Parse int to throw an exception if port is not an int
+				Integer.parseInt(port);
+
+				// Create profile
+				Profile prof = new ProfileImpl();
+				prof.setParameter(Profile.CONTAINER_NAME, "Auction_" + auctionName);
+				prof.setParameter(Profile.MAIN_PORT, port);
+
+				// Create new main container
+				ContainerController container = runtime.createMainContainer(prof);
+				containers.add(container);
+
+				// Instantiate agent
+				AuctioneerAgent agent = new AuctioneerAgent();
+				AgentController controller = container.acceptNewAgent(name, agent);
+				controller.start();
+			} catch (NumberFormatException ex) {
+				errorLabel.setText("Enter a valid port number");
+			} catch (Exception ex) {
+				errorLabel.setText(ex.getMessage());
+				ex.printStackTrace();
+				System.out.println("Could not create auction :(");
+			}
+		});
+
+		constraints = new GridBagConstraints();
+		constraints.gridx = 0;
+		constraints.gridy = 7;
+		constraints.gridwidth = GridBagConstraints.REMAINDER;
+		constraints.anchor = java.awt.GridBagConstraints.CENTER;
+		constraints.insets = new java.awt.Insets(10, 3, 10, 3);
+		rootPanel.add(buttonAuctioneer, constraints);
+
+		getContentPane().add(rootPanel);
 		getContentPane().setBackground(background);
 	}
 }
