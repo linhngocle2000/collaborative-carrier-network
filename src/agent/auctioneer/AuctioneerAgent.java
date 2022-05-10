@@ -157,7 +157,7 @@ public class AuctioneerAgent extends Agent {
             String auctionToJoin = msgContent.split(" ")[0];
             String request = msgContent.split(" ")[1];
             // Name of auction in message is invalid
-            if (!load.equals(auctionToJoin)) {
+            if (load == null || !load.equals(auctionToJoin)) {
                // Send "invalid request" reply
                reply.setPerformative(ACLMessage.NOT_UNDERSTOOD);
                reply.setContent("Auction not available");
