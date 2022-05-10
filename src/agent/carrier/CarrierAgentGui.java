@@ -5,6 +5,7 @@ package agent.carrier;
  */
 public interface CarrierAgentGui {
     void setAgent(CarrierAgent a);
+    void setAuction(String auction);
     void show();
     void hide();
     void notifyUser(String message);

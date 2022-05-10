@@ -198,6 +198,10 @@ public class CarrierAgentGuiImpl extends JFrame implements CarrierAgentGui{
         setResizable(false);
     }
 
+    public void setAuction(String auction) {
+        titleTF.setText(auction);
+    }
+
     /**
      * This method is to set the name showed at the top of GUI
      * @param a Carrier agent

@@ -25,7 +25,7 @@ public class CarrierAgent extends Agent {
    protected void setup() {
 
       // Printout a welcome message
-      System.out.println("Hello! Carrier-agent "+getAID().getName()+" is ready.");
+      System.out.println("Hello! Carrier-agent " + getAID().getName() + " is ready.");
 
       // Register the carrier service and carrier agent in the yellow pages
       DFAgentDescription dfd = new DFAgentDescription();
@@ -84,9 +84,15 @@ public class CarrierAgent extends Agent {
          // Received a message from auctioneer agent
          if (msg != null) {
 
-            // Print message content and sender in GUI
-            myGui.notifyUser("Message: \"" + msg.getContent() + "\" from " + msg.getSender().getLocalName());
-            auctioneerAgent = msg.getSender();
+            if (msg.getProtocol().equals("auction-welcome")) {
+               String auction = msg.getContent();
+               myGui.notifyUser("You joined the auction for " + auction);
+               myGui.setAuction(auction);
+            } else {  
+               // Print message content and sender in GUI
+               myGui.notifyUser("Message: \"" + msg.getContent() + "\" from " + msg.getSender().getLocalName());
+               auctioneerAgent = msg.getSender();
+            }
          }
          // No message received, then block behaviour
          else {

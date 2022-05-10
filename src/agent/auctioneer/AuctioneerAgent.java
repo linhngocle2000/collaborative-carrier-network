@@ -48,7 +48,7 @@ public class AuctioneerAgent extends Agent {
       System.out.println("Hello! Auctioneer-agent "+getAID().getName()+" is ready.");
 
       // Get the list of all available carriers
-      addBehaviour(new UpdateCarriers());
+      addBehaviour(new UpdateCarriers(this));
 
       // Show the GUI to interact with the user
       myGui = new AuctioneerAgentGuiImpl(load);
@@ -60,6 +60,14 @@ public class AuctioneerAgent extends Agent {
     * Inner class UpdateCarriers
     */
    private class UpdateCarriers extends CyclicBehaviour {
+
+      private AuctioneerAgent auctioneer;
+
+      public UpdateCarriers(AuctioneerAgent auctioneer) {
+         super();
+         this.auctioneer = auctioneer;
+      }
+
       public void action() {         
          try {
             // Find all connected carriers
@@ -75,6 +83,11 @@ public class AuctioneerAgent extends Agent {
                {
                   // Remote carrier is not in local list so add it
                   carrierAgents.addElement(dfAgentDescription.getName());
+
+                  // If auction has started, inform carrier
+                  if (load != null) {
+                     addBehaviour(new WelcomeNewBidder(auctioneer, dfAgentDescription.getName()));
+                  }
                }
             }
          }
@@ -129,6 +142,27 @@ public class AuctioneerAgent extends Agent {
     */
    public void clearListOfBidders() {
       bidders.clear();
+   }
+
+   private class WelcomeNewBidder extends OneShotBehaviour {
+
+      private Agent auctioneer;
+      private AID bidder;
+
+      public WelcomeNewBidder(Agent auctioneer, AID bidder) {
+         super(auctioneer);
+         this.auctioneer = auctioneer;
+         this.bidder = bidder;
+      }
+
+      public void action() {
+         ACLMessage msg = new ACLMessage(ACLMessage.INFORM);
+         msg.setSender(auctioneer.getAID());
+         msg.setProtocol("auction-welcome");
+         msg.setContent(load);
+         msg.addReceiver(bidder);
+         send(msg);
+      }
    }
 
    /**
