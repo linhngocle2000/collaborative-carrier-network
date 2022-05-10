@@ -10,7 +10,6 @@ import jade.domain.FIPAAgentManagement.ServiceDescription;
 import jade.domain.FIPAException;
 import jade.lang.acl.ACLMessage;
 
-import java.util.ArrayList;
 import java.util.Vector;
 
 
@@ -48,18 +47,23 @@ public class AuctioneerAgent extends Agent {
    /**
     * Inner class UpdateCarriers
     */
-   private class UpdateCarriers extends OneShotBehaviour {
-      public void action() {
-         // Update list of available carrier agents
-         DFAgentDescription template = new DFAgentDescription();
-         ServiceDescription sd = new ServiceDescription();
-         sd.setType("Carrier");
-         template.addServices(sd);
+   private class UpdateCarriers extends CyclicBehaviour {
+      public void action() {         
          try {
+            // Find all connected carriers
+            DFAgentDescription template = new DFAgentDescription();
+            ServiceDescription sd = new ServiceDescription();
+            sd.setType("Carrier");
+            template.addServices(sd);
             DFAgentDescription[] result = DFService.search(myAgent, template);
-            carrierAgents.clear();
+
+            // Check if carriers need to be added to the local list
             for (DFAgentDescription dfAgentDescription : result) {
-               carrierAgents.addElement(dfAgentDescription.getName());
+               if (!carrierAgents.stream().anyMatch(item -> item.getName().equals(dfAgentDescription.getName().getName())))
+               {
+                  // Remote carrier is not in local list so add it
+                  carrierAgents.addElement(dfAgentDescription.getName());
+               }
             }
          }
          catch (FIPAException fe) {
