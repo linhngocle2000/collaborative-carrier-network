@@ -1,1 +1,1 @@
-java -cp ./jade/lib/jade.jar ./src/App.java
+java -cp ./jade/lib/jade.jar -jar ./ccn.jar
