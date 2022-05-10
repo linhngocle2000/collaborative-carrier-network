@@ -185,16 +185,19 @@ public class App extends JFrame {
 				if (name == null || name.trim().length() == 0) {
 					throw new Exception("Enter a name to join an auction");
 				}
+				name = name.trim();
 
 				String host = joinHostText.getText();
 				if (host == null || host.trim().length() == 0) {
 					throw new Exception("Enter a host to join an auction");
 				}
+				host = host.trim();
 
 				String port = joinPortText.getText();
 				if (port == null || port.trim().length() == 0) {
 					throw new Exception("Enter a port to join an auction");
 				}
+				port = port.trim();
 
 				// Parse int to throw an exception if port is not an int
 				Integer.parseInt(port);
@@ -202,8 +205,8 @@ public class App extends JFrame {
 				// Create profile
 				Profile prof = new ProfileImpl();
 				prof.setParameter(Profile.CONTAINER_NAME, "Carrier_" + name);
-				prof.setParameter(Profile.MAIN_HOST, host.trim());
-				prof.setParameter(Profile.MAIN_PORT, port.trim());
+				prof.setParameter(Profile.MAIN_HOST, host);
+				prof.setParameter(Profile.MAIN_PORT, port);
 
 				// Create new main container
 				ContainerController container = runtime.createAgentContainer(prof);
@@ -211,7 +214,7 @@ public class App extends JFrame {
 
 				// Instantiate agent
 				CarrierAgent agent = new CarrierAgent();
-				AgentController controller = container.acceptNewAgent(name.trim(), agent);
+				AgentController controller = container.acceptNewAgent(name, agent);
 				controller.start();
 			} catch (NumberFormatException ex) {
 				errorLabel.setText("Enter a valid port number");
@@ -349,7 +352,7 @@ public class App extends JFrame {
 				containers.add(container);
 
 				// Instantiate agent
-				AuctioneerAgent agent = new AuctioneerAgent();
+				AuctioneerAgent agent = new AuctioneerAgent(auctionName);
 				AgentController controller = container.acceptNewAgent(name, agent);
 				controller.start();
 			} catch (NumberFormatException ex) {

@@ -27,6 +27,18 @@ public class AuctioneerAgent extends Agent {
    // The GUI to interact with the user
    private AuctioneerAgentGui myGui;
 
+   // Normal ctor
+   public AuctioneerAgent() {
+      super();
+   }
+
+   // Auction ready ctor
+   public AuctioneerAgent(String auction) {
+      this();
+      load = auction;
+      startAuction();
+   }
+
    /**
     * Agent initializations
     */
@@ -39,7 +51,7 @@ public class AuctioneerAgent extends Agent {
       addBehaviour(new UpdateCarriers());
 
       // Show the GUI to interact with the user
-      myGui = new AuctioneerAgentGuiImpl();
+      myGui = new AuctioneerAgentGuiImpl(load);
       myGui.setAgent(this);
       myGui.show();
    }

@@ -27,7 +27,7 @@ public class AuctioneerAgentGuiImpl extends JFrame implements AuctioneerAgentGui
     private JTextArea logTA;
 
 
-    public AuctioneerAgentGuiImpl() {
+    public AuctioneerAgentGuiImpl(String auction) {
         super();
 
         // Terminate agent when GUI window is closed
@@ -91,16 +91,6 @@ public class AuctioneerAgentGuiImpl extends JFrame implements AuctioneerAgentGui
         gridBagConstraints.anchor = GridBagConstraints.NORTHWEST;
         gridBagConstraints.insets = new Insets(15, 3, 0, 3);
         rootPanel.add(ipText, gridBagConstraints);
-
-        // Get "external" IP address to share with other agents
-        try {
-            URL whatismyip = new URL("http://checkip.amazonaws.com");
-            BufferedReader in = new BufferedReader(new InputStreamReader(whatismyip.openStream()));
-            String ip = in.readLine();
-            ipText.setText(ip);
-        } catch (Exception ex) {
-            ipText.setText("IP address couldn't be retrieved");
-        }
 
         rootPanel.setBorder(new BevelBorder(BevelBorder.LOWERED));
 
@@ -182,6 +172,22 @@ public class AuctioneerAgentGuiImpl extends JFrame implements AuctioneerAgentGui
         pack();
 
         setResizable(false);
+
+        if (auction != null) {
+            titleTF.setText(auction);
+            titleTF.setEditable(false);
+            notifyUser("Auction: " + auction + " started");
+        }
+
+        // Get "external" IP address to share with other agents
+        try {
+            URL whatismyip = new URL("http://checkip.amazonaws.com");
+            BufferedReader in = new BufferedReader(new InputStreamReader(whatismyip.openStream()));
+            String ip = in.readLine();
+            ipText.setText(ip);
+        } catch (Exception ex) {
+            ipText.setText("IP address couldn't be retrieved");
+        }
     }
 
     /**
