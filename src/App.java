@@ -219,7 +219,7 @@ public class App extends JFrame {
 				containers.add(container);
 
 				// Instantiate agent
-				CarrierAgent agent = new CarrierAgent(host);
+				CarrierAgent agent = new CarrierAgent();
 				AgentController controller = container.acceptNewAgent(name, agent);
 				controller.start();
 			} catch (NumberFormatException ex) {
