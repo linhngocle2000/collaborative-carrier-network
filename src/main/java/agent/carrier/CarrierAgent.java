@@ -59,7 +59,7 @@ public class CarrierAgent extends Agent {
                Iterator it = dfd.getAllServices();
                while (it.hasNext()) {
                   ServiceDescription sd = (ServiceDescription) it.next();
-                  if (sd.getType().equals("tuhh_sd_group04_ccn")) {
+                  if (sd.getType().equals("tuhh_sd_group04_ccn") && sd.getName().equals("Pizza")) {
                      System.out.println("- Service \"" + sd.getName() + "\" provided by agent " + provider.getName());
                      auctioneerAgent = provider;
                   }
@@ -73,6 +73,7 @@ public class CarrierAgent extends Agent {
       catch (FIPAException fe) {
          fe.printStackTrace();
       }
+
 
 
    // Show the GUI to interact with the user
