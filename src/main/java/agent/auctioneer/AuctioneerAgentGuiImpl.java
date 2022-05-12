@@ -1,4 +1,4 @@
-package agent.auctioneer;
+package main.java.agent.auctioneer;
 
 import java.awt.*;
 import java.awt.event.*;
@@ -11,7 +11,7 @@ import javax.swing.border.*;
 
 
 /**
- J2SE (Swing-based) implementation of the GUI of the agent that offers an auction
+ J2SE (Swing-based) implementation of the GUI of the main.java.agent that offers an auction
  */
 public class AuctioneerAgentGuiImpl extends JFrame implements AuctioneerAgentGui {
 
@@ -21,13 +21,13 @@ public class AuctioneerAgentGuiImpl extends JFrame implements AuctioneerAgentGui
     private JTextField titleTF;
 
     // Buttons: Start, End, Exit
-    private JButton startB, endB, exitB;
+    private JButton endB;
 
     // Print logs
     private JTextArea logTA;
 
 
-    public AuctioneerAgentGuiImpl(String auction) {
+    public AuctioneerAgentGuiImpl() {
         super();
 
         // Terminate agent when GUI window is closed
@@ -42,6 +42,7 @@ public class AuctioneerAgentGuiImpl extends JFrame implements AuctioneerAgentGui
         rootPanel.setLayout(new GridBagLayout());
         rootPanel.setMinimumSize(new Dimension(330, 100));
         rootPanel.setPreferredSize(new Dimension(330, 100));
+
 
 ///////////
 // Line 0
@@ -61,6 +62,7 @@ public class AuctioneerAgentGuiImpl extends JFrame implements AuctioneerAgentGui
         titleTF = new JTextField(64);
         titleTF.setMinimumSize(new Dimension(222, 20));
         titleTF.setPreferredSize(new Dimension(222, 20));
+        titleTF.setEditable(false);
         gridBagConstraints = new GridBagConstraints();
         gridBagConstraints.gridx = 1;
         gridBagConstraints.gridy = 0;
@@ -110,61 +112,25 @@ public class AuctioneerAgentGuiImpl extends JFrame implements AuctioneerAgentGui
 
         // Set reaction of GUI when start-button is pressed
         p = new JPanel();
-        startB = new JButton("Start");
-        startB.addActionListener(e -> {
-            String title = titleTF.getText();
-            if (title != null && title.length() > 0) {
-
-                // Set auction name = name in text field
-                myAgent.setLoad(title);
-
-                // Inform all carrier agents that an auction has started
-                myAgent.startAuction();
-
-                // Auction name is not editable anymore until auction ends
-                titleTF.setEditable(false);
-
-                notifyUser("Auction: " + title + " started");
-            } else {
-                // Show error message when no name specified
-                JOptionPane.showMessageDialog(AuctioneerAgentGuiImpl.this, "No auction specified", "WARNING", JOptionPane.WARNING_MESSAGE);
-            }
-        });
 
         // Set reaction of GUI when end-button is pressed
         endB = new JButton("End");
         endB.addActionListener(e -> {
-            // If there is an auction to end
-            if (myAgent.getLoad() != null) {
-                // Reset text field
-                titleTF.setText("");
-                // Clear list of bidder
-                myAgent.clearListOfBidders();
-                // Inform all carrier agents that auction has ended
-                myAgent.endAuction();
-                notifyUser("Auction: " + myAgent.getLoad() + " ended");
-                // Reset name of auction
-                myAgent.setLoad(null);
-                // Text field is editable
-                titleTF.setEditable(true);
-            }
-            // If there is no auction to end, send error message
-            else {
-                JOptionPane.showMessageDialog(AuctioneerAgentGuiImpl.this, "No auction to end", "WARNING", JOptionPane.WARNING_MESSAGE);
-            }
+            myAgent.endAuction();
+            myAgent.doDelete();
         });
 
         // Set reaction of GUI when exit-button is pressed
-        exitB = new JButton("Exit");
-        // Terminate auctioneer agent
-        exitB.addActionListener(e -> myAgent.doDelete());
+        // exitB = new JButton("Exit");
+        // Terminate auctioneer main.java.agent
+        // exitB.addActionListener(e -> myAgent.doDelete());
 
-        endB.setPreferredSize(startB.getPreferredSize());
-        exitB.setPreferredSize(startB.getPreferredSize());
+        //endB.setPreferredSize(startB.getPreferredSize());
+        //exitB.setPreferredSize(startB.getPreferredSize());
 
-        p.add(startB);
+        //p.add(startB);
         p.add(endB);
-        p.add(exitB);
+        //p.add(exitB);
 
         p.setBorder(new BevelBorder(BevelBorder.LOWERED));
         getContentPane().add(p, BorderLayout.SOUTH);
@@ -173,11 +139,10 @@ public class AuctioneerAgentGuiImpl extends JFrame implements AuctioneerAgentGui
 
         setResizable(false);
 
-        if (auction != null) {
-            titleTF.setText(auction);
-            titleTF.setEditable(false);
-            notifyUser("Auction: " + auction + " started");
-        }
+//        if (auction != null) {
+//            titleTF.setText(auction);
+//            notifyUser("Auction: " + auction + " started");
+//        }
 
         // Get "external" IP address to share with other agents
         try {
@@ -188,6 +153,11 @@ public class AuctioneerAgentGuiImpl extends JFrame implements AuctioneerAgentGui
         } catch (Exception ex) {
             ipText.setText("IP address couldn't be retrieved");
         }
+    }
+
+    public void setAuctionField(String auction) {
+        titleTF.setText(auction);
+        titleTF.setEditable(false);
     }
 
     /**

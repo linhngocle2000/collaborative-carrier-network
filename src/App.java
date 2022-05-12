@@ -11,11 +11,11 @@ import jade.wrapper.AgentController;
 import jade.wrapper.ContainerController;
 import jade.wrapper.StaleProxyException;
 
-import agent.auctioneer.AuctioneerAgent;
-import agent.carrier.CarrierAgent;
+import main.java.agent.auctioneer.AuctioneerAgent;
+import main.java.agent.carrier.CarrierAgent;
 
 public class App extends JFrame {
-	static public void main(String args[]) {
+	static public void main(String[] args) {
 		(new App()).setVisible(true);
 	}
 
@@ -32,7 +32,9 @@ public class App extends JFrame {
 
 	// Jade
 	jade.core.Runtime runtime;
-	List<ContainerController> containers;
+	private List<ContainerController> containers;
+	private AuctioneerAgent agent;
+
 
 	public App() {
 		background = new Color(1f, 1f, 1f);
@@ -47,12 +49,13 @@ public class App extends JFrame {
 		// Setup jade environment
 		runtime = jade.core.Runtime.instance();
 		runtime.setCloseVM(true); // Exit jade after the last container is killed
-		containers = new ArrayList<ContainerController>();
+		containers = new ArrayList<>();
 
 		this.addWindowListener(new WindowAdapter() {
 			@Override
 			public void windowClosing(WindowEvent e) {
 				super.windowClosing(e);
+
 
 				// Kill all containers
 				for (ContainerController container : containers) {
@@ -73,6 +76,7 @@ public class App extends JFrame {
 
 	private void createWelcomeUI()
 	{
+
 		// Root panel
 		JPanel rootPanel = new JPanel();
 		rootPanel.setLayout(new GridBagLayout());
@@ -174,6 +178,7 @@ public class App extends JFrame {
 		constraints.insets = new java.awt.Insets(0, 3, 0, 3);
 		rootPanel.add(joinPortText, constraints);
 
+
 		// Join button
 		JButton buttonBidder = new JButton();
 		buttonBidder.setText("Join");
@@ -189,7 +194,7 @@ public class App extends JFrame {
 
 				String host = joinHostText.getText();
 				if (host == null || host.trim().length() == 0) {
-					throw new Exception("Enter a host to join an auction");
+					throw new Exception("Enter an auction name");
 				}
 				host = host.trim();
 
@@ -201,6 +206,7 @@ public class App extends JFrame {
 
 				// Parse int to throw an exception if port is not an int
 				Integer.parseInt(port);
+
 				
 				// Create profile
 				Profile prof = new ProfileImpl();
@@ -213,7 +219,7 @@ public class App extends JFrame {
 				containers.add(container);
 
 				// Instantiate agent
-				CarrierAgent agent = new CarrierAgent();
+				CarrierAgent agent = new CarrierAgent(host);
 				AgentController controller = container.acceptNewAgent(name, agent);
 				controller.start();
 			} catch (NumberFormatException ex) {
@@ -315,7 +321,7 @@ public class App extends JFrame {
 
 		// Auction button
 		JButton buttonAuctioneer = new JButton();
-		buttonAuctioneer.setText("Create an auction");
+		buttonAuctioneer.setText("Create");
 		buttonAuctioneer.setVisible(true);
 		buttonAuctioneer.addActionListener(e -> {
 			try {
@@ -326,6 +332,8 @@ public class App extends JFrame {
 					throw new Exception("Enter your name to create an auction");
 				}
 				name = name.trim();
+
+				String host = joinHostText.getText().trim();
 
 				String auctionName = createNameText.getText();
 				if (auctionName == null || auctionName.trim().length() == 0) {
@@ -345,9 +353,10 @@ public class App extends JFrame {
 				// Create profile
 				Profile prof = new ProfileImpl();
 				prof.setParameter(Profile.CONTAINER_NAME, "Auction_" + auctionName);
+				prof.setParameter(Profile.MAIN_HOST, "localhost");
 				prof.setParameter(Profile.MAIN_PORT, port);
 
-				// Create new main container
+				// Create a main container
 				ContainerController container = runtime.createMainContainer(prof);
 				containers.add(container);
 
