@@ -7,12 +7,16 @@ import javax.swing.*;
 
 import jade.core.Profile;
 import jade.core.ProfileImpl;
+import jade.wrapper.AgentContainer;
 import jade.wrapper.AgentController;
+//import jade.wrapper.ContainerController;
 import jade.wrapper.ContainerController;
 import jade.wrapper.StaleProxyException;
 
 import main.java.agent.auctioneer.AuctioneerAgent;
 import main.java.agent.carrier.CarrierAgent;
+
+
 
 public class App extends JFrame {
 	static public void main(String[] args) {
@@ -33,7 +37,7 @@ public class App extends JFrame {
 	// Jade
 	jade.core.Runtime runtime;
 	private List<ContainerController> containers;
-	private AuctioneerAgent agent;
+
 
 
 	public App() {
@@ -209,13 +213,18 @@ public class App extends JFrame {
 
 				
 				// Create profile
-				Profile prof = new ProfileImpl();
-				prof.setParameter(Profile.CONTAINER_NAME, "Carrier_" + name);
-				prof.setParameter(Profile.MAIN_HOST, host);
-				prof.setParameter(Profile.MAIN_PORT, port);
+//				Profile prof = new ProfileImpl();
+//				prof.setParameter(Profile.CONTAINER_NAME, "Carrier_" + name);
+//				prof.setParameter(Profile.MAIN_HOST, host);
+//				prof.setParameter(Profile.MAIN_PORT, port);
+				ProfileImpl pContainer;
+				pContainer = new ProfileImpl("127.0.0.1", 8888, "Ithaq");
+				pContainer.setParameter(Profile.CONTAINER_NAME,"DistantContainer");
+
+
 
 				// Create new main container
-				ContainerController container = runtime.createAgentContainer(prof);
+				ContainerController container = runtime.createAgentContainer(pContainer);
 				containers.add(container);
 
 				// Instantiate agent
@@ -351,18 +360,27 @@ public class App extends JFrame {
 				Integer.parseInt(port);
 
 				// Create profile
-				Profile prof = new ProfileImpl();
-				prof.setParameter(Profile.CONTAINER_NAME, "Auction_" + auctionName);
-				prof.setParameter(Profile.MAIN_HOST, "localhost");
-				prof.setParameter(Profile.MAIN_PORT, port);
+				Profile prof = new ProfileImpl("127.0.0.1", 8888, "Ithaq");
+
 
 				// Create a main container
-				ContainerController container = runtime.createMainContainer(prof);
-				containers.add(container);
+				AgentContainer mainContainerRef = runtime.createMainContainer(prof);
+				//ContainerController container = runtime.createMainContainer(prof);
+				containers.add(mainContainerRef);
+
+				AgentController rma;
+				rma = mainContainerRef.createNewAgent("rma", "jade.tools.rma.rma", new Object[0]);
+				rma.start();
+
+				AgentController snif;
+				snif= mainContainerRef.createNewAgent("sniffeur", "jade.tools.sniffer.Sniffer",new Object[0]);
+				snif.start();
+
+
 
 				// Instantiate agent
 				AuctioneerAgent agent = new AuctioneerAgent(auctionName);
-				AgentController controller = container.acceptNewAgent(name, agent);
+				AgentController controller = mainContainerRef.acceptNewAgent(name, agent);
 				controller.start();
 			} catch (NumberFormatException ex) {
 				errorLabel.setText("Enter a valid port number");

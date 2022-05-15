@@ -35,46 +35,43 @@ public class CarrierAgent extends Agent {
    protected void setup() {
 
       // Printout a welcome message
-      System.out.println("Hello! Carrier-agent " + getAID().getName() + " is ready.");
+      System.out.println("Hello! Carrier-agent " + getAID() + " is ready.");
 
-//      try {
-//         // Build the description used as template for the search
-//         DFAgentDescription template = new DFAgentDescription();
-//         ServiceDescription templateSd = new ServiceDescription();
-//         templateSd.setType("tuhh_sd_group04_ccn");
-//         template.addServices(templateSd);
-//
-//         SearchConstraints sc = new SearchConstraints();
-//         // We want to receive 10 results at most
-//         sc.setMaxResults(10L);
-//
-//         DFAgentDescription[] results = DFService.search(this, template, sc);
-//         if (results.length > 0) {
-//            System.out.println("Agent "+getLocalName()+" found the following auction services:");
-//            for (DFAgentDescription dfd : results) {
-//               AID provider = dfd.getName();
-//               // The same agent may provide several services; we are only interested
-//               // in the "tuhh_sd_group04_ccn" one
-//               Iterator it = dfd.getAllServices();
-//               while (it.hasNext()) {
-//                  ServiceDescription sd = (ServiceDescription) it.next();
-//                  if (sd.getType().equals("tuhh_sd_group04_ccn") && sd.getName().equals("Pizza")) {
-//                     System.out.println("- Service \"" + sd.getName() + "\" provided by agent " + provider.getName());
-//                     auctioneerAgent = provider;
-//                  }
-//               }
-//            }
-//         }
-//         else {
-//            System.out.println("Agent "+getLocalName()+" did not find any weather-forecast service");
-//         }
-//      }
-//      catch (FIPAException fe) {
-//         fe.printStackTrace();
-//      }
+      try {
+         // Build the description used as template for the search
+         DFAgentDescription template = new DFAgentDescription();
+         ServiceDescription templateSd = new ServiceDescription();
+         templateSd.setType("tuhh_sd_group04_ccn");
+         template.addServices(templateSd);
 
-      auctioneerAgent = new AID("linh@192.168.178.44:123/JADE", AID.ISGUID);
-      auctioneerAgent.addAddresses("http://host.docker.internal:7778/acc");
+         SearchConstraints sc = new SearchConstraints();
+         // We want to receive 10 results at most
+         sc.setMaxResults(10L);
+
+         DFAgentDescription[] results = DFService.search(this, template, sc);
+         if (results.length > 0) {
+            System.out.println("Agent "+getLocalName()+" found the following auction services:");
+            for (DFAgentDescription dfd : results) {
+               AID provider = dfd.getName();
+               // The same agent may provide several services; we are only interested
+               // in the "tuhh_sd_group04_ccn" one
+               Iterator it = dfd.getAllServices();
+               while (it.hasNext()) {
+                  ServiceDescription sd = (ServiceDescription) it.next();
+                  if (sd.getType().equals("tuhh_sd_group04_ccn")) {
+                     System.out.println("- Service \"" + sd.getName() + "\" provided by agent " + provider.getName());
+                     auctioneerAgent = provider;
+                  }
+               }
+            }
+         }
+         else {
+            System.out.println("Agent "+getLocalName()+" did not find any weather-forecast service");
+         }
+      }
+      catch (FIPAException fe) {
+         fe.printStackTrace();
+      }
 
 
 
