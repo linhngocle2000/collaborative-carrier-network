@@ -363,6 +363,7 @@ public class App extends JFrame {
 
 				// Create profile
 				Profile prof = new ProfileImpl("192.168.178.31", 8888, "Ithaq");
+				prof.setParameter(Profile.MTPS, "jade.mtp.http.MessageTransportProtocol(http://192.168.178.31:7778/acc)");
 
 
 				// Create a main container
