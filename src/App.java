@@ -218,8 +218,10 @@ public class App extends JFrame {
 //				prof.setParameter(Profile.MAIN_HOST, host);
 //				prof.setParameter(Profile.MAIN_PORT, port);
 				ProfileImpl pContainer;
-				pContainer = new ProfileImpl("127.0.0.1", 8888, "Ithaq");
-				pContainer.setParameter(Profile.CONTAINER_NAME,"DistantContainer");
+				pContainer = new ProfileImpl();
+				pContainer.setParameter(Profile.MAIN_HOST, "192.168.178.31");
+				pContainer.setParameter(Profile.CONTAINER_NAME,"CarrierContainer");
+				pContainer.setParameter(Profile.MAIN_PORT, "8888");
 
 
 
@@ -360,7 +362,7 @@ public class App extends JFrame {
 				Integer.parseInt(port);
 
 				// Create profile
-				Profile prof = new ProfileImpl("127.0.0.1", 8888, "Ithaq");
+				Profile prof = new ProfileImpl("192.168.178.31", 8888, "Ithaq");
 
 
 				// Create a main container
