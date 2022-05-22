@@ -1,17 +1,22 @@
 import java.awt.*;
 import java.awt.event.*;
-import java.util.ArrayList;
-import java.util.List;
+import java.net.Inet4Address;
+import java.net.UnknownHostException;
 
 import javax.swing.*;
 
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.Locale;
+
 import jade.core.Profile;
 import jade.core.ProfileImpl;
-import jade.wrapper.AgentContainer;
-import jade.wrapper.AgentController;
-//import jade.wrapper.ContainerController;
-import jade.wrapper.ContainerController;
-import jade.wrapper.StaleProxyException;
+import jade.wrapper.*;
 
 import main.java.agent.auctioneer.AuctioneerAgent;
 import main.java.agent.carrier.CarrierAgent;
@@ -31,65 +36,99 @@ public class App extends JFrame {
 	// Background color for UI elements
 	Color background;
 
-	// Database connection
-	// DatabaseConnection db;
-
 	// Jade
 	jade.core.Runtime runtime;
-	private List<ContainerController> containers;
+	private AgentContainer maincontainer;
+	private String ip;
+	private String mtp;
+	private boolean isPlatformCreated = false;
+	private AgentController agents;
+
+	private ArrayList<CarrierAgent> carrieragentlist = new ArrayList<>();
+	private ArrayList<AuctioneerAgent> auctioneeragentlist = new ArrayList<>();
+	private JLabel errorLabel;
+
 
 
 
 	public App() {
 		background = new Color(1f, 1f, 1f);
 
-		setTitle("Auctioneer Agent Platform");
-		setSize(720, 400);
-		setLocation(50, 50);
+		setTitle("Auction Management Platform");
+		setSize(620, 400);
+		setLocationRelativeTo(null);
 		setBackground(background);
+
 
 		createWelcomeUI();
 
 		// Setup jade environment
 		runtime = jade.core.Runtime.instance();
 		runtime.setCloseVM(true); // Exit jade after the last container is killed
-		containers = new ArrayList<>();
 
 		this.addWindowListener(new WindowAdapter() {
-			@Override
 			public void windowClosing(WindowEvent e) {
-				super.windowClosing(e);
-
-
-				// Kill all containers
-				for (ContainerController container : containers) {
+				removeTerminatedAgents();
+				if (!carrieragentlist.isEmpty()) {
+					for (CarrierAgent carrier:carrieragentlist) {
+						if (carrier.isAgentAlive()) {
+							errorLabel.setText("Close all agent windows before exiting platform.");
+							setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
+						}
+					}
+				} else if (!auctioneeragentlist.isEmpty()) {
+					for (AuctioneerAgent auctioneer:auctioneeragentlist) {
+						if (auctioneer.isAgentAlive()) {
+							errorLabel.setText("Close all agent windows before exiting platform.");
+							setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
+						}
+					}
+				} else {
+					// Kill main container
 					try {
-						container.kill();
-					} catch (StaleProxyException ex) {
+						if (maincontainer != null) {
+							try {
+								maincontainer.getPlatformController().kill();
+								setDefaultCloseOperation(EXIT_ON_CLOSE);
+							} catch (StaleProxyException ex) {
+								ex.printStackTrace();
+							}
+						}
+					} catch (ControllerException ex) {
 						ex.printStackTrace();
 					}
 				}
-
-				dispose();
 			}
 		});
-
-		// db = new DatabaseConnection();
-		// db.Connect();
 	}
 
-	private void createWelcomeUI()
-	{
+	private void removeTerminatedAgents() {
+		carrieragentlist.removeIf(s -> !s.isAgentAlive());
+		auctioneeragentlist.removeIf(s -> !s.isAgentAlive());
+	}
+
+	private static String getIpAddress() throws UnknownHostException {
+		return Inet4Address.getLocalHost().getHostAddress();
+	}
+
+	private static Connection connectToDB() throws SQLException {
+		String dburl = "jdbc:postgresql://ec2-99-80-170-190.eu-west-1.compute.amazonaws.com:5432/d7p2aqlsbl8lc8";
+		String dbuser = "mwmhqhpwgzqkkc";
+		String dbpw = "694d944a63cbfe7db7e950765dcac3260bd859c0668abe43045555abfba8fd0f";
+		return DriverManager.getConnection(dburl, dbuser, dbpw);
+	}
+
+	private void createWelcomeUI() {
 
 		// Root panel
 		JPanel rootPanel = new JPanel();
 		rootPanel.setLayout(new GridBagLayout());
-		rootPanel.setMinimumSize(new Dimension(330, 100));
-		rootPanel.setPreferredSize(new Dimension(330, 100));
+		rootPanel.setMinimumSize(new Dimension(220, 100));
+		rootPanel.setPreferredSize(new Dimension(220, 100));
 		rootPanel.setBackground(background);
 
 		// Label for error messages
-		JLabel errorLabel = new JLabel();
+		errorLabel = new JLabel();
 		errorLabel.setForeground(new Color(1f, 0f, 0f));
 		errorLabel.setHorizontalAlignment(SwingConstants.CENTER);
 
@@ -138,49 +177,28 @@ public class App extends JFrame {
 		constraints.insets = new java.awt.Insets(0, 3, 0, 3);
 		rootPanel.add(joinNameText, constraints);
 
-		// Join host label
-		JLabel joinHostLabel = new JLabel("Host");
-		joinHostLabel.setHorizontalAlignment(SwingConstants.LEFT);
+
+		// Join auction name label
+		JLabel joinAuctionNameLabel = new JLabel("Auction name");
+		joinAuctionNameLabel.setHorizontalAlignment(SwingConstants.LEFT);
 
 		constraints = new GridBagConstraints();
 		constraints.gridx = 1;
 		constraints.gridy = 1;
 		constraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
 		constraints.insets = new java.awt.Insets(10, 3, 0, 3);
-		rootPanel.add(joinHostLabel, constraints);
+		rootPanel.add(joinAuctionNameLabel, constraints);
 
-		// Join host text field
-		JTextField joinHostText = new JTextField();
-		joinHostText.setPreferredSize(new Dimension(150, 20));
+		// Join auction name text field
+		JTextField joinAuctionNameText = new JTextField();
+		joinAuctionNameText.setPreferredSize(new Dimension(150, 20));
 
 		constraints = new GridBagConstraints();
 		constraints.gridx = 1;
 		constraints.gridy = 2;
 		constraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
 		constraints.insets = new java.awt.Insets(0, 3, 0, 3);
-		rootPanel.add(joinHostText, constraints);
-
-		// Join port label
-		JLabel joinPortLabel = new JLabel("Port");
-		joinPortLabel.setHorizontalAlignment(SwingConstants.LEFT);
-
-		constraints = new GridBagConstraints();
-		constraints.gridx = 2;
-		constraints.gridy = 1;
-		constraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
-		constraints.insets = new java.awt.Insets(10, 3, 0, 3);
-		rootPanel.add(joinPortLabel, constraints);
-
-		// Join port text field
-		JTextField joinPortText = new JTextField();
-		joinPortText.setPreferredSize(new Dimension(50, 20));
-
-		constraints = new GridBagConstraints();
-		constraints.gridx = 2;
-		constraints.gridy = 2;
-		constraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
-		constraints.insets = new java.awt.Insets(0, 3, 0, 3);
-		rootPanel.add(joinPortText, constraints);
+		rootPanel.add(joinAuctionNameText, constraints);
 
 
 		// Join button
@@ -190,51 +208,61 @@ public class App extends JFrame {
 			try {
 				errorLabel.setText("");
 
+
 				String name = joinNameText.getText();
 				if (name == null || name.trim().length() == 0) {
 					throw new Exception("Enter a name to join an auction");
 				}
 				name = name.trim();
 
-				String host = joinHostText.getText();
-				if (host == null || host.trim().length() == 0) {
-					throw new Exception("Enter an auction name");
+
+				String auctionName = joinAuctionNameText.getText();
+				if (auctionName == null || auctionName.trim().length() == 0) {
+					throw new Exception("Enter an auction name to join");
 				}
-				host = host.trim();
+				auctionName = auctionName.trim().toLowerCase();
 
-				String port = joinPortText.getText();
-				if (port == null || port.trim().length() == 0) {
-					throw new Exception("Enter a port to join an auction");
+				Connection connection = connectToDB();
+				String auctionmtp;
+				Statement statement = connection.createStatement();
+				ResultSet resultSet = statement.executeQuery("SELECT * FROM public.auctioneer_agent where auction='"+auctionName+"'");
+				if (!resultSet.next()) {
+					throw new Exception("Auction not available");
+				} else {
+					auctionmtp = resultSet.getString("mtp");
 				}
-				port = port.trim();
 
-				// Parse int to throw an exception if port is not an int
-				Integer.parseInt(port);
-
-				
 				// Create profile
-//				Profile prof = new ProfileImpl();
-//				prof.setParameter(Profile.CONTAINER_NAME, "Carrier_" + name);
-//				prof.setParameter(Profile.MAIN_HOST, host);
-//				prof.setParameter(Profile.MAIN_PORT, port);
-				ProfileImpl pContainer;
-				pContainer = new ProfileImpl();
-				pContainer.setParameter(Profile.MAIN_HOST, "192.168.178.31");
-				pContainer.setParameter(Profile.CONTAINER_NAME,"CarrierContainer");
-				pContainer.setParameter(Profile.MAIN_PORT, "8888");
+				if (!isPlatformCreated) {
+					ip = getIpAddress();
+					mtp = "http://"+ip+":7778/acc";
+					Profile prof = new ProfileImpl(ip, 8888, "Auction");
+					prof.setParameter(Profile.MTPS, "jade.mtp.http.MessageTransportProtocol("+mtp+")");
+					prof.setParameter(Profile.GUI, "true");
 
+					// Create a main container
+					maincontainer = runtime.createMainContainer(prof);
 
+					// Create sniffeur agent
+					agents = maincontainer.createNewAgent("sniffeur", "jade.tools.sniffer.Sniffer",new Object[0]);
 
-				// Create new main container
-				ContainerController container = runtime.createAgentContainer(pContainer);
-				containers.add(container);
-
-				// Instantiate agent
-				CarrierAgent agent = new CarrierAgent();
-				AgentController controller = container.acceptNewAgent(name, agent);
-				controller.start();
-			} catch (NumberFormatException ex) {
-				errorLabel.setText("Enter a valid port number");
+					// Instantiate agent
+					CarrierAgent agent = new CarrierAgent(auctionName, auctionmtp);
+					agents = maincontainer.acceptNewAgent(name, agent);
+					carrieragentlist.add(agent);
+					isPlatformCreated = true;
+				} else {
+					CarrierAgent agent = new CarrierAgent(auctionName, auctionmtp);
+					agents = maincontainer.acceptNewAgent(name, agent);
+					carrieragentlist.add(agent);
+				}
+				agents.start();
+			} catch (UnknownHostException unknownHoste) {
+				errorLabel.setText("Failed to retrieve IP address. Please try again later.");
+				unknownHoste.printStackTrace();
+			} catch (SQLException sqle) {
+				errorLabel.setText("Failed to connect to database. Please try again later.");
+				sqle.printStackTrace();
 			} catch (Exception ex) {
 				errorLabel.setText(ex.getMessage());
 				ex.printStackTrace();
@@ -264,36 +292,15 @@ public class App extends JFrame {
 		constraints.insets = new java.awt.Insets(30, 3, 0, 3);
 		rootPanel.add(auctionLabel, constraints);
 
-		// Your name label
-		JLabel yourNameLabel = new JLabel("Your name");
-		yourNameLabel.setHorizontalAlignment(SwingConstants.LEFT);
-
-		constraints = new GridBagConstraints();
-		constraints.gridx = 0;
-		constraints.gridy = 5;
-		constraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
-		constraints.insets = new java.awt.Insets(10, 3, 0, 3);
-		rootPanel.add(yourNameLabel, constraints);
-
-		// Your name text field
-		JTextField yourNameText = new JTextField();
-		yourNameText.setPreferredSize(new Dimension(150, 20));
-
-		constraints = new GridBagConstraints();
-		constraints.gridx = 0;
-		constraints.gridy = 6;
-		constraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
-		constraints.insets = new java.awt.Insets(0, 3, 0, 3);
-		rootPanel.add(yourNameText, constraints);
-
 		// Auction name label
 		JLabel createNameLabel = new JLabel("Auction name");
 		createNameLabel.setHorizontalAlignment(SwingConstants.LEFT);
 
 		constraints = new GridBagConstraints();
-		constraints.gridx = 1;
+		constraints.gridx = 0;
 		constraints.gridy = 5;
-		constraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
+		constraints.gridwidth = GridBagConstraints.REMAINDER;
+		constraints.anchor = GridBagConstraints.CENTER;
 		constraints.insets = new java.awt.Insets(10, 3, 0, 3);
 		rootPanel.add(createNameLabel, constraints);
 		
@@ -302,33 +309,12 @@ public class App extends JFrame {
 		createNameText.setPreferredSize(new Dimension(150, 20));
 
 		constraints = new GridBagConstraints();
-		constraints.gridx = 1;
+		constraints.gridx = 0;
 		constraints.gridy = 6;
-		constraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
+		constraints.gridwidth = GridBagConstraints.REMAINDER;
+		constraints.anchor = GridBagConstraints.CENTER;
 		constraints.insets = new java.awt.Insets(0, 3, 0, 3);
 		rootPanel.add(createNameText, constraints);
-		
-		// Auction port label
-		JLabel createPortLabel = new JLabel("Port");
-		createPortLabel.setHorizontalAlignment(SwingConstants.LEFT);
-
-		constraints = new GridBagConstraints();
-		constraints.gridx = 2;
-		constraints.gridy = 5;
-		constraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
-		constraints.insets = new java.awt.Insets(10, 3, 0, 3);
-		rootPanel.add(createPortLabel, constraints);
-
-		// Auction port text field
-		JTextField createPortText = new JTextField();
-		createPortText.setPreferredSize(new Dimension(50, 20));
-
-		constraints = new GridBagConstraints();
-		constraints.gridx = 2;
-		constraints.gridy = 6;
-		constraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
-		constraints.insets = new java.awt.Insets(0, 3, 0, 3);
-		rootPanel.add(createPortText, constraints);
 
 		// Auction button
 		JButton buttonAuctioneer = new JButton();
@@ -338,59 +324,54 @@ public class App extends JFrame {
 			try {
 				errorLabel.setText("");
 
-				String name = yourNameText.getText();
-				if (name == null || name.trim().length() == 0) {
-					throw new Exception("Enter your name to create an auction");
-				}
-				name = name.trim();
-
-				String host = joinHostText.getText().trim();
-
 				String auctionName = createNameText.getText();
 				if (auctionName == null || auctionName.trim().length() == 0) {
-					throw new Exception("Enter an auction name to create an auction");
+					throw new Exception("Enter an auction name to create");
 				}
-				auctionName = auctionName.trim();
+				auctionName = auctionName.trim().toLowerCase();
 
-				String port = createPortText.getText();
-				if (port == null || port.trim().length() == 0) {
-					throw new Exception("Enter a port to create an auction");
+				Connection connection = connectToDB();
+				Statement statement = connection.createStatement();
+				ResultSet resultSet = statement.executeQuery("SELECT * FROM public.auctioneer_agent WHERE auction='"+auctionName+"'");
+				if (resultSet.next()) {
+					throw new Exception("Auction name already existed");
 				}
-				port = port.trim();
+				if (!isPlatformCreated) {
+					ip = getIpAddress();
+					mtp = "http://"+ip+":7778/acc";
+					statement.executeUpdate("INSERT INTO public.auctioneer_agent VALUES ('" + auctionName + "','" + mtp +"')");
+					Profile prof = new ProfileImpl(ip, 8888, "Auction");
+					prof.setParameter(Profile.MTPS, "jade.mtp.http.MessageTransportProtocol("+mtp+")");
+					prof.setParameter(Profile.GUI, "true");
 
-				// Parse int to throw an exception if port is not an int
-				Integer.parseInt(port);
+					// Create a main container
+					maincontainer = runtime.createMainContainer(prof);
 
-				// Create profile
-				Profile prof = new ProfileImpl("192.168.178.31", 8888, "Ithaq");
-				prof.setParameter(Profile.MTPS, "jade.mtp.http.MessageTransportProtocol(http://192.168.178.31:7778/acc)");
+					// Create sniffeur agent
+					agents = maincontainer.createNewAgent("sniffeur", "jade.tools.sniffer.Sniffer",new Object[0]);
 
-
-				// Create a main container
-				AgentContainer mainContainerRef = runtime.createMainContainer(prof);
-				//ContainerController container = runtime.createMainContainer(prof);
-				containers.add(mainContainerRef);
-
-				AgentController rma;
-				rma = mainContainerRef.createNewAgent("rma", "jade.tools.rma.rma", new Object[0]);
-				rma.start();
-
-				AgentController snif;
-				snif= mainContainerRef.createNewAgent("sniffeur", "jade.tools.sniffer.Sniffer",new Object[0]);
-				snif.start();
-
-
-
-				// Instantiate agent
-				AuctioneerAgent agent = new AuctioneerAgent(auctionName);
-				AgentController controller = mainContainerRef.acceptNewAgent(name, agent);
-				controller.start();
-			} catch (NumberFormatException ex) {
-				errorLabel.setText("Enter a valid port number");
+					// Instantiate agent
+					AuctioneerAgent agent = new AuctioneerAgent(auctionName);
+					agents = maincontainer.acceptNewAgent(auctionName, agent);
+					auctioneeragentlist.add(agent);
+					isPlatformCreated = true;
+				} else {
+					statement.executeUpdate("INSERT INTO public.auctioneer_agent VALUES ('" + auctionName + "','" + mtp +"')");
+					AuctioneerAgent agent = new AuctioneerAgent(auctionName);
+					agents = maincontainer.acceptNewAgent(auctionName, agent);
+					auctioneeragentlist.add(agent);
+				}
+				agents.start();
+			} catch (UnknownHostException unknownHoste) {
+				errorLabel.setText("Failed to retrieve IP address. Please try again later.");
+				unknownHoste.printStackTrace();
+			} catch (SQLException sqle) {
+				errorLabel.setText("Failed to connect to database. Please try again later.");
+				sqle.printStackTrace();
 			} catch (Exception ex) {
 				errorLabel.setText(ex.getMessage());
 				ex.printStackTrace();
-				System.out.println("Could not create auction :(");
+				System.out.println("Could not join auction :(");
 			}
 		});
 

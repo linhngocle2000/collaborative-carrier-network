@@ -10,6 +10,7 @@ import jade.domain.FIPAAgentManagement.SearchConstraints;
 import jade.domain.FIPAAgentManagement.ServiceDescription;
 import jade.domain.FIPAException;
 import jade.lang.acl.ACLMessage;
+import main.java.agent.auctioneer.AuctioneerAgentGui;
 
 import java.util.Iterator;
 import java.util.concurrent.TimeUnit;
@@ -20,13 +21,17 @@ public class CarrierAgent extends Agent {
    // Available auctioneer main.java.agent
    private AID auctioneerAgent;
    private String auctionName;
+   private String mtp;
 
 
    // The GUI to interact with the user
    private CarrierAgentGui myGui;
+   private boolean isAgentAlive = false;
 
-   public CarrierAgent() {
+   public CarrierAgent(String auction, String mtpaddr) {
       super();
+      auctionName = auction;
+      mtp = mtpaddr;
    }
 
    /**
@@ -36,42 +41,10 @@ public class CarrierAgent extends Agent {
 
       // Printout a welcome message
       System.out.println("Hello! Carrier-agent " + getAID() + " is ready.");
+      isAgentAlive = true;
 
-      try {
-         // Build the description used as template for the search
-         DFAgentDescription template = new DFAgentDescription();
-         ServiceDescription templateSd = new ServiceDescription();
-         templateSd.setType("tuhh_sd_group04_ccn");
-         template.addServices(templateSd);
-
-         SearchConstraints sc = new SearchConstraints();
-         // We want to receive 10 results at most
-         sc.setMaxResults(10L);
-
-         DFAgentDescription[] results = DFService.search(this, template, sc);
-         if (results.length > 0) {
-            System.out.println("Agent "+getLocalName()+" found the following auction services:");
-            for (DFAgentDescription dfd : results) {
-               AID provider = dfd.getName();
-               // The same agent may provide several services; we are only interested
-               // in the "tuhh_sd_group04_ccn" one
-               Iterator it = dfd.getAllServices();
-               while (it.hasNext()) {
-                  ServiceDescription sd = (ServiceDescription) it.next();
-                  if (sd.getType().equals("tuhh_sd_group04_ccn")) {
-                     System.out.println("- Service \"" + sd.getName() + "\" provided by agent " + provider.getName());
-                     auctioneerAgent = provider;
-                  }
-               }
-            }
-         }
-         else {
-            System.out.println("Agent "+getLocalName()+" did not find any weather-forecast service");
-         }
-      }
-      catch (FIPAException fe) {
-         fe.printStackTrace();
-      }
+      auctioneerAgent = new AID(auctionName+"@Auction", AID.ISGUID);
+      auctioneerAgent.addAddresses(mtp);
 
 
 
@@ -87,7 +60,7 @@ public class CarrierAgent extends Agent {
    }
 
    /**
-    * This method is to get AID of auctioneer main.java.agent
+    * This method is to get AID of auctioneer agent
     * @return AID of auctioneer main.java.agent
     */
    public AID getAuctioneerAgent() {
@@ -95,17 +68,17 @@ public class CarrierAgent extends Agent {
    }
 
    /**
-    * This method is called by the GUI to send a join-request to auctioneer main.java.agent
+    * This method is called by the GUI to send a join-request to auctioneer agent
     */
    public void sendJoinRequest() {
       addBehaviour(new JoinRequest());
    }
 
    /**
-    * This method is called by the GUI to send an exit-request to auctioneer main.java.agent
+    * This method is called by the GUI to send an exit-request to auctioneer agent
     */
    public void sendExitRequest() {
-      addBehaviour(new ExitRequest(this));
+      addBehaviour(new ExitRequest());
    }
 
    /**
@@ -121,7 +94,6 @@ public class CarrierAgent extends Agent {
          msg.setContent("join");
          msg.addReceiver(auctioneerAgent);
          send(msg);
-         myGui.notifyUser("Msg sent");
       }
    }
 
@@ -142,7 +114,7 @@ public class CarrierAgent extends Agent {
                String auction = msg.getContent();
                myGui.notifyUser("Auction for " + auction + " is terminating. Window will close shortly");
                try {
-                  TimeUnit.SECONDS.sleep(10);
+                  TimeUnit.SECONDS.sleep(5);
                } catch (InterruptedException e) {
                   e.printStackTrace();
                }
@@ -164,15 +136,11 @@ public class CarrierAgent extends Agent {
     */
    private class ExitRequest extends OneShotBehaviour {
 
-
-      private ExitRequest(Agent a) {
-         super(a);
-      }
-
       public void action() {
          // Send request to exit
-         ACLMessage msg = new ACLMessage(ACLMessage.CANCEL);
-         msg.setSender(this.myAgent.getAID());
+         myGui.notifyUser("msg sent");
+         ACLMessage msg = new ACLMessage(ACLMessage.REQUEST);
+         msg.setSender(myAgent.getAID());
          msg.setProtocol("auction-exit");
          msg.setContent("exit");
          msg.addReceiver(auctioneerAgent);
@@ -184,13 +152,14 @@ public class CarrierAgent extends Agent {
     * Agent clean-up
     */
    protected void takeDown() {
-      // Calling dispose() here causes a DisposalInterrupted exception in the main window, so don't do it
-      // Dispose the GUI if it is there
-      if (myGui != null) {
-         myGui.dispose();
-      }
 
       // Printout a dismissal message
       System.out.println("Carrier-agent "+getAID().getName()+" terminating.");
+      isAgentAlive = false;
+
+   }
+
+   public boolean isAgentAlive() {
+      return isAgentAlive;
    }
 }

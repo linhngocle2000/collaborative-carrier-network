@@ -33,6 +33,7 @@ public class AuctioneerAgentGuiImpl extends JFrame implements AuctioneerAgentGui
         // Terminate agent when GUI window is closed
         addWindowListener(new WindowAdapter() {
             public void windowClosing(WindowEvent e) {
+                myAgent.endAuction();
                 myAgent.doDelete();
             }
         } );
@@ -71,29 +72,6 @@ public class AuctioneerAgentGuiImpl extends JFrame implements AuctioneerAgentGui
         gridBagConstraints.insets = new Insets(5, 3, 0, 3);
         rootPanel.add(titleTF, gridBagConstraints);
 
-        // IP address of the auctioneer
-        JLabel ipLabel = new JLabel("IP address:");
-        ipLabel.setHorizontalAlignment(SwingConstants.LEFT);
-        gridBagConstraints = new GridBagConstraints();
-        gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 1;
-        gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
-        gridBagConstraints.insets = new java.awt.Insets(15, 3, 0, 3);
-        rootPanel.add(ipLabel, gridBagConstraints);
-
-        // Text field to copy IP address
-        JTextField ipText = new JTextField();
-        ipText.setMinimumSize(new Dimension(222, 20));
-        ipText.setPreferredSize(new Dimension(222, 20));
-        ipText.setEditable(false);
-        gridBagConstraints = new GridBagConstraints();
-        gridBagConstraints.gridx = 1;
-        gridBagConstraints.gridy = 1;
-        gridBagConstraints.gridwidth = 3;
-        gridBagConstraints.anchor = GridBagConstraints.NORTHWEST;
-        gridBagConstraints.insets = new Insets(15, 3, 0, 3);
-        rootPanel.add(ipText, gridBagConstraints);
-
         rootPanel.setBorder(new BevelBorder(BevelBorder.LOWERED));
 
         getContentPane().add(rootPanel, BorderLayout.NORTH);
@@ -118,19 +96,10 @@ public class AuctioneerAgentGuiImpl extends JFrame implements AuctioneerAgentGui
         endB.addActionListener(e -> {
             myAgent.endAuction();
             myAgent.doDelete();
+            dispose();
         });
 
-        // Set reaction of GUI when exit-button is pressed
-        // exitB = new JButton("Exit");
-        // Terminate auctioneer main.java.agent
-        // exitB.addActionListener(e -> myAgent.doDelete());
-
-        //endB.setPreferredSize(startB.getPreferredSize());
-        //exitB.setPreferredSize(startB.getPreferredSize());
-
-        //p.add(startB);
         p.add(endB);
-        //p.add(exitB);
 
         p.setBorder(new BevelBorder(BevelBorder.LOWERED));
         getContentPane().add(p, BorderLayout.SOUTH);
@@ -138,21 +107,6 @@ public class AuctioneerAgentGuiImpl extends JFrame implements AuctioneerAgentGui
         pack();
 
         setResizable(false);
-
-//        if (auction != null) {
-//            titleTF.setText(auction);
-//            notifyUser("Auction: " + auction + " started");
-//        }
-
-        // Get "external" IP address to share with other agents
-        try {
-            URL whatismyip = new URL("http://checkip.amazonaws.com");
-            BufferedReader in = new BufferedReader(new InputStreamReader(whatismyip.openStream()));
-            String ip = in.readLine();
-            ipText.setText(ip);
-        } catch (Exception ex) {
-            ipText.setText("IP address couldn't be retrieved");
-        }
     }
 
     public void setAuctionField(String auction) {

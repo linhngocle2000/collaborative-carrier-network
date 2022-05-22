@@ -2,6 +2,7 @@ package main.java.agent.carrier;
 
 import java.awt.*;
 import java.awt.event.*;
+import java.util.concurrent.TimeUnit;
 import javax.swing.*;
 import javax.swing.border.*;
 
@@ -16,10 +17,6 @@ public class CarrierAgentGuiImpl extends JFrame implements CarrierAgentGui{
     // Text field to enter auction name
     private JTextField titleTF;
 
-    // Radio buttons to choose "Join"/"Exit" auction
-    // private JRadioButton joinButton, exitButton;
-
-    // Buttons: Send, Reset, Exit
     private JButton exitB;
 
     // Print logs
@@ -31,6 +28,7 @@ public class CarrierAgentGuiImpl extends JFrame implements CarrierAgentGui{
         // Terminate agent when GUI window is closed
         addWindowListener(new WindowAdapter() {
             public void windowClosing(WindowEvent e) {
+                myAgent.sendExitRequest();
                 myAgent.doDelete();
             }
         } );
@@ -57,6 +55,7 @@ public class CarrierAgentGuiImpl extends JFrame implements CarrierAgentGui{
 
         // Set position of text field to enter auction name in the GUI
         titleTF = new JTextField(64);
+        titleTF.setEditable(false);
         titleTF.setMinimumSize(new Dimension(222, 20));
         titleTF.setPreferredSize(new Dimension(222, 20));
         gridBagConstraints = new GridBagConstraints();
@@ -66,52 +65,6 @@ public class CarrierAgentGuiImpl extends JFrame implements CarrierAgentGui{
         gridBagConstraints.anchor = GridBagConstraints.NORTHWEST;
         gridBagConstraints.insets = new Insets(5, 3, 0, 3);
         rootPanel.add(titleTF, gridBagConstraints);
-
-///////////
-// Line 1
-///////////
-
-        // Set position of title "Request" in the GUI
-//        l = new JLabel("Request:");
-//        l.setHorizontalAlignment(SwingConstants.LEFT);
-//        gridBagConstraints = new GridBagConstraints();
-//        gridBagConstraints.gridx = 0;
-//        gridBagConstraints.gridy = 1;
-//        gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
-//        gridBagConstraints.insets = new java.awt.Insets(10, 3, 0, 3);
-//        rootPanel.add(l, gridBagConstraints);
-
-        // Set position of radio button "Join" in the GUI
-//        joinButton = new JRadioButton("Join");
-//        joinButton.setActionCommand("Join");
-//        joinButton.setSelected(false);
-//        joinButton.setMinimumSize(new Dimension(70, 20));
-//        joinButton.setPreferredSize(new Dimension(70, 20));
-//        joinButton.setHorizontalAlignment(SwingConstants.LEFT);
-//        gridBagConstraints = new GridBagConstraints();
-//        gridBagConstraints.gridx = 1;
-//        gridBagConstraints.gridy = 1;
-//        gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
-//        gridBagConstraints.insets = new java.awt.Insets(10, 3, 0, 3);
-//        rootPanel.add(joinButton, gridBagConstraints);
-
-        // Set position of exit-auction button in the GUI
-//        exitButton = new JRadioButton("Exit");
-//        exitButton.setActionCommand("Exit");
-//        exitButton.setSelected(false);
-//        exitButton.setHorizontalAlignment(SwingConstants.LEFT);
-//        exitButton.setMinimumSize(new Dimension(70, 20));
-//        exitButton.setPreferredSize(new Dimension(70, 20));
-//        gridBagConstraints = new GridBagConstraints();
-//        gridBagConstraints.gridx = 2;
-//        gridBagConstraints.gridy = 1;
-//        gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
-//        gridBagConstraints.insets = new java.awt.Insets(10, 3, 0, 3);
-//        rootPanel.add(exitButton, gridBagConstraints);
-//
-//        ButtonGroup buttonGroup = new ButtonGroup();
-//        buttonGroup.add(joinButton);
-//        buttonGroup.add(exitButton);
 
         rootPanel.setBorder(new BevelBorder(BevelBorder.LOWERED));
 
@@ -131,64 +84,16 @@ public class CarrierAgentGuiImpl extends JFrame implements CarrierAgentGui{
 
         // Set reaction of GUI when send-button is pressed
         p = new JPanel();
-//        sendB = new JButton("Send");
-//        sendB.addActionListener(e -> {
-//            String title = titleTF.getText();
-//            boolean join = joinButton.isSelected();
-//            boolean cancel = exitButton.isSelected();
-//
-//            // If no auction is available
-//            if (myAgent.getAuctioneerAgent() == null) {
-//                JOptionPane.showMessageDialog(CarrierAgentGuiImpl.this, "No auction available at the moment", "WARNING", JOptionPane.WARNING_MESSAGE);
-//            } else {
-//                // If an auction name is specified
-//                if (title != null && title.length() > 0) {
-//                    // If request is "Join"
-//                    if (join) {
-//                        // Send "Join" request to auctioneer main.java.agent
-//                        myAgent.sendJoinRequest(title + " Join");
-//                    }
-//                    // If request is "Exit"
-//                    else if (cancel) {
-//                        // Send "Exit" request to auctioneer main.java.agent
-//                        myAgent.sendExitRequest(title + " Exit");
-//                    }
-//                    // No request is specified, show error message
-//                    else {
-//                        JOptionPane.showMessageDialog(CarrierAgentGuiImpl.this, "Request not specified", "WARNING", JOptionPane.WARNING_MESSAGE);
-//                    }
-//                }
-//                // No auction name specified, show error message
-//                else {
-//                    JOptionPane.showMessageDialog(CarrierAgentGuiImpl.this, "No auction specified", "WARNING", JOptionPane.WARNING_MESSAGE);
-//                }
-//        }
-//        });
-
-        // Set reaction of GUI when reset-button is pressed
-//        resetB = new JButton("Reset");
-//        resetB.addActionListener(e -> {
-//
-//            // Reset text field
-//            titleTF.setText("");
-//
-//            // Reset radio buttons
-//            buttonGroup.clearSelection();
-//        });
 
         // Set reaction of GUI when exit-button is pressed
         exitB = new JButton("Exit");
         exitB.addActionListener(e -> {
-            myAgent.sendExitRequest();
             // Terminate carrier agent
+            myAgent.sendExitRequest();
             myAgent.doDelete();
+            dispose();
         });
 
-//        sendB.setPreferredSize(resetB.getPreferredSize());
-//        exitB.setPreferredSize(resetB.getPreferredSize());
-
-        //.add(sendB);
-        //p.add(resetB);
         p.add(exitB);
 
         p.setBorder(new BevelBorder(BevelBorder.LOWERED));
@@ -202,7 +107,6 @@ public class CarrierAgentGuiImpl extends JFrame implements CarrierAgentGui{
 
     public void setAuctionField(String auction) {
         titleTF.setText(auction);
-        titleTF.setEditable(false);
     }
 
     /**
@@ -222,4 +126,5 @@ public class CarrierAgentGuiImpl extends JFrame implements CarrierAgentGui{
     public void notifyUser(String message) {
         logTA.append(message+"\n");
     }
+
 }

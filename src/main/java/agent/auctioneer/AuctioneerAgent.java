@@ -11,7 +11,9 @@ import jade.domain.FIPAException;
 import jade.domain.FIPANames;
 import jade.lang.acl.ACLMessage;
 import jade.util.leap.Iterator;
+import main.java.agent.carrier.CarrierAgent;
 
+import java.sql.*;
 import java.util.Vector;
 
 
@@ -23,8 +25,7 @@ public class AuctioneerAgent extends Agent {
    // List of bidders
    private Vector<AID> bidders = new Vector<>();
 
-   // List of available carriers
-   //private final Vector<AID> carrierAgents = new Vector<>();
+   private boolean isAgentAlive = false;
 
    // The GUI to interact with the user
    private AuctioneerAgentGui myGui;
@@ -42,24 +43,7 @@ public class AuctioneerAgent extends Agent {
 
       // Printout a welcome message
       System.out.println("Hello! Auctioneer-agent "+getAID()+" is ready.");
-
-      try {
-         DFAgentDescription dfd = new DFAgentDescription();
-         dfd.setName(getAID());
-         ServiceDescription sd = new ServiceDescription();
-         sd.setName(load);
-         sd.setType("tuhh_sd_group04_ccn");
-         // Agents that want to use this service need to "know" the weather-forecast-ontology
-         sd.addOntologies("ccn-ontology");
-         // Agents that want to use this service need to "speak" the FIPA-SL language
-         sd.addLanguages(FIPANames.ContentLanguage.FIPA_SL);
-         dfd.addServices(sd);
-
-         DFService.register(this, dfd);
-      }
-      catch (FIPAException fe) {
-         fe.printStackTrace();
-      }
+      isAgentAlive = true;
 
       // Show the GUI to interact with the user
       myGui = new AuctioneerAgentGuiImpl();
@@ -88,6 +72,18 @@ public class AuctioneerAgent extends Agent {
 
       // Inform all available carrier agents about the closed auction
       addBehaviour(new EndAuction(this));
+
+      // remove auction from database
+      String dburl = "jdbc:postgresql://ec2-99-80-170-190.eu-west-1.compute.amazonaws.com:5432/d7p2aqlsbl8lc8";
+      String dbuser = "mwmhqhpwgzqkkc";
+      String dbpw = "694d944a63cbfe7db7e950765dcac3260bd859c0668abe43045555abfba8fd0f";
+      try (Connection connection = DriverManager.getConnection(dburl, dbuser, dbpw)) {
+         Statement statement = connection.createStatement();
+         statement.executeUpdate("DELETE FROM public.auctioneer_agent WHERE auction='"+load+"'");
+      } catch (SQLException e) {
+         System.out.println("Failed to delete auction from database.");
+         e.printStackTrace();
+      }
    }
 
    /**
@@ -106,34 +102,6 @@ public class AuctioneerAgent extends Agent {
       load = loadToSet;
    }
 
-
-   /**
-    * This method is called by the GUI to clear list of bidders when auction ended.
-    */
-//   public void clearListOfBidders() {
-//      bidders.clear();
-//   }
-
-//   private class WelcomeNewBidder extends OneShotBehaviour {
-//
-//      private Agent auctioneer;
-//      private AID bidder;
-//
-//      public WelcomeNewBidder(Agent auctioneer, AID bidder) {
-//         super(auctioneer);
-//         this.auctioneer = auctioneer;
-//         this.bidder = bidder;
-//      }
-//
-//      public void action() {
-//         ACLMessage msg = new ACLMessage(ACLMessage.INFORM);
-//         msg.setSender(auctioneer.getAID());
-//         msg.setProtocol("auction-welcome");
-//         msg.setContent(load);
-//         msg.addReceiver(bidder);
-//         send(msg);
-//      }
-//   }
 
    /**
     * Inner class InformAuction
@@ -169,8 +137,7 @@ public class AuctioneerAgent extends Agent {
          if (msg != null) {
             ACLMessage reply = msg.createReply();
             String msgContent = msg.getContent();
-            myGui.notifyUser("msg received");
-            // Name of auction in message is invalid
+            // Join-message
             if (msgContent.equals("join")) {
                // Add sender to bidder list
                reply.setPerformative(ACLMessage.CONFIRM);
@@ -178,15 +145,12 @@ public class AuctioneerAgent extends Agent {
                reply.setProtocol("auction-welcome");
                bidders.add(msg.getSender());
                myGui.notifyUser("Add " + msg.getSender().getLocalName() + " to bidders list");
-               myGui.notifyUser("msg sent");
-            }
-            // Sender sends "Join" request
-            else {
-               // else adds to bidders list
+               myAgent.send(reply);
+            } else {
+               // else remove from bidder list
                bidders.remove(msg.getSender());
-               myGui.notifyUser("Remove " + msg.getSender().getLocalName() + " to bidders list");
+               myGui.notifyUser("Remove " + msg.getSender().getLocalName() + " from bidders list");
             }
-            myAgent.send(reply);
          }
          // No message received, then block behaviour
          else {
@@ -200,12 +164,12 @@ public class AuctioneerAgent extends Agent {
     */
    protected void takeDown() {
 
-      // Dispose the GUI if it is there
-      if (myGui != null) {
-         myGui.dispose();
-      }
-
       // Printout a dismissal message
       System.out.println("Auctioneer-agent "+getAID().getName()+" terminating.");
+      isAgentAlive = false;
+   }
+
+   public boolean isAgentAlive() {
+      return isAgentAlive;
    }
 }
