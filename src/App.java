@@ -43,6 +43,7 @@ public class App extends JFrame {
 	private String mtp;
 	private boolean isPlatformCreated = false;
 	private AgentController agents;
+	private String platformID;
 
 	private ArrayList<CarrierAgent> carrieragentlist = new ArrayList<>();
 	private ArrayList<AuctioneerAgent> auctioneeragentlist = new ArrayList<>();
@@ -236,7 +237,8 @@ public class App extends JFrame {
 				if (!isPlatformCreated) {
 					ip = getIpAddress();
 					mtp = "http://"+ip+":7778/acc";
-					Profile prof = new ProfileImpl(ip, 8888, "Auction");
+					platformID = "Auction" + ip;
+					Profile prof = new ProfileImpl(ip, 8888, platformID);
 					prof.setParameter(Profile.MTPS, "jade.mtp.http.MessageTransportProtocol("+mtp+")");
 					prof.setParameter(Profile.GUI, "true");
 
@@ -247,12 +249,12 @@ public class App extends JFrame {
 					agents = maincontainer.createNewAgent("sniffeur", "jade.tools.sniffer.Sniffer",new Object[0]);
 
 					// Instantiate agent
-					CarrierAgent agent = new CarrierAgent(auctionName, auctionmtp);
+					CarrierAgent agent = new CarrierAgent(auctionName, auctionmtp, platformID);
 					agents = maincontainer.acceptNewAgent(name, agent);
 					carrieragentlist.add(agent);
 					isPlatformCreated = true;
 				} else {
-					CarrierAgent agent = new CarrierAgent(auctionName, auctionmtp);
+					CarrierAgent agent = new CarrierAgent(auctionName, auctionmtp, platformID);
 					agents = maincontainer.acceptNewAgent(name, agent);
 					carrieragentlist.add(agent);
 				}
@@ -340,7 +342,8 @@ public class App extends JFrame {
 					ip = getIpAddress();
 					mtp = "http://"+ip+":7778/acc";
 					statement.executeUpdate("INSERT INTO public.auctioneer_agent VALUES ('" + auctionName + "','" + mtp +"')");
-					Profile prof = new ProfileImpl(ip, 8888, "Auction");
+					platformID = "Auction" + ip;
+					Profile prof = new ProfileImpl(ip, 8888, platformID);
 					prof.setParameter(Profile.MTPS, "jade.mtp.http.MessageTransportProtocol("+mtp+")");
 					prof.setParameter(Profile.GUI, "true");
 

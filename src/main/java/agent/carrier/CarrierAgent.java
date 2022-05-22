@@ -22,16 +22,18 @@ public class CarrierAgent extends Agent {
    private AID auctioneerAgent;
    private String auctionName;
    private String mtp;
+   private String platformID;
 
 
    // The GUI to interact with the user
    private CarrierAgentGui myGui;
    private boolean isAgentAlive = false;
 
-   public CarrierAgent(String auction, String mtpaddr) {
+   public CarrierAgent(String auction, String mtpaddr, String pfid) {
       super();
       auctionName = auction;
       mtp = mtpaddr;
+      platformID = pfid;
    }
 
    /**
@@ -43,7 +45,7 @@ public class CarrierAgent extends Agent {
       System.out.println("Hello! Carrier-agent " + getAID() + " is ready.");
       isAgentAlive = true;
 
-      auctioneerAgent = new AID(auctionName+"@Auction", AID.ISGUID);
+      auctioneerAgent = new AID(auctionName+"@"+platformID, AID.ISGUID);
       auctioneerAgent.addAddresses(mtp);
 
 
