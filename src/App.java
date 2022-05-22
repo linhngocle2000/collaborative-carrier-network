@@ -225,19 +225,21 @@ public class App extends JFrame {
 
 				Connection connection = connectToDB();
 				String auctionmtp;
+				String auctionplatform;
 				Statement statement = connection.createStatement();
 				ResultSet resultSet = statement.executeQuery("SELECT * FROM public.auctioneer_agent where auction='"+auctionName+"'");
 				if (!resultSet.next()) {
 					throw new Exception("Auction not available");
 				} else {
 					auctionmtp = resultSet.getString("mtp");
+					auctionplatform = resultSet.getString("platformid");
 				}
 
 				// Create profile
 				if (!isPlatformCreated) {
 					ip = getIpAddress();
 					mtp = "http://"+ip+":7778/acc";
-					platformID = "Auction" + ip;
+					platformID = "Auction_" + ip;
 					Profile prof = new ProfileImpl(ip, 8888, platformID);
 					prof.setParameter(Profile.MTPS, "jade.mtp.http.MessageTransportProtocol("+mtp+")");
 					prof.setParameter(Profile.GUI, "true");
@@ -249,12 +251,12 @@ public class App extends JFrame {
 					agents = maincontainer.createNewAgent("sniffeur", "jade.tools.sniffer.Sniffer",new Object[0]);
 
 					// Instantiate agent
-					CarrierAgent agent = new CarrierAgent(auctionName, auctionmtp, platformID);
+					CarrierAgent agent = new CarrierAgent(auctionName, auctionmtp, auctionplatform);
 					agents = maincontainer.acceptNewAgent(name, agent);
 					carrieragentlist.add(agent);
 					isPlatformCreated = true;
 				} else {
-					CarrierAgent agent = new CarrierAgent(auctionName, auctionmtp, platformID);
+					CarrierAgent agent = new CarrierAgent(auctionName, auctionmtp, auctionplatform);
 					agents = maincontainer.acceptNewAgent(name, agent);
 					carrieragentlist.add(agent);
 				}
@@ -341,8 +343,8 @@ public class App extends JFrame {
 				if (!isPlatformCreated) {
 					ip = getIpAddress();
 					mtp = "http://"+ip+":7778/acc";
-					statement.executeUpdate("INSERT INTO public.auctioneer_agent VALUES ('" + auctionName + "','" + mtp +"')");
-					platformID = "Auction" + ip;
+					platformID = "Auction_" + ip;
+					statement.executeUpdate("INSERT INTO public.auctioneer_agent VALUES ('" + auctionName + "','" + mtp +"','" + platformID+"')");
 					Profile prof = new ProfileImpl(ip, 8888, platformID);
 					prof.setParameter(Profile.MTPS, "jade.mtp.http.MessageTransportProtocol("+mtp+")");
 					prof.setParameter(Profile.GUI, "true");
