@@ -1,55 +1,44 @@
 <?php
 
 // Set response mime type
+
+use CCN\Route\Handler;
+
 header('Content-type: application/json');
 
-// Register autoloader
-spl_autoload_register(function ($class)
+require __DIR__ . '/Util/autoload.php';
+
+try
 {
-	if (str_starts_with($class, 'CCN'))
-	{
-		$class = substr($class, 4);
-	}
-	else
-	{
-		return false;
-	}
+	// Validate request format
+	$method = $_SERVER['REQUEST_METHOD'];
+	$body = file_get_contents('php://input');
+	$body = json_decode($body);
 
-	$file = __DIR__ . '/src/' . str_replace('\\', DIRECTORY_SEPARATOR, $class) . '.php';
-
-	if (file_exists($file))
+	if ($body === false)
 	{
-		require $file;
-		return true;
+		throw new Exception(json_last_error_msg(), json_last_error());
 	}
 
-	return false;
-});
+	// Get request handler
+	$handler = Handler::get();
+	$result = $handler->execute($body['Cmd'], $body['Data']);
 
-// Create database connection
-$host = 'localhost';
-$user = 'ckh1694';
-$passwd = 'a9xbgEsJz&fT';
-
-ini_set("mysql.default_socket", "/var/lib/mysql/mysql.sock");
-$connection = mysqli_connect($host, $user, $passwd, 'ckh1694');
-
-// Validate request format
-$method = $_SERVER['REQUEST_METHOD'];
-$body = file_get_contents('php://input');
-$body = json_decode($body);
-
-if ($body === false)
+	echo json_encode([
+		"success" => true,
+		"data" => $result,
+	]);
+}
+catch (\Exception $ex)
 {
 	http_response_code(400);
 	echo json_encode([
 		"success" => false,
-		"error" => json_last_error_msg() 
+		"error" => [
+			"message" => $ex->getMessage(),
+			"code" => $ex->getCode(),
+			"stacktrace" => $ex->getTraceAsString(),
+		]
 	]);
 	exit();
 }
-
-// Get request handler
-echo json_encode([
-	"success" => true
-]);
