@@ -12,7 +12,7 @@ spl_autoload_register(function ($class)
 		return false;
 	}
 
-	$file = __DIR__ . '/src/' . str_replace('\\', DIRECTORY_SEPARATOR, $class) . '.php';
+	$file = __DIR__ . '/../' . str_replace('\\', DIRECTORY_SEPARATOR, $class) . '.php';
 
 	if (file_exists($file))
 	{

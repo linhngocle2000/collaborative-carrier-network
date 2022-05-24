@@ -20,13 +20,22 @@ class Agent
 		$name = $db->escape_string($name);
 		$hash = password_hash($password, PASSWORD_DEFAULT);
 
-		$result = $db->query("SELECT COUNT(*) FROM `Agent` WHERE `Username` = $username");
-		if ($result->num_rows !== 0)
+		$result = $db->query("SELECT COUNT(*) AS `Count` FROM `Agent` WHERE `Username` = '$username'");
+		if ($result === false)
 		{
-			throw new \Exception("$username is already used");
+			throw new \Exception($db->error);
 		}
 
-		$result = $db->query("INSERT INTO `Agent` (`Username`, `Name`, `Password`) VALUES ($username, $name, $hash)");
+		if (($row = $result->fetch_assoc()) && $row['Count'] != 0)
+		{
+			throw new \Exception("Username $username is alread used");
+		}
+
+		$result = $db->query("INSERT INTO `Agent` (`Username`, `Name`, `Password`) VALUES ('$username', '$name', '$hash')");
+		if ($result === false)
+		{
+			throw new \Exception($db->error);
+		}
 
 		return new Agent($username, $name);
 	}
@@ -34,22 +43,54 @@ class Agent
 	/**
 	 * @param  string $username
 	 * @param  string $password
-	 * @return Agent
+	 * @return string session token
 	 */
 	public static function login($username, $password)
 	{
 		$db = Database::getConnection();
-		$username = $db->escape_string($username);
-		$password = password_hash($password, PASSWORD_DEFAULT);
-		$result = $db->query("SELECT `Username`, `Name` FROM `Agent` WHERE `Username` = $username AND `Password` = $password");
-		
-		$data = $result->fetch_assoc();
-		if (!$data)
-		{
-			throw new Exception("User $username not found");
-		}
 
-		return new Agent($data['Username'], $data['Name']);
+		try
+		{
+			$db->begin_transaction();
+
+			$username = $db->escape_string($username);
+			$result = $db->query("SELECT `Username`, `Name`, `Password` FROM `Agent` WHERE `Username` LIKE '$username'");
+			if ($result === false)
+			{
+				throw new \Exception($db->error);
+			}
+			$data = $result->fetch_assoc();
+			if (!$data)
+			{
+				throw new \Exception("$username not found");
+			}
+			if (!password_verify($password, $data['Password']))
+			{
+				throw new \Exception("Invalid password");
+			}
+			$data['Password'] = null;
+
+			$result = $db->query("SELECT * FROM `Session` WHERE `Agent` = '$username'");
+			if ($row = $result->fetch_assoc())
+			{
+				$token = $row['Token'];
+				$db->query("UPDATE `Session` SET `Expiration` = UTC_TIMESTAMP() + INTERVAL 2 HOUR WHERE `Token` = '$token'");
+			}
+			else
+			{
+				$token = md5(rand());
+				$db->query("INSERT INTO `Session` (`Token`, `Agent`, `Expiration`) VALUES ('$token', '$username', UTC_TIMESTAMP() + INTERVAL 2 HOUR)");
+			}
+
+			$db->commit();
+	
+			return $token;
+		}
+		catch (\Exception $ex)
+		{
+			$db->rollback();
+			throw $ex;
+		}
 	}
 
 	/**

@@ -6,6 +6,8 @@ use Exception;
 
 class Handler
 {
+	private static $handler;
+	
 	/** @return Handler */
 	public static function get()
 	{
@@ -16,12 +18,11 @@ class Handler
 
 		return Handler::$handler;
 	}
-	private static $handler;
 
 	/**
 	 * Register a command to be served by this application
 	 * @param string $command
-	 * @param callable $callback
+	 * @param callable $callback A function that accepts a data array as input and returns a simple type or data array (that can be parsed to json)
 	 */
 	public function register($command, $callback)
 	{
@@ -30,7 +31,7 @@ class Handler
 			throw new Exception("Route callback is not a callable");
 		}
 
-		if (isset($this->commands[$command]))
+		if (array_key_exists($command, $this->commands))
 		{
 			throw new Exception("Command is already defined");
 		}
@@ -45,12 +46,12 @@ class Handler
 	 */
 	public function execute($command, $data)
 	{
-		if (empty($this->commands[$command]))
+		if (!array_key_exists($command, $this->commands))
 		{
-			throw new Exception("Not found");
+			throw new Exception("$command not found");
 		}
 
-		$this->commands[$command]($data);
+		return $this->commands[$command]($data);
 	}
 
 	private function __construct()
