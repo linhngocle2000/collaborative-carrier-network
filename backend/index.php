@@ -39,7 +39,7 @@ try
 	}
 
 	// Register routes
-	require __DIR__ . '/Route/agentRoute.php';
+	require __DIR__ . '/Route/routes.php';
 
 	// Handle request
 	$handler = Handler::get();
