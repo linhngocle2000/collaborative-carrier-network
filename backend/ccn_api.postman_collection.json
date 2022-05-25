@@ -66,6 +66,36 @@
 			"response": []
 		},
 		{
+			"name": "Get Agents",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"Cmd\": \"getAgents\",\r\n    \"Token\": \"39426cdc28c5290f625b839848622365\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "https://cgi.tu-harburg.de/~ckh1694/index.php",
+					"protocol": "https",
+					"host": [
+						"cgi",
+						"tu-harburg",
+						"de"
+					],
+					"path": [
+						"~ckh1694",
+						"index.php"
+					]
+				}
+			},
+			"response": []
+		},
+		{
 			"name": "Get Auctions",
 			"request": {
 				"method": "POST",
