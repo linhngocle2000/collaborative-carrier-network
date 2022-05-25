@@ -12,7 +12,7 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\r\n    \"Cmd\": \"register\",\r\n    \"Data\": {\r\n        \"Username\": \"chris\",\r\n        \"Name\": \"Christian\",\r\n        \"Password\": \"chris\"\r\n    }\r\n}",
+					"raw": "{\r\n    \"Cmd\": \"register\",\r\n    \"Data\": {\r\n        \"Username\": \"chris\",\r\n        \"Name\": \"Christian\",\r\n        \"Password\": \"chris\",\r\n        \"IsAuctioneer\": false\r\n    }\r\n}",
 					"options": {
 						"raw": {
 							"language": "json"
