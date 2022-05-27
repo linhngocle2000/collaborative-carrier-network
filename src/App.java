@@ -112,11 +112,16 @@ public class App extends JFrame {
 		return Inet4Address.getLocalHost().getHostAddress();
 	}
 
+	// private static Connection connectToDB() throws SQLException {
+	// 	String dburl = "jdbc:postgresql://ec2-99-80-170-190.eu-west-1.compute.amazonaws.com:5432/d7p2aqlsbl8lc8";
+	// 	String dbuser = "mwmhqhpwgzqkkc";
+	// 	String dbpw = "694d944a63cbfe7db7e950765dcac3260bd859c0668abe43045555abfba8fd0f";
+	// 	return DriverManager.getConnection(dburl, dbuser, dbpw);
+	// }
+
 	private static Connection connectToDB() throws SQLException {
-		String dburl = "jdbc:postgresql://ec2-99-80-170-190.eu-west-1.compute.amazonaws.com:5432/d7p2aqlsbl8lc8";
-		String dbuser = "mwmhqhpwgzqkkc";
-		String dbpw = "694d944a63cbfe7db7e950765dcac3260bd859c0668abe43045555abfba8fd0f";
-		return DriverManager.getConnection(dburl, dbuser, dbpw);
+		String dburl = "jdbc:sqlite:data.db";
+		return DriverManager.getConnection(dburl);
 	}
 
 	private void createWelcomeUI() {
@@ -180,7 +185,7 @@ public class App extends JFrame {
 
 
 		// Join auction name label
-		JLabel joinAuctionNameLabel = new JLabel("Auction name");
+		JLabel joinAuctionNameLabel = new JLabel("ID");
 		joinAuctionNameLabel.setHorizontalAlignment(SwingConstants.LEFT);
 
 		constraints = new GridBagConstraints();
@@ -206,7 +211,7 @@ public class App extends JFrame {
 		JButton buttonBidder = new JButton();
 		buttonBidder.setText("Join");
 		buttonBidder.addActionListener(e -> {
-			try {
+			try (Connection connection = connectToDB()) {
 				errorLabel.setText("");
 
 
@@ -217,20 +222,20 @@ public class App extends JFrame {
 				name = name.trim();
 
 
-				String auctionName = joinAuctionNameText.getText();
-				if (auctionName == null || auctionName.trim().length() == 0) {
-					throw new Exception("Enter an auction name to join");
+				String agentID = joinAuctionNameText.getText();
+				if (agentID == null || agentID.trim().length() == 0) {
+					throw new Exception("Enter ID to join");
 				}
-				auctionName = auctionName.trim().toLowerCase();
+				agentID = agentID.trim().toLowerCase();
 
-				Connection connection = connectToDB();
 				String auctionmtp;
 				String auctionplatform;
 				Statement statement = connection.createStatement();
-				ResultSet resultSet = statement.executeQuery("SELECT * FROM public.auctioneer_agent where auction='"+auctionName+"'");
+				ResultSet resultSet = statement.executeQuery("SELECT * FROM AGENTS WHERE Agent_ID =" + agentID);
 				if (!resultSet.next()) {
 					throw new Exception("Auction not available");
-				} else {
+				} 
+				else {
 					auctionmtp = resultSet.getString("mtp");
 					auctionplatform = resultSet.getString("platformid");
 				}
@@ -251,16 +256,37 @@ public class App extends JFrame {
 					agents = maincontainer.createNewAgent("sniffeur", "jade.tools.sniffer.Sniffer",new Object[0]);
 
 					// Instantiate agent
-					CarrierAgent agent = new CarrierAgent(auctionName, auctionmtp, auctionplatform);
-					agents = maincontainer.acceptNewAgent(name, agent);
-					carrieragentlist.add(agent);
+					switch (resultSet.getString("Agent_Type")) {
+						case "Carrier":
+							CarrierAgent carrier = new CarrierAgent(agentID, auctionmtp, auctionplatform);
+							agents = maincontainer.acceptNewAgent(name, carrier);
+							carrieragentlist.add(carrier);
+							break;
+					
+						case "Auctioneer":
+							AuctioneerAgent auctioneer = new AuctioneerAgent(agentID);
+							agents = maincontainer.acceptNewAgent(agentID, auctioneer);
+							auctioneeragentlist.add(auctioneer);
+							break;
+					}
 					isPlatformCreated = true;
 				} else {
-					CarrierAgent agent = new CarrierAgent(auctionName, auctionmtp, auctionplatform);
-					agents = maincontainer.acceptNewAgent(name, agent);
-					carrieragentlist.add(agent);
+					switch (resultSet.getString("Agent_Type")) {
+						case "Carrier":
+							CarrierAgent carrier = new CarrierAgent(agentID, auctionmtp, auctionplatform);
+							agents = maincontainer.acceptNewAgent(name, carrier);
+							carrieragentlist.add(carrier);
+							break;
+					
+						case "Auctioneer":
+							AuctioneerAgent auctioneer = new AuctioneerAgent(agentID);
+							agents = maincontainer.acceptNewAgent(agentID, auctioneer);
+							auctioneeragentlist.add(auctioneer);
+							break;
+					}
 				}
 				agents.start();
+				connection.close();
 			} catch (UnknownHostException unknownHoste) {
 				errorLabel.setText("Failed to retrieve IP address. Please try again later.");
 				unknownHoste.printStackTrace();
@@ -282,111 +308,111 @@ public class App extends JFrame {
 		constraints.insets = new java.awt.Insets(10, 3, 10, 3);
 		rootPanel.add(buttonBidder, constraints);
 
-		// Auction label
-		JLabel auctionLabel = new JLabel("Create an auction");
-		font = joinLabel.getFont();
-		auctionLabel.setFont(font.deriveFont(Font.BOLD, 14));
-		auctionLabel.setHorizontalAlignment(SwingConstants.CENTER);
+		// // Auction label
+		// JLabel auctionLabel = new JLabel("Create an auction");
+		// font = joinLabel.getFont();
+		// auctionLabel.setFont(font.deriveFont(Font.BOLD, 14));
+		// auctionLabel.setHorizontalAlignment(SwingConstants.CENTER);
 
-		constraints = new GridBagConstraints();
-		constraints.gridx = 0;
-		constraints.gridy = 4;
-		constraints.gridwidth = GridBagConstraints.REMAINDER;
-		constraints.anchor = java.awt.GridBagConstraints.CENTER;
-		constraints.insets = new java.awt.Insets(30, 3, 0, 3);
-		rootPanel.add(auctionLabel, constraints);
+		// constraints = new GridBagConstraints();
+		// constraints.gridx = 0;
+		// constraints.gridy = 4;
+		// constraints.gridwidth = GridBagConstraints.REMAINDER;
+		// constraints.anchor = java.awt.GridBagConstraints.CENTER;
+		// constraints.insets = new java.awt.Insets(30, 3, 0, 3);
+		// rootPanel.add(auctionLabel, constraints);
 
-		// Auction name label
-		JLabel createNameLabel = new JLabel("Auction name");
-		createNameLabel.setHorizontalAlignment(SwingConstants.LEFT);
+		// // Auction name label
+		// JLabel createNameLabel = new JLabel("Auction name");
+		// createNameLabel.setHorizontalAlignment(SwingConstants.LEFT);
 
-		constraints = new GridBagConstraints();
-		constraints.gridx = 0;
-		constraints.gridy = 5;
-		constraints.gridwidth = GridBagConstraints.REMAINDER;
-		constraints.anchor = GridBagConstraints.CENTER;
-		constraints.insets = new java.awt.Insets(10, 3, 0, 3);
-		rootPanel.add(createNameLabel, constraints);
+		// constraints = new GridBagConstraints();
+		// constraints.gridx = 0;
+		// constraints.gridy = 5;
+		// constraints.gridwidth = GridBagConstraints.REMAINDER;
+		// constraints.anchor = GridBagConstraints.CENTER;
+		// constraints.insets = new java.awt.Insets(10, 3, 0, 3);
+		// rootPanel.add(createNameLabel, constraints);
 		
-		// Auction name text field
-		JTextField createNameText = new JTextField();
-		createNameText.setPreferredSize(new Dimension(150, 20));
+		// // Auction name text field
+		// JTextField createNameText = new JTextField();
+		// createNameText.setPreferredSize(new Dimension(150, 20));
 
-		constraints = new GridBagConstraints();
-		constraints.gridx = 0;
-		constraints.gridy = 6;
-		constraints.gridwidth = GridBagConstraints.REMAINDER;
-		constraints.anchor = GridBagConstraints.CENTER;
-		constraints.insets = new java.awt.Insets(0, 3, 0, 3);
-		rootPanel.add(createNameText, constraints);
+		// constraints = new GridBagConstraints();
+		// constraints.gridx = 0;
+		// constraints.gridy = 6;
+		// constraints.gridwidth = GridBagConstraints.REMAINDER;
+		// constraints.anchor = GridBagConstraints.CENTER;
+		// constraints.insets = new java.awt.Insets(0, 3, 0, 3);
+		// rootPanel.add(createNameText, constraints);
 
-		// Auction button
-		JButton buttonAuctioneer = new JButton();
-		buttonAuctioneer.setText("Create");
-		buttonAuctioneer.setVisible(true);
-		buttonAuctioneer.addActionListener(e -> {
-			try {
-				errorLabel.setText("");
+		// // Auction button
+		// JButton buttonAuctioneer = new JButton();
+		// buttonAuctioneer.setText("Create");
+		// buttonAuctioneer.setVisible(true);
+		// buttonAuctioneer.addActionListener(e -> {
+		// 	try {
+		// 		errorLabel.setText("");
 
-				String auctionName = createNameText.getText();
-				if (auctionName == null || auctionName.trim().length() == 0) {
-					throw new Exception("Enter an auction name to create");
-				}
-				auctionName = auctionName.trim().toLowerCase();
+		// 		String agentID = createNameText.getText();
+		// 		if (agentID == null || agentID.trim().length() == 0) {
+		// 			throw new Exception("Enter an auction name to create");
+		// 		}
+		// 		agentID = agentID.trim().toLowerCase();
 
-				Connection connection = connectToDB();
-				Statement statement = connection.createStatement();
-				ResultSet resultSet = statement.executeQuery("SELECT * FROM public.auctioneer_agent WHERE auction='"+auctionName+"'");
-				if (resultSet.next()) {
-					throw new Exception("Auction name already existed");
-				}
-				if (!isPlatformCreated) {
-					ip = getIpAddress();
-					mtp = "http://"+ip+":7778/acc";
-					platformID = "Auction_" + ip;
-					statement.executeUpdate("INSERT INTO public.auctioneer_agent VALUES ('" + auctionName + "','" + mtp +"','" + platformID+"')");
-					Profile prof = new ProfileImpl(ip, 8888, platformID);
-					prof.setParameter(Profile.MTPS, "jade.mtp.http.MessageTransportProtocol("+mtp+")");
-					prof.setParameter(Profile.GUI, "true");
+		// 		Connection connection = connectToDB();
+		// 		Statement statement = connection.createStatement();
+		// 		ResultSet resultSet = statement.executeQuery("SELECT * FROM public.auctioneer_agent WHERE auction='"+agentID+"'");
+		// 		if (resultSet.next()) {
+		// 			throw new Exception("Auction name already existed");
+		// 		}
+		// 		if (!isPlatformCreated) {
+		// 			ip = getIpAddress();
+		// 			mtp = "http://"+ip+":7778/acc";
+		// 			platformID = "Auction_" + ip;
+		// 			statement.executeUpdate("INSERT INTO public.auctioneer_agent VALUES ('" + agentID + "','" + mtp +"','" + platformID+"')");
+		// 			Profile prof = new ProfileImpl(ip, 8888, platformID);
+		// 			prof.setParameter(Profile.MTPS, "jade.mtp.http.MessageTransportProtocol("+mtp+")");
+		// 			prof.setParameter(Profile.GUI, "true");
 
-					// Create a main container
-					maincontainer = runtime.createMainContainer(prof);
+		// 			// Create a main container
+		// 			maincontainer = runtime.createMainContainer(prof);
 
-					// Create sniffeur agent
-					agents = maincontainer.createNewAgent("sniffeur", "jade.tools.sniffer.Sniffer",new Object[0]);
+		// 			// Create sniffeur agent
+		// 			agents = maincontainer.createNewAgent("sniffeur", "jade.tools.sniffer.Sniffer",new Object[0]);
 
-					// Instantiate agent
-					AuctioneerAgent agent = new AuctioneerAgent(auctionName);
-					agents = maincontainer.acceptNewAgent(auctionName, agent);
-					auctioneeragentlist.add(agent);
-					isPlatformCreated = true;
-				} else {
-					statement.executeUpdate("INSERT INTO public.auctioneer_agent VALUES ('" + auctionName + "','" + mtp +"')");
-					AuctioneerAgent agent = new AuctioneerAgent(auctionName);
-					agents = maincontainer.acceptNewAgent(auctionName, agent);
-					auctioneeragentlist.add(agent);
-				}
-				agents.start();
-			} catch (UnknownHostException unknownHoste) {
-				errorLabel.setText("Failed to retrieve IP address. Please try again later.");
-				unknownHoste.printStackTrace();
-			} catch (SQLException sqle) {
-				errorLabel.setText("Failed to connect to database. Please try again later.");
-				sqle.printStackTrace();
-			} catch (Exception ex) {
-				errorLabel.setText(ex.getMessage());
-				ex.printStackTrace();
-				System.out.println("Could not join auction :(");
-			}
-		});
+		// 			// Instantiate agent
+		// 			AuctioneerAgent agent = new AuctioneerAgent(agentID);
+		// 			agents = maincontainer.acceptNewAgent(agentID, agent);
+		// 			auctioneeragentlist.add(agent);
+		// 			isPlatformCreated = true;
+		// 		} else {
+		// 			statement.executeUpdate("INSERT INTO public.auctioneer_agent VALUES ('" + agentID + "','" + mtp +"')");
+		// 			AuctioneerAgent agent = new AuctioneerAgent(agentID);
+		// 			agents = maincontainer.acceptNewAgent(agentID, agent);
+		// 			auctioneeragentlist.add(agent);
+		// 		}
+		// 		agents.start();
+		// 	} catch (UnknownHostException unknownHoste) {
+		// 		errorLabel.setText("Failed to retrieve IP address. Please try again later.");
+		// 		unknownHoste.printStackTrace();
+		// 	} catch (SQLException sqle) {
+		// 		errorLabel.setText("Failed to connect to database. Please try again later.");
+		// 		sqle.printStackTrace();
+		// 	} catch (Exception ex) {
+		// 		errorLabel.setText(ex.getMessage());
+		// 		ex.printStackTrace();
+		// 		System.out.println("Could not join auction :(");
+		// 	}
+		// });
 
-		constraints = new GridBagConstraints();
-		constraints.gridx = 0;
-		constraints.gridy = 7;
-		constraints.gridwidth = GridBagConstraints.REMAINDER;
-		constraints.anchor = java.awt.GridBagConstraints.CENTER;
-		constraints.insets = new java.awt.Insets(10, 3, 10, 3);
-		rootPanel.add(buttonAuctioneer, constraints);
+		// constraints = new GridBagConstraints();
+		// constraints.gridx = 0;
+		// constraints.gridy = 7;
+		// constraints.gridwidth = GridBagConstraints.REMAINDER;
+		// constraints.anchor = java.awt.GridBagConstraints.CENTER;
+		// constraints.insets = new java.awt.Insets(10, 3, 10, 3);
+		// rootPanel.add(buttonAuctioneer, constraints);
 
 		getContentPane().add(rootPanel);
 		getContentPane().setBackground(background);

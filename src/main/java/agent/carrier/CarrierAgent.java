@@ -17,10 +17,13 @@ import java.util.concurrent.TimeUnit;
 
 
 public class CarrierAgent extends Agent {
+   private String agentID;
+   private String vehicleID;
+   private int depotX;
+   private int depotY;
 
    // Available auctioneer main.java.agent
    private AID auctioneerAgent;
-   private String auctionName;
    private String mtp;
    private String platformID;
 
@@ -29,9 +32,9 @@ public class CarrierAgent extends Agent {
    private CarrierAgentGui myGui;
    private boolean isAgentAlive = false;
 
-   public CarrierAgent(String auction, String mtpaddr, String pfid) {
+   public CarrierAgent(String aID, String mtpaddr, String pfid) {
       super();
-      auctionName = auction;
+      agentID = aID;
       mtp = mtpaddr;
       platformID = pfid;
    }
@@ -45,7 +48,7 @@ public class CarrierAgent extends Agent {
       System.out.println("Hello! Carrier-agent " + getAID() + " is ready.");
       isAgentAlive = true;
 
-      auctioneerAgent = new AID(auctionName+"@"+platformID, AID.ISGUID);
+      auctioneerAgent = new AID(agentID+"@"+platformID, AID.ISGUID);
       auctioneerAgent.addAddresses(mtp);
 
 
@@ -163,5 +166,9 @@ public class CarrierAgent extends Agent {
 
    public boolean isAgentAlive() {
       return isAgentAlive;
+   }
+
+   public String getAgentID() {
+      return this.agentID;
    }
 }
