@@ -31,13 +31,13 @@ public class App {
 
         welcomeUI.setVisible(true);
 
-        welcomeLoginBtn = welcomeUI.getLoginBtn();
+        welcomeLoginBtn = WelcomeUI.getLoginBtn();
         welcomeLoginBtn.addActionListener(e -> {
             welcomeUI.setVisible(false);
             loginUI.setVisible(true);
         });
 
-        welcomeRegisterBtn = welcomeUI.getRegisterBtn();
+        welcomeRegisterBtn = WelcomeUI.getRegisterBtn();
         welcomeRegisterBtn.addActionListener(e -> {
             welcomeUI.setVisible(false);
             registerUI.setVisible(true);
@@ -59,30 +59,30 @@ public class App {
         loginLoginBtn.addActionListener(e -> {
             loginUI.setVisible(false);
             loginUI.reset();
-            //carrierLoginUI.setVisible(true);
+            carrierLoginUI.setVisible(true);
             auctioneerUI.setVisible(true);
         });
 
-        carrierLoginLogoutBtn = carrierLoginUI.getLogoutBtn();
+        carrierLoginLogoutBtn = CarrierLoginUI.getLogoutBtn();
         carrierLoginLogoutBtn.addActionListener(e -> {
             carrierLoginUI.setVisible(false);
             welcomeUI.setVisible(true);
         });
 
-        carrierLoginJoinAuctionBtn = carrierLoginUI.getJoinAuctionBtn();
+        carrierLoginJoinAuctionBtn = CarrierLoginUI.getJoinAuctionBtn();
         carrierLoginJoinAuctionBtn.addActionListener(e -> {
             carrierLoginUI.setVisible(false);
             carrierJoinAuctionUI.setVisible(true);
         });
 
-        carrierJoinAuctionLogoutBtn = carrierJoinAuctionUI.getLogoutBtn();
+        carrierJoinAuctionLogoutBtn = CarrierJoinAuctionUI.getLogoutBtn();
         carrierJoinAuctionLogoutBtn.addActionListener(e -> {
             carrierJoinAuctionUI.setVisible(false);
             carrierJoinAuctionUI.reset();
             welcomeUI.setVisible(true);
         });
 
-        auctioneerLogoutBtn = auctioneerUI.getLogoutBtn();
+        auctioneerLogoutBtn = AuctioneerUI.getLogoutBtn();
         auctioneerLogoutBtn.addActionListener(e -> {
             auctioneerUI.setVisible(false);
             auctioneerUI.reset();

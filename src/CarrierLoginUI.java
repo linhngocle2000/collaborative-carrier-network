@@ -8,15 +8,19 @@ public class CarrierLoginUI extends JFrame {
 
     private static JButton joinAuctionBtn, administrationBtn, logoutBtn;
 
+    private Color background = UIData.getBackground();
+    private int width = UIData.getWidth();
+    private int height = UIData.getHeight();
+    private Font font = UIData.getFont();
+    private Border emptyBorder = UIData.getEmptyBorder();
+
     public CarrierLoginUI() {
 
         super();
 
-        Color background = new Color(1f, 1f, 1f);
-
         setTitle("CCN");
-        setSize(250, 320);
-        setMinimumSize(new Dimension(250, 320));
+        setSize(width, height);
+        setMinimumSize(new Dimension(width, height));
         setLocationRelativeTo(null);
 
         setDefaultCloseOperation(EXIT_ON_CLOSE);
@@ -25,8 +29,7 @@ public class CarrierLoginUI extends JFrame {
         rootPanel.setLayout(new GridBagLayout());
         rootPanel.setBackground(background);
 
-        JLabel loginLabel = new JLabel("Log in as: ");
-        Font font = loginLabel.getFont();
+        JLabel loginLabel = new JLabel("Login as: ");
         loginLabel.setFont(font.deriveFont(Font.BOLD, 14));
         loginLabel.setHorizontalAlignment(SwingConstants.CENTER);
 
@@ -65,11 +68,9 @@ public class CarrierLoginUI extends JFrame {
         logoutBtn = new JButton();
         logoutBtn.setText("<HTML><U>Logout</U></HTML>");
         logoutBtn.setFocusPainted(false);
-        Border emptyBorder = BorderFactory.createEmptyBorder();
         logoutBtn.setBorder(emptyBorder);
         logoutBtn.setBackground(background);
-        Font btnfont = logoutBtn.getFont();
-        logoutBtn.setFont(btnfont.deriveFont(Font.PLAIN, 12));
+        logoutBtn.setFont(font.deriveFont(Font.PLAIN, 12));
         logoutBtn.setForeground(Color.BLUE);
 
         constraints = new GridBagConstraints();

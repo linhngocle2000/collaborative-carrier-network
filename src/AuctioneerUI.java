@@ -5,16 +5,22 @@ import java.awt.*;
 public class AuctioneerUI extends JFrame {
     private static JButton startBtn, listOfAuctionsBtn, logoutBtn;
     private JTextField auctionText, requestText;
+    private JLabel errorLabel;
+
+    private Color background = UIData.getBackground();
+    private int width = UIData.getWidth();
+    private int height = UIData.getHeight();
+    private Font font = UIData.getFont();
+    private Color errorColor = UIData.getErrorColor();
+    private Border emptyBorder = UIData.getEmptyBorder();
 
     public AuctioneerUI() {
 
         super();
 
-        Color background = new Color(1f, 1f, 1f);
-
         setTitle("CCN");
-        setSize(250, 320);
-        setMinimumSize(new Dimension(250, 320));
+        setSize(width, height);
+        setMinimumSize(new Dimension(width, height));
         setLocationRelativeTo(null);
 
         setDefaultCloseOperation(EXIT_ON_CLOSE);
@@ -23,7 +29,7 @@ public class AuctioneerUI extends JFrame {
         rootPanel.setLayout(new GridBagLayout());
         rootPanel.setBackground(background);
 
-        JLabel loginLabel = new JLabel("Log in as: ");
+        JLabel loginLabel = new JLabel("Login as: ");
         Font font = loginLabel.getFont();
         loginLabel.setFont(font.deriveFont(Font.BOLD, 14));
         loginLabel.setHorizontalAlignment(SwingConstants.CENTER);
@@ -39,11 +45,9 @@ public class AuctioneerUI extends JFrame {
         listOfAuctionsBtn = new JButton();
         listOfAuctionsBtn.setText("<HTML><U>Auction requests</U></HTML>");
         listOfAuctionsBtn.setFocusPainted(false);
-        Border emptyBorder = BorderFactory.createEmptyBorder();
         listOfAuctionsBtn.setBorder(emptyBorder);
         listOfAuctionsBtn.setBackground(background);
-        Font auctionfont = listOfAuctionsBtn.getFont();
-        listOfAuctionsBtn.setFont(auctionfont.deriveFont(Font.PLAIN, 12));
+        listOfAuctionsBtn.setFont(font.deriveFont(Font.PLAIN, 12));
 
         constraints = new GridBagConstraints();
         constraints.gridx = 0;
@@ -102,24 +106,38 @@ public class AuctioneerUI extends JFrame {
         constraints.gridy = 4;
         constraints.gridwidth = GridBagConstraints.REMAINDER;
         constraints.anchor = GridBagConstraints.CENTER;
-        constraints.insets = new java.awt.Insets(20, 3, 0, 3);
+        constraints.insets = new java.awt.Insets(20, 3, 10, 3);
         rootPanel.add(startBtn, constraints);
+
+        errorLabel = new JLabel();
+        errorLabel.setForeground(errorColor);
+        errorLabel.setHorizontalAlignment(SwingConstants.CENTER);
+        // Invalid request ID
+        // Auction name already existed
+        errorLabel.setText("");
+
+        constraints = new GridBagConstraints();
+        constraints.gridx = 0;
+        constraints.gridy = 5;
+        constraints.gridwidth = GridBagConstraints.REMAINDER;
+        constraints.anchor = java.awt.GridBagConstraints.CENTER;
+        constraints.insets = new java.awt.Insets(10, 3, 10, 3);
+        rootPanel.add(errorLabel, constraints);
 
         logoutBtn = new JButton();
         logoutBtn.setText("<HTML><U>Logout</U></HTML>");
         logoutBtn.setFocusPainted(false);
         logoutBtn.setBorder(emptyBorder);
         logoutBtn.setBackground(background);
-        Font btnfont = logoutBtn.getFont();
-        logoutBtn.setFont(btnfont.deriveFont(Font.PLAIN, 12));
+        logoutBtn.setFont(font.deriveFont(Font.PLAIN, 12));
         logoutBtn.setForeground(Color.BLUE);
 
         constraints = new GridBagConstraints();
         constraints.gridx = 0;
-        constraints.gridy = 5;
+        constraints.gridy = 6;
         constraints.gridwidth = GridBagConstraints.REMAINDER;
         constraints.anchor = GridBagConstraints.CENTER;
-        constraints.insets = new java.awt.Insets(10, 0, 10, 0);
+        constraints.insets = new java.awt.Insets(15, 0, 0, 0);
         rootPanel.add(logoutBtn, constraints);
 
         getContentPane().add(rootPanel);

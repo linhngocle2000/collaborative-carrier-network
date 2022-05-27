@@ -1,22 +1,24 @@
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
+
 
 public class WelcomeUI extends JFrame {
 
     private static JButton loginBtn;
     private static JButton registerBtn;
 
+    private Color background = UIData.getBackground();
+    private int width = UIData.getWidth();
+    private int height = UIData.getHeight();
+    private Font font = UIData.getFont();
+
     public WelcomeUI() {
 
         super();
 
-        Color background = new Color(1f, 1f, 1f);
-
         setTitle("CCN");
-        setSize(250, 320);
-        setMinimumSize(new Dimension(250, 320));
+        setSize(width, height);
+        setMinimumSize(new Dimension(width, height));
         setLocationRelativeTo(null);
 
         setDefaultCloseOperation(EXIT_ON_CLOSE);
@@ -26,9 +28,8 @@ public class WelcomeUI extends JFrame {
         rootPanel.setBackground(background);
 
         JLabel titleLabel = new JLabel("<HTML>Collaborative Carrier<br><center>Network</center></HTML>");
-        Font font = titleLabel .getFont();
-        titleLabel .setFont(font .deriveFont(Font.BOLD, 14));
-        titleLabel .setHorizontalAlignment(SwingConstants.CENTER);
+        titleLabel.setFont(font.deriveFont(Font.BOLD, 16));
+        titleLabel.setHorizontalAlignment(SwingConstants.CENTER);
 
         GridBagConstraints constraints = new GridBagConstraints();
         constraints.gridx = 0;
@@ -51,8 +52,7 @@ public class WelcomeUI extends JFrame {
         rootPanel.add(registerBtn, constraints);
 
         JLabel orLabel = new JLabel("or");
-        Font orFont = orLabel.getFont();
-        orLabel.setFont(orFont.deriveFont(Font.BOLD, 14));
+        orLabel.setFont(font.deriveFont(Font.BOLD, 14));
         orLabel.setHorizontalAlignment(SwingConstants.CENTER);
 
         constraints = new GridBagConstraints();
