@@ -9,7 +9,7 @@ import java.awt.event.FocusListener;
 public class RegisterUI extends JFrame {
 
     private static JButton backBtn, registerBtn;
-    private JTextField nameText, trText;
+    private JTextField nameText, trText, usernameText;
     private JPasswordField passwordText;
     private JRadioButton carrierBtn, auctioneerBtn;
     private JLabel errorLabel,successLabel;
@@ -79,15 +79,14 @@ public class RegisterUI extends JFrame {
         constraints.insets = new java.awt.Insets(0, 3, 25, 3);
         rootPanel.add(loginLabel, constraints);
 
-        JLabel nameLabel = new JLabel("Username");
+        JLabel nameLabel = new JLabel("Name");
         nameLabel.setHorizontalAlignment(SwingConstants.LEFT);
 
         constraints = new GridBagConstraints();
         constraints.gridx = 0;
         constraints.gridy = 2;
-        constraints.weighty = 0.0;
         constraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
-        constraints.insets = new java.awt.Insets(12, 3, 10, 5);
+        constraints.insets = new java.awt.Insets(12, 3, 8, 5);
         rootPanel.add(nameLabel, constraints);
 
         // Join name text field
@@ -99,8 +98,31 @@ public class RegisterUI extends JFrame {
         constraints.gridy = 2;
         constraints.gridwidth = 2;
         constraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
-        constraints.insets = new java.awt.Insets(10, 5, 10, 3);
+        constraints.insets = new java.awt.Insets(10, 5, 6, 3);
         rootPanel.add(nameText, constraints);
+
+
+        JLabel usernameLabel = new JLabel("Username");
+        nameLabel.setHorizontalAlignment(SwingConstants.LEFT);
+
+        constraints = new GridBagConstraints();
+        constraints.gridx = 0;
+        constraints.gridy = 3;
+        constraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
+        constraints.insets = new java.awt.Insets(18, 3, 12, 5);
+        rootPanel.add(usernameLabel, constraints);
+
+        // Join name text field
+        usernameText = new JTextField();
+        usernameText.setPreferredSize(new Dimension(120, 22));
+
+        constraints = new GridBagConstraints();
+        constraints.gridx = 1;
+        constraints.gridy = 3;
+        constraints.gridwidth = 2;
+        constraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
+        constraints.insets = new java.awt.Insets(16, 5, 10, 3);
+        rootPanel.add(usernameText, constraints);
 
 
         JLabel passwordLabel = new JLabel("Password");
@@ -108,9 +130,9 @@ public class RegisterUI extends JFrame {
 
         constraints = new GridBagConstraints();
         constraints.gridx = 0;
-        constraints.gridy = 3;
+        constraints.gridy = 4;
         constraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
-        constraints.insets = new java.awt.Insets(18, 3, 15, 5);
+        constraints.insets = new java.awt.Insets(14, 3, 12, 5);
         rootPanel.add(passwordLabel, constraints);
 
         passwordText = new JPasswordField();
@@ -118,10 +140,10 @@ public class RegisterUI extends JFrame {
 
         constraints = new GridBagConstraints();
         constraints.gridx = 1;
-        constraints.gridy = 3;
+        constraints.gridy = 4;
         constraints.gridwidth = 2;
         constraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
-        constraints.insets = new java.awt.Insets(16, 5, 15, 3);
+        constraints.insets = new java.awt.Insets(12, 5, 10, 3);
         rootPanel.add(passwordText, constraints);
 
         JLabel role = new JLabel("Role");
@@ -129,9 +151,9 @@ public class RegisterUI extends JFrame {
 
         constraints = new GridBagConstraints();
         constraints.gridx = 0;
-        constraints.gridy = 4;
+        constraints.gridy = 5;
         constraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
-        constraints.insets = new java.awt.Insets(16, 3, 10, 3);
+        constraints.insets = new java.awt.Insets(14, 3, 8, 3);
         rootPanel.add(role, constraints);
 
         carrierBtn = new JRadioButton("Carrier");
@@ -145,9 +167,9 @@ public class RegisterUI extends JFrame {
 
         constraints = new GridBagConstraints();
         constraints.gridx = 1;
-        constraints.gridy = 4;
+        constraints.gridy = 5;
         constraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
-        constraints.insets = new java.awt.Insets(13, 3, 10, 0);
+        constraints.insets = new java.awt.Insets(11, 3, 5, 0);
         rootPanel.add(carrierBtn, constraints);
 
         auctioneerBtn = new JRadioButton("Auctioneer");
@@ -161,9 +183,9 @@ public class RegisterUI extends JFrame {
 
         constraints = new GridBagConstraints();
         constraints.gridx = 1;
-        constraints.gridy = 5;
+        constraints.gridy = 6;
         constraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
-        constraints.insets = new java.awt.Insets(2, 3, 10, 3);
+        constraints.insets = new java.awt.Insets(0, 3, 8, 3);
         rootPanel.add(auctioneerBtn, constraints);
 
         ButtonGroup group = new ButtonGroup();
@@ -175,9 +197,9 @@ public class RegisterUI extends JFrame {
 
         constraints = new GridBagConstraints();
         constraints.gridx = 0;
-        constraints.gridy = 6;
+        constraints.gridy = 7;
         constraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
-        constraints.insets = new java.awt.Insets(18, 3, 15, 5);
+        constraints.insets = new java.awt.Insets(16, 3, 16, 5);
         rootPanel.add(trLabel, constraints);
 
 
@@ -188,10 +210,10 @@ public class RegisterUI extends JFrame {
 
         constraints = new GridBagConstraints();
         constraints.gridx = 1;
-        constraints.gridy = 6;
+        constraints.gridy = 7;
         constraints.gridwidth = 2;
         constraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
-        constraints.insets = new java.awt.Insets(16, 5, 15, 0);
+        constraints.insets = new java.awt.Insets(14, 5, 14, 0);
         rootPanel.add(trText, constraints);
 
         JButton infoBtn = new JButton();
@@ -213,7 +235,7 @@ public class RegisterUI extends JFrame {
 
         constraints = new GridBagConstraints();
         constraints.gridx = 3;
-        constraints.gridy = 6;
+        constraints.gridy = 7;
         constraints.anchor = GridBagConstraints.NORTHWEST;
         constraints.insets = new java.awt.Insets(16, 5, 5, 0);
         rootPanel.add(infoBtn, constraints);
@@ -227,7 +249,7 @@ public class RegisterUI extends JFrame {
 
         constraints = new GridBagConstraints();
         constraints.gridx = 0;
-        constraints.gridy = 7;
+        constraints.gridy = 8;
         constraints.gridwidth = GridBagConstraints.REMAINDER;
         constraints.anchor = GridBagConstraints.CENTER;
         constraints.insets = new java.awt.Insets(25, 10, 10, 3);
@@ -250,7 +272,7 @@ public class RegisterUI extends JFrame {
 
         constraints = new GridBagConstraints();
         constraints.gridx = 0;
-        constraints.gridy = 8;
+        constraints.gridy = 9;
         constraints.gridwidth = GridBagConstraints.REMAINDER;
         constraints.anchor = java.awt.GridBagConstraints.CENTER;
         constraints.insets = new java.awt.Insets(20, 0, 0, 0);
