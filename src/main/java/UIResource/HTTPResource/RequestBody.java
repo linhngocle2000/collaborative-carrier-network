@@ -1,3 +1,5 @@
+package UIResource.HTTPResource;
+
 import org.json.JSONObject;
 
 public class RequestBody {

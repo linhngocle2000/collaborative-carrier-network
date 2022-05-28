@@ -1,3 +1,7 @@
+package StartUI;
+
+import UIResource.UIData;
+
 import javax.swing.*;
 import java.awt.*;
 

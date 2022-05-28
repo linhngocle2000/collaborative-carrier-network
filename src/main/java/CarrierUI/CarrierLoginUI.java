@@ -1,8 +1,10 @@
+package CarrierUI;
+
+import UIResource.UIData;
+
 import javax.swing.*;
 import javax.swing.border.Border;
 import java.awt.*;
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
 
 public class CarrierLoginUI extends JFrame {
 

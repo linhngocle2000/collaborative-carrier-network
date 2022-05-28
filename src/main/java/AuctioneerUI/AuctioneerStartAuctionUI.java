@@ -1,8 +1,12 @@
+package AuctioneerUI;
+
+import UIResource.UIData;
+
 import javax.swing.*;
 import javax.swing.border.Border;
 import java.awt.*;
 
-public class AuctioneerUI extends JFrame {
+public class AuctioneerStartAuctionUI extends JFrame {
     private static JButton startBtn, listOfAuctionsBtn, logoutBtn;
     private JTextField auctionText, requestText;
     private JLabel errorLabel, nameLabel;
@@ -14,7 +18,7 @@ public class AuctioneerUI extends JFrame {
     private Color errorColor = UIData.getErrorColor();
     private Border emptyBorder = UIData.getEmptyBorder();
 
-    public AuctioneerUI() {
+    public AuctioneerStartAuctionUI() {
 
         super();
 

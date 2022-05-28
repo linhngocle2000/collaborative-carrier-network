@@ -1,5 +1,12 @@
+import AuctioneerUI.AuctioneerStartAuctionUI;
+import StartUI.LoginUI;
+import StartUI.RegisterUI;
+import StartUI.WelcomeUI;
+import CarrierUI.CarrierJoinAuctionUI;
+import CarrierUI.CarrierLoginUI;
+import UIResource.HTTPResource.HTTPRequests;
+
 import javax.swing.*;
-import java.io.IOException;
 import java.util.Map.Entry;
 
 public class App {
@@ -9,7 +16,7 @@ public class App {
     private static RegisterUI registerUI;
     private static CarrierLoginUI carrierLoginUI;
     private static CarrierJoinAuctionUI carrierJoinAuctionUI;
-    private static AuctioneerUI auctioneerUI;
+    private static AuctioneerStartAuctionUI auctioneerUI;
 
     private static JButton welcomeLoginBtn, welcomeRegisterBtn,
             loginBackBtn, loginLoginBtn, registerBackBtn,
@@ -29,7 +36,7 @@ public class App {
         registerUI = new RegisterUI();
         carrierLoginUI = new CarrierLoginUI();
         carrierJoinAuctionUI = new CarrierJoinAuctionUI();
-        auctioneerUI = new AuctioneerUI();
+        auctioneerUI = new AuctioneerStartAuctionUI();
 
         welcomeUI.setVisible(true);
 
@@ -130,7 +137,7 @@ public class App {
             welcomeUI.setVisible(true);
         });
 
-        auctioneerLogoutBtn = AuctioneerUI.getLogoutBtn();
+        auctioneerLogoutBtn = AuctioneerStartAuctionUI.getLogoutBtn();
         auctioneerLogoutBtn.addActionListener(e -> {
             auctioneerUI.setVisible(false);
             auctioneerUI.reset();
