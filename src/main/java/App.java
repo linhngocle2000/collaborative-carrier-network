@@ -1,4 +1,6 @@
 import javax.swing.*;
+import java.io.IOException;
+import java.util.Map.Entry;
 
 public class App {
 
@@ -9,15 +11,15 @@ public class App {
     private static CarrierJoinAuctionUI carrierJoinAuctionUI;
     private static AuctioneerUI auctioneerUI;
 
-    private static JButton welcomeLoginBtn;
-    private static JButton welcomeRegisterBtn;
-    private static JButton loginBackBtn;
-    private static JButton loginLoginBtn;
-    private static JButton registerBackBtn;
-    private static JButton carrierLoginLogoutBtn;
-    private static JButton carrierLoginJoinAuctionBtn;
-    private static JButton carrierJoinAuctionLogoutBtn;
-    private static JButton auctioneerLogoutBtn;
+    private static JButton welcomeLoginBtn, welcomeRegisterBtn,
+            loginBackBtn, loginLoginBtn, registerBackBtn,
+            carrierLoginLogoutBtn, carrierLoginJoinAuctionBtn,
+            carrierJoinAuctionLogoutBtn, auctioneerLogoutBtn,
+            registerRegisterBtn;
+
+    private static String displayName;
+
+    private static Boolean isAuctioneer;
 
     static public void main(String[] args) {
 
@@ -49,6 +51,28 @@ public class App {
             welcomeUI.setVisible(true);
         });
 
+        registerRegisterBtn = RegisterUI.getRegisterBtn();
+        registerRegisterBtn.addActionListener(e -> {
+
+            try {
+                if (!registerUI.areAllFieldsFilled()) {
+                    throw new Exception("Please fill out all fields.");
+                }
+                String name = registerUI.getNameText();
+                String username = registerUI.getUsernameText();
+                String password = registerUI.getPasswordText();
+                boolean isAuctioneer = registerUI.isAuctioneer();
+                if (!HTTPRequests.register(name, username, password, isAuctioneer)) {
+                    throw new Exception("Username " + username + " is already used.");
+                } else {
+                    registerUI.setErrorLabel("");
+                    registerUI.showSuccessLabel();
+                }
+            } catch (Exception ex) {
+                registerUI.setErrorLabel(ex.getMessage());
+            }
+        });
+
         registerBackBtn = RegisterUI.getBackBtn();
         registerBackBtn.addActionListener(e -> {
             registerUI.setVisible(false);
@@ -56,11 +80,34 @@ public class App {
         });
 
         loginLoginBtn = LoginUI.getLoginBtn();
+        loginUI.getRootPane().setDefaultButton(loginLoginBtn);
         loginLoginBtn.addActionListener(e -> {
-            loginUI.setVisible(false);
-            loginUI.reset();
-            carrierLoginUI.setVisible(true);
-            auctioneerUI.setVisible(true);
+            String username = loginUI.getNameText();
+            String password = loginUI.getPasswordText();
+            Boolean isAuctioneerAgent = null;
+            String name = null;
+            try {
+                Entry<String, Boolean> response = HTTPRequests.login(username, password);
+                if (response == null) {
+                    throw new Exception("Incorrect username/password.");
+                }
+                name = response.getKey();
+                isAuctioneerAgent = response.getValue();
+                loginUI.setVisible(false);
+                loginUI.reset();
+                if (isAuctioneerAgent) {
+                    auctioneerUI.setVisible(true);
+                    auctioneerUI.setNameLabel(name);
+                } else {
+                    carrierLoginUI.setNameLabel(name);
+                    carrierLoginUI.setVisible(true);
+                }
+            } catch (Exception exception) {
+                loginUI.setErrorLabel(exception.getMessage());
+            } finally {
+                displayName = name;
+                isAuctioneer = isAuctioneerAgent;
+            }
         });
 
         carrierLoginLogoutBtn = CarrierLoginUI.getLogoutBtn();
@@ -71,6 +118,7 @@ public class App {
 
         carrierLoginJoinAuctionBtn = CarrierLoginUI.getJoinAuctionBtn();
         carrierLoginJoinAuctionBtn.addActionListener(e -> {
+            carrierJoinAuctionUI.setNameLabel(displayName);
             carrierLoginUI.setVisible(false);
             carrierJoinAuctionUI.setVisible(true);
         });

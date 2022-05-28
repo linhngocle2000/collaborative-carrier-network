@@ -5,7 +5,7 @@ import java.awt.*;
 public class AuctioneerUI extends JFrame {
     private static JButton startBtn, listOfAuctionsBtn, logoutBtn;
     private JTextField auctionText, requestText;
-    private JLabel errorLabel;
+    private JLabel errorLabel, nameLabel;
 
     private Color background = UIData.getBackground();
     private int width = UIData.getWidth();
@@ -29,6 +29,14 @@ public class AuctioneerUI extends JFrame {
         rootPanel.setLayout(new GridBagLayout());
         rootPanel.setBackground(background);
 
+        JPanel topPanel = new JPanel();
+        topPanel.setLayout(new GridBagLayout());
+        topPanel.setBackground(background);
+
+        JPanel bottomPanel = new JPanel();
+        bottomPanel.setLayout(new GridBagLayout());
+        bottomPanel.setBackground(background);
+
         JLabel loginLabel = new JLabel("Login as: ");
         Font font = loginLabel.getFont();
         loginLabel.setFont(font.deriveFont(Font.BOLD, 14));
@@ -37,10 +45,20 @@ public class AuctioneerUI extends JFrame {
         GridBagConstraints constraints = new GridBagConstraints();
         constraints.gridx = 0;
         constraints.gridy = 0;
-        constraints.gridwidth = GridBagConstraints.REMAINDER;
-        constraints.anchor = GridBagConstraints.CENTER;
-        constraints.insets = new java.awt.Insets(0, 0, 18, 0);
-        rootPanel.add(loginLabel, constraints);
+        constraints.anchor = GridBagConstraints.NORTHWEST;
+        constraints.insets = new java.awt.Insets(20, 0, 0, 0);
+        topPanel.add(loginLabel, constraints);
+
+        nameLabel = new JLabel();
+        nameLabel.setFont(font.deriveFont(Font.BOLD,14));
+        nameLabel.setHorizontalAlignment(SwingConstants.CENTER);
+
+        constraints = new GridBagConstraints();
+        constraints.gridx = 1;
+        constraints.gridy = 0;
+        constraints.anchor = GridBagConstraints.NORTHWEST;
+        constraints.insets = new java.awt.Insets(20, 0, 0, 0);
+        topPanel.add(nameLabel, constraints);
 
         listOfAuctionsBtn = new JButton();
         listOfAuctionsBtn.setText("<HTML><U>Auction requests</U></HTML>");
@@ -54,7 +72,7 @@ public class AuctioneerUI extends JFrame {
         constraints.gridy = 1;
         constraints.gridwidth = GridBagConstraints.REMAINDER;
         constraints.anchor = GridBagConstraints.CENTER;
-        constraints.insets = new java.awt.Insets(0, 0, 20, 0);
+        constraints.insets = new java.awt.Insets(0, 0, 25, 0);
         rootPanel.add(listOfAuctionsBtn, constraints);
 
         JLabel auctionLabel = new JLabel("Auction name");
@@ -137,10 +155,12 @@ public class AuctioneerUI extends JFrame {
         constraints.gridy = 6;
         constraints.gridwidth = GridBagConstraints.REMAINDER;
         constraints.anchor = GridBagConstraints.CENTER;
-        constraints.insets = new java.awt.Insets(15, 0, 0, 0);
-        rootPanel.add(logoutBtn, constraints);
+        constraints.insets = new java.awt.Insets(0, 0, 20, 0);
+        bottomPanel.add(logoutBtn, constraints);
 
-        getContentPane().add(rootPanel);
+        getContentPane().add(topPanel, BorderLayout.NORTH);
+        getContentPane().add(bottomPanel, BorderLayout.SOUTH);
+        getContentPane().add(rootPanel, BorderLayout.CENTER);
         getContentPane().setBackground(background);
 
         pack();
@@ -150,6 +170,10 @@ public class AuctioneerUI extends JFrame {
 
     public static JButton getLogoutBtn() {
         return logoutBtn;
+    }
+
+    public void setNameLabel(String s) {
+        nameLabel.setText(s);
     }
 
     public void reset() {

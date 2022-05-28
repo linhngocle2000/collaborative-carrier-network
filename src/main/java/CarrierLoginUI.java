@@ -7,6 +7,7 @@ import java.awt.event.WindowEvent;
 public class CarrierLoginUI extends JFrame {
 
     private static JButton joinAuctionBtn, administrationBtn, logoutBtn;
+    private JLabel nameLabel;
 
     private Color background = UIData.getBackground();
     private int width = UIData.getWidth();
@@ -29,6 +30,14 @@ public class CarrierLoginUI extends JFrame {
         rootPanel.setLayout(new GridBagLayout());
         rootPanel.setBackground(background);
 
+        JPanel topPanel = new JPanel();
+        topPanel.setLayout(new GridBagLayout());
+        topPanel.setBackground(background);
+
+        JPanel bottomPanel = new JPanel();
+        bottomPanel.setLayout(new GridBagLayout());
+        bottomPanel.setBackground(background);
+
         JLabel loginLabel = new JLabel("Login as: ");
         loginLabel.setFont(font.deriveFont(Font.BOLD, 14));
         loginLabel.setHorizontalAlignment(SwingConstants.CENTER);
@@ -36,10 +45,20 @@ public class CarrierLoginUI extends JFrame {
         GridBagConstraints constraints = new GridBagConstraints();
         constraints.gridx = 0;
         constraints.gridy = 0;
-        constraints.gridwidth = GridBagConstraints.REMAINDER;
-        constraints.anchor = GridBagConstraints.CENTER;
-        constraints.insets = new java.awt.Insets(0, 0, 20, 0);
-        rootPanel.add(loginLabel, constraints);
+        constraints.anchor = GridBagConstraints.NORTHWEST;
+        constraints.insets = new java.awt.Insets(20, 0, 0, 0);
+        topPanel.add(loginLabel, constraints);
+
+        nameLabel = new JLabel();
+        nameLabel.setFont(font.deriveFont(Font.BOLD,14));
+        nameLabel.setHorizontalAlignment(SwingConstants.CENTER);
+
+        constraints = new GridBagConstraints();
+        constraints.gridx = 1;
+        constraints.gridy = 0;
+        constraints.anchor = GridBagConstraints.NORTHWEST;
+        constraints.insets = new java.awt.Insets(20, 0, 0, 0);
+        topPanel.add(nameLabel, constraints);
 
         joinAuctionBtn = new JButton();
         joinAuctionBtn.setText("Join Auction");
@@ -50,7 +69,7 @@ public class CarrierLoginUI extends JFrame {
         constraints.gridy = 1;
         constraints.gridwidth = GridBagConstraints.REMAINDER;
         constraints.anchor = GridBagConstraints.CENTER;
-        constraints.insets = new java.awt.Insets(10, 0, 10, 0);
+        constraints.insets = new java.awt.Insets(20, 0, 20, 0);
         rootPanel.add(joinAuctionBtn, constraints);
 
         administrationBtn = new JButton();
@@ -62,7 +81,7 @@ public class CarrierLoginUI extends JFrame {
         constraints.gridy = 2;
         constraints.gridwidth = GridBagConstraints.REMAINDER;
         constraints.anchor = GridBagConstraints.CENTER;
-        constraints.insets = new java.awt.Insets(10, 0, 10, 0);
+        constraints.insets = new java.awt.Insets(20, 0, 20, 0);
         rootPanel.add(administrationBtn, constraints);
 
         logoutBtn = new JButton();
@@ -75,13 +94,15 @@ public class CarrierLoginUI extends JFrame {
 
         constraints = new GridBagConstraints();
         constraints.gridx = 0;
-        constraints.gridy = 3;
+        constraints.gridy = 0;
         constraints.gridwidth = GridBagConstraints.REMAINDER;
         constraints.anchor = GridBagConstraints.CENTER;
-        constraints.insets = new java.awt.Insets(10, 0, 10, 0);
-        rootPanel.add(logoutBtn, constraints);
+        constraints.insets = new java.awt.Insets(0, 0, 20, 0);
+        bottomPanel.add(logoutBtn, constraints);
 
-        getContentPane().add(rootPanel);
+        getContentPane().add(rootPanel, BorderLayout.CENTER);
+        getContentPane().add(topPanel, BorderLayout.NORTH);
+        getContentPane().add(bottomPanel, BorderLayout.SOUTH);
         getContentPane().setBackground(background);
 
         pack();
@@ -99,6 +120,10 @@ public class CarrierLoginUI extends JFrame {
 
     public static JButton getLogoutBtn() {
         return logoutBtn;
+    }
+
+    public void setNameLabel(String s) {
+        nameLabel.setText(s);
     }
 
 

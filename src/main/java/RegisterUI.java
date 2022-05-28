@@ -268,14 +268,15 @@ public class RegisterUI extends JFrame {
         successLabel.setForeground(successColor);
         successLabel.setHorizontalAlignment(SwingConstants.CENTER);
         // <HTML>Successfully registered. Return and log in with<br><center>the created username/password.</center></HTML>
-        successLabel.setText("");
+        successLabel.setText("<HTML>Successfully registered. Return and log in with<br><center>the created username/password.</center></HTML>");
+        successLabel.setVisible(false);
 
         constraints = new GridBagConstraints();
         constraints.gridx = 0;
         constraints.gridy = 9;
         constraints.gridwidth = GridBagConstraints.REMAINDER;
         constraints.anchor = java.awt.GridBagConstraints.CENTER;
-        constraints.insets = new java.awt.Insets(20, 0, 0, 0);
+        constraints.insets = new java.awt.Insets(15, 0, 0, 0);
         rootPanel.add(errorLabel, constraints);
         rootPanel.add(successLabel, constraints);
 
@@ -293,8 +294,13 @@ public class RegisterUI extends JFrame {
         return backBtn;
     }
 
+    public static JButton getRegisterBtn() {
+        return registerBtn;
+    }
+
     public void reset() {
         nameText.setText("");
+        usernameText.setText("");
         passwordText.setText("");
         carrierBtn.setSelected(false);
         auctioneerBtn.setSelected(false);
@@ -302,6 +308,41 @@ public class RegisterUI extends JFrame {
         trText.setText("");
         errorLabel.setText("");
         successLabel.setText("");
+    }
+
+    public String getNameText() {
+        return nameText.getText().trim();
+    }
+
+    public String getUsernameText() {
+        return usernameText.getText().trim();
+    }
+
+    public String getPasswordText() {
+        return new String(passwordText.getPassword());
+    }
+
+    public boolean isAuctioneer() {
+        return !carrierBtn.isSelected();
+    }
+
+    public boolean areAllFieldsFilled() {
+        if (getNameText().equals("")) {
+            return false;
+        } else if (getUsernameText().equals("")) {
+            return false;
+        } else if (getPasswordText().equals("")) {
+            return false;
+        } else return carrierBtn.isSelected() || auctioneerBtn.isSelected();
+        // TODO: Check transport requests field
+    }
+
+    public void setErrorLabel(String s) {
+        errorLabel.setText(s);
+    }
+
+    public void showSuccessLabel() {
+        successLabel.setVisible(true);
     }
 
 

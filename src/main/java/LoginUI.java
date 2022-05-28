@@ -7,7 +7,7 @@ public class LoginUI extends JFrame {
     private static JButton backBtn, loginBtn;
     private JTextField nameText;
     private JPasswordField passwordText;
-    private JLabel errorLabel;
+    private static JLabel errorLabel;
 
     private Color background = UIData.getBackground();
     private int width = UIData.getWidth();
@@ -87,7 +87,6 @@ public class LoginUI extends JFrame {
         constraints.insets = new java.awt.Insets(12, 3, 0, 5);
         rootPanel.add(nameLabel, constraints);
 
-        // Join name text field
         nameText = new JTextField();
         nameText.setPreferredSize(new Dimension(120, 22));
 
@@ -98,8 +97,6 @@ public class LoginUI extends JFrame {
         constraints.insets = new java.awt.Insets(10, 5, 0, 3);
         rootPanel.add(nameText, constraints);
 
-
-        // Join auction name label
         JLabel passwordLabel = new JLabel("Password");
         passwordLabel.setHorizontalAlignment(SwingConstants.LEFT);
 
@@ -110,7 +107,6 @@ public class LoginUI extends JFrame {
         constraints.insets = new java.awt.Insets(22, 3, 5, 5);
         rootPanel.add(passwordLabel, constraints);
 
-        // Join auction name text field
         passwordText = new JPasswordField();
         passwordText.setPreferredSize(new Dimension(120, 22));
 
@@ -163,6 +159,18 @@ public class LoginUI extends JFrame {
 
     public static JButton getLoginBtn() {
         return loginBtn;
+    }
+
+    public String getNameText() {
+        return nameText.getText().trim();
+    }
+
+    public String getPasswordText() {
+        return new String(passwordText.getPassword());
+    }
+
+    public void setErrorLabel(String s) {
+        errorLabel.setText(s);
     }
 
     public void reset() {
