@@ -3,6 +3,8 @@
 		"lib/**/*.jar",
 		"jade/lib/jade.jar",
 		"jsprit.jar",
-		"sqlite-jdbc-3.36.0.3.jar"
+		"sqlite-jdbc-3.36.0.3.jar",
+		"gs-core-2.0.jar",
+		"gs-ui-swing-2.0.jar"
 	]
 }

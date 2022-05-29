@@ -15,15 +15,22 @@ import com.graphhopper.jsprit.core.reporting.SolutionPrinter;
 import com.graphhopper.jsprit.core.util.Coordinate;
 import com.graphhopper.jsprit.core.util.Solutions;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-public class TourPlanning {
-   private VehicleImpl vehicle;
-   private VehicleRoutingProblem problem;
-   private VehicleRoutingProblemSolution bestSolution;
+import javax.swing.JPanel;
 
-   public void vehicleRegister(String vehicleID, double depot_X, double depot_Y) {
+public class TourPlanning {
+   private static VehicleImpl vehicle;
+   private static VehicleRoutingProblem problem;
+   private static VehicleRoutingProblemSolution bestSolution;
+
+   private void generateRequest(){
+      
+   }
+
+   private static void vehicleRegister(String vehicleID, double depot_X, double depot_Y) {
 
       /*
 		 * get a vehicle type-builder and build a type with the typeId "vehicleType"
@@ -41,8 +48,8 @@ public class TourPlanning {
   
    }
 
-   public void requestRegister(List<Shipment> requests) {
-      //List<Shipment> requests = TransportRequest.generateRequest(new ArrayList<>());
+   private static void requestRegister() {
+      List<Shipment> requests = TransportRequest.generateRequest(new ArrayList<>());
       
       VehicleRoutingProblem.Builder vrpBuilder = VehicleRoutingProblem.Builder.newInstance();
 		vrpBuilder.addVehicle(vehicle);
@@ -53,16 +60,19 @@ public class TourPlanning {
 		problem = vrpBuilder.build();
    }
 
-   public void tourOptimize() {
+   private static void tourOptimize() {
       VehicleRoutingAlgorithm algorithm = new SchrimpfFactory().createAlgorithm(problem);
       Collection<VehicleRoutingProblemSolution> solutions = algorithm.searchSolutions();
       bestSolution = Solutions.bestOf(solutions);
       
-		SolutionPrinter.print(problem, bestSolution, SolutionPrinter.Print.VERBOSE);
+		// SolutionPrinter.print(problem, bestSolution, SolutionPrinter.Print.VERBOSE);
    }
 
-   public void tourVisualize() {
-      new GraphStreamViewer(problem, bestSolution).setRenderShipments(true).setRenderDelay(300).display();
+   public static JPanel tourVisualize(String vehicleID, double depot_X, double depot_Y) {
+      vehicleRegister(vehicleID, depot_X, depot_Y);
+      requestRegister();
+      tourOptimize();
+      return new VisualView(problem, bestSolution).display();
    }
 
    private static Location loc(Coordinate coordinate) {

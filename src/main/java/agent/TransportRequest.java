@@ -17,7 +17,7 @@ public class TransportRequest {
 
    public static List<Shipment> generateRequest(List<Shipment> requests) {
       int count = 0;
-      while (count < 4) {
+      while (count < 2) {
          pickup_X = Math.random() * 30;
          pickup_Y = Math.random() * 30;
          deliver_X = Math.random() * 30;

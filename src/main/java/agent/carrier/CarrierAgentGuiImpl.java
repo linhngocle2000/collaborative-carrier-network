@@ -11,6 +11,8 @@ import java.util.concurrent.TimeUnit;
 import javax.swing.*;
 import javax.swing.border.*;
 
+import main.java.agent.TourPlanning;
+
 
 /**
  J2SE (Swing-based) implementation of the GUI of the main.java.agent that wants to join/exit an auction
@@ -43,11 +45,60 @@ public class CarrierAgentGuiImpl extends JFrame implements CarrierAgentGui{
         JPanel leftPanel = new JPanel();
         JPanel rightPanel = new JPanel();
 
-        leftPanel.setMinimumSize(new Dimension(600, 500));
-        leftPanel.setPreferredSize(new Dimension(600, 500));
+        leftPanel.setMinimumSize(new Dimension(600, 550));
+        leftPanel.setPreferredSize(new Dimension(600, 550));
  
         // rightPanel.setMinimumSize(new Dimension(600, 500));
         // rightPanel.setPreferredSize(new Dimension(600, 500));
+
+//////
+//    Right Panel
+//////
+
+        // Visual Panel
+        TitledBorder visualTitle = new TitledBorder("Visualization");
+        visualTitle.setTitleJustification(TitledBorder.CENTER);
+        visualTitle.setTitlePosition(TitledBorder.TOP);
+
+        JPanel visualPanel = new JPanel();
+        visualPanel.setBorder(visualTitle);
+        visualPanel.setMinimumSize(new Dimension(590, 540));
+        visualPanel.setPreferredSize(new Dimension(590, 540));
+
+
+        // Visual Button
+        JButton visualButton = new JButton("Visualization");
+        visualButton.addActionListener(e -> {
+            try (Connection conn = connectToDB()) {
+                Statement stm = conn.createStatement();
+                ResultSet result = stm.executeQuery("SELECT * FROM AGENTS WHERE Agent_ID =" + myAgent.getAgentID());
+                myAgent.setVehicleID(result.getString("Vehicle_ID"));
+                visualPanel.add(TourPlanning.tourVisualize(myAgent.getVehicleID(), myAgent.getDepotX(), myAgent.getDepotY()));
+                revalidate();
+                
+            } catch (SQLException sqle) {
+                notifyUser("Failed to connect to database. Please try again later.");
+                sqle.printStackTrace();
+            } catch (Exception ex) {
+                notifyUser("Failed to visualize.");
+                ex.printStackTrace();
+            }
+        });
+        
+
+        rightPanel.add(visualPanel);
+
+//////
+//    Bottom Panel
+//////
+
+        // Exit Button
+        JButton exitButton = new JButton("Exit");
+        exitButton.addActionListener(e -> {
+            myAgent.sendExitRequest();
+            myAgent.doDelete();
+            dispose();
+        });
 
 //////
 //    Left Panel
@@ -88,18 +139,23 @@ public class CarrierAgentGuiImpl extends JFrame implements CarrierAgentGui{
         // Add depot location button
         JButton depotButton = new JButton("Add Location");
         depotButton.addActionListener(e -> {
-            try (Connection conn = connectToDB()) {
-                int depotX = Integer.parseInt(depotXField.getText());
-                int depotY = Integer.parseInt(depotYField.getText());
+            try {
+                // int depotX = Integer.parseInt(depotXField.getText());
+                // int depotY = Integer.parseInt(depotYField.getText());
 
-                Statement stm = conn.createStatement();
-                stm.executeUpdate("UPDATE AGENTS SET Depot_X = " + depotX + ", Depot_Y = " + depotY + " WHERE Agent_ID = " + myAgent.getAgentID());
-                notifyUser("Your new location is set at (" + depotX + ", " + depotY + ")");
+                myAgent.setDepotX(Double.parseDouble(depotXField.getText()));
+                myAgent.setDepotY(Double.parseDouble(depotYField.getText()));
+
+                notifyUser("Your new location is set at (" + myAgent.getDepotX() + ", " + myAgent.getDepotY() + ")");
+
+                // Statement stm = conn.createStatement();
+                // stm.executeUpdate("UPDATE AGENTS SET Depot_X = " + depotX + ", Depot_Y = " + depotY + " WHERE Agent_ID = " + myAgent.getAgentID());
+                // notifyUser("Your new location is set at (" + depotX + ", " + depotY + ")");
                 
-                conn.close();
-            } catch (SQLException sqle) {
-                notifyUser("Failed to connect to database. Please try again later.");
-                sqle.printStackTrace();
+                // conn.close();
+            // } catch (SQLException sqle) {
+            //     notifyUser("Failed to connect to database. Please try again later.");
+            //     sqle.printStackTrace();
             } catch (Exception ex) {
 				// errorLabel.setText(ex.getMessage());
 				ex.printStackTrace();
@@ -114,9 +170,6 @@ public class CarrierAgentGuiImpl extends JFrame implements CarrierAgentGui{
         depotPanel.add(locationPanel, BorderLayout.CENTER);
         depotPanel.add(depotButton, BorderLayout.SOUTH);
 
-
-        // Visual Button
-        JButton visualButton = new JButton("Visualization");
 
 
         // Agent Panel
@@ -178,37 +231,11 @@ public class CarrierAgentGuiImpl extends JFrame implements CarrierAgentGui{
 
         leftPanel.add(logPanel, BorderLayout.SOUTH);
 
-//////
-//    Right Panel
-//////
-
-        // Visual Panel
-        TitledBorder visualTitle = new TitledBorder("Visualization");
-        visualTitle.setTitleJustification(TitledBorder.CENTER);
-        visualTitle.setTitlePosition(TitledBorder.TOP);
-
-        JPanel visualPanel = new JPanel();
-        visualPanel.setBorder(visualTitle);
-        visualPanel.setMinimumSize(new Dimension(590, 490));
-        visualPanel.setPreferredSize(new Dimension(590, 490));
-
-        rightPanel.add(visualPanel);
-
-//////
-//    Bottom Panel
-//////
-
-        JButton exitButton = new JButton("Exit");
-        exitButton.addActionListener(e -> {
-            myAgent.sendExitRequest();
-            myAgent.doDelete();
-            dispose();
-        });
-
 
         getContentPane().add(leftPanel, BorderLayout.WEST);
         getContentPane().add(rightPanel, BorderLayout.EAST);
         getContentPane().add(exitButton, BorderLayout.SOUTH);
+
 
         pack();      
         setResizable(false);

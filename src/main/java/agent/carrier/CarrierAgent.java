@@ -19,8 +19,8 @@ import java.util.concurrent.TimeUnit;
 public class CarrierAgent extends Agent {
    private String agentID;
    private String vehicleID;
-   private int depotX;
-   private int depotY;
+   private double depotX;
+   private double depotY;
 
    // Available auctioneer main.java.agent
    private AID auctioneerAgent;
@@ -170,5 +170,29 @@ public class CarrierAgent extends Agent {
 
    public String getAgentID() {
       return this.agentID;
+   }
+
+   public String getVehicleID() {
+      return this.vehicleID;
+   }
+
+   public void setVehicleID(String vehicleID) {
+      this.vehicleID = vehicleID;
+   }
+
+   public double getDepotX() {
+      return this.depotX;
+   }
+
+   public void setDepotX(double depotX) {
+      this.depotX = depotX;
+   }
+
+   public double getDepotY() {
+      return this.depotY;
+   }
+
+   public void setDepotY(double depotY) {
+      this.depotY = depotY;
    }
 }
