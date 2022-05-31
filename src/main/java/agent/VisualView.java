@@ -43,145 +43,70 @@ import java.awt.*;
 
 public class VisualView {
 
-    public static class StyleSheets {
+   private String STYLESHEET =   "node {" +
+                                 "	size: 10px, 10px;" +
+                                 "  fill-color: green;" +
+                                 "	text-alignment: at-right;" +
+                                 " 	stroke-mode: plain;" +
+                                 "	stroke-color: #999;" +
+                                 "	stroke-width: 1.0;" +
+                                 "	text-font: couriernew;" +
+                                 " 	text-offset: 2,-5;" +
+                                 "	text-size: 8;" +
+                                 "}" +
+                                 "node.pickup {" +
+                                 " 	fill-color: green;" +
+                                 "}" +
+                                 "node.delivery {" +
+                                 " 	fill-color: blue;" +
+                                 "}" +
+                                 "node.pickupInRoute {" +
+                                 "	fill-color: green;" +
+                                 " 	stroke-mode: plain;" +
+                                 "	stroke-color: #333;" +
+                                 "  stroke-width: 2.0;" +
+                                 "}" +
+                                 "node.deliveryInRoute {" +
+                                 " 	fill-color: blue;" +
+                                 " 	stroke-mode: plain;" +
+                                 "	stroke-color: #333;" +
+                                 "  stroke-width: 2.0;" +
+                                 "}" +
+                                 "node.depot {" +
+                                 " 	fill-color: red;" +
+                                 "	size: 10px, 10px;" +
+                                 " 	shape: box;" +
+                                 "}" +
+                                 "node.removed {" +
+                                 " 	fill-color: red;" +
+                                 "	size: 10px, 10px;" +
+                                 " 	stroke-mode: plain;" +
+                                 "	stroke-color: #333;" +
+                                 "  stroke-width: 2.0;" +
+                                 "}" +
+                                 "edge {" +
+                                 "	fill-color: #333;" +
+                                 "	arrow-size: 6px,3px;" +
+                                 "}" +
+                                 "edge.shipment {" +
+                                 "	fill-color: #999;" +
+                                 "	arrow-size: 6px,3px;" +
+                                 "}";
+    
+   static Graph createMultiGraph(String name, String style) {
+      Graph g = new MultiGraph(name);
+      g.addAttribute("ui.quality");
+      g.addAttribute("ui.antialias");
+      g.addAttribute("ui.stylesheet", style);
+      return g;
+   }
 
-        static String BLUE_FOREST =
-            "graph { fill-color: #141F2E; }" +
-                "node {" +
-                "	size: 7px, 7px;" +
-                "   fill-color: #A0FFA0;" +
-                "	text-alignment: at-right;" +
-                " 	stroke-mode: plain;" +
-                "	stroke-color: #999;" +
-                "	stroke-width: 1.0;" +
-                "	text-font: couriernew;" +
-                " 	text-offset: 2,-5;" +
-                "	text-size: 8;" +
-                "}" +
-                "node.pickup {" +
-                " 	fill-color: #6CC644;" +
-                "}" +
-                "node.delivery {" +
-                " 	fill-color: #f93;" +
-                "}" +
-                "node.pickupInRoute {" +
-                "	fill-color: #6CC644;" +
-                " 	stroke-mode: plain;" +
-                "	stroke-color: #333;" +
-                "   stroke-width: 2.0;" +
-                "}" +
-                "node.deliveryInRoute {" +
-                " 	fill-color: #f93;" +
-                " 	stroke-mode: plain;" +
-                "	stroke-color: #333;" +
-                "   stroke-width: 2.0;" +
-                "}" +
-                "node.depot {" +
-                " 	fill-color: #BD2C00;" +
-                "	size: 10px, 10px;" +
-                " 	shape: box;" +
-                "}" +
-                "node.removed {" +
-                " 	fill-color: #FF8080;" +
-                "	size: 10px, 10px;" +
-                " 	stroke-mode: plain;" +
-                "	stroke-color: #CCF;" +
-                "   stroke-width: 2.0;" +
-                "   shadow-mode: gradient-radial;" +
-                "   shadow-width: 10px; shadow-color: #EEF, #000; shadow-offset: 0px;" +
-                "}" +
-
-                "edge {" +
-                "	fill-color: #D3D3D3;" +
-                "	arrow-size: 6px,3px;" +
-                "}" +
-//                    "edge.inserted {" +
-//                    "	fill-color: #A0FFA0;" +
-//                    "	arrow-size: 6px,3px;" +
-//                    "   shadow-mode: gradient-radial;" +
-//                    "   shadow-width: 10px; shadow-color: #EEF, #000; shadow-offset: 0px;" +
-//                    "}" +
-//                    "edge.removed {" +
-//                    "	fill-color: #FF0000;" +
-//                    "	arrow-size: 6px,3px;" +
-//                    "   shadow-mode: gradient-radial;" +
-//                    "   shadow-width: 10px; shadow-color: #EEF, #000; shadow-offset: 0px;" +
-//                    "}" +
-                "edge.shipment {" +
-                "	fill-color: #999;" +
-                "	arrow-size: 6px,3px;" +
-                "}";
-
-
-        @SuppressWarnings("UnusedDeclaration")
-        public static String SIMPLE_WHITE =
-            "node {" +
-                "	size: 10px, 10px;" +
-                "   fill-color: #6CC644;" +
-                "	text-alignment: at-right;" +
-                " 	stroke-mode: plain;" +
-                "	stroke-color: #999;" +
-                "	stroke-width: 1.0;" +
-                "	text-font: couriernew;" +
-                " 	text-offset: 2,-5;" +
-                "	text-size: 8;" +
-                "}" +
-                "node.pickup {" +
-                " 	fill-color: #6CC644;" +
-                "}" +
-                "node.delivery {" +
-                " 	fill-color: #f93;" +
-                "}" +
-                "node.pickupInRoute {" +
-                "	fill-color: #6CC644;" +
-                " 	stroke-mode: plain;" +
-                "	stroke-color: #333;" +
-                "   stroke-width: 2.0;" +
-                "}" +
-                "node.deliveryInRoute {" +
-                " 	fill-color: #f93;" +
-                " 	stroke-mode: plain;" +
-                "	stroke-color: #333;" +
-                "   stroke-width: 2.0;" +
-                "}" +
-                "node.depot {" +
-                " 	fill-color: #BD2C00;" +
-                "	size: 10px, 10px;" +
-                " 	shape: box;" +
-                "}" +
-                "node.removed {" +
-                " 	fill-color: #BD2C00;" +
-                "	size: 10px, 10px;" +
-                " 	stroke-mode: plain;" +
-                "	stroke-color: #333;" +
-                "   stroke-width: 2.0;" +
-                "}" +
-
-                "edge {" +
-                "	fill-color: #333;" +
-                "	arrow-size: 6px,3px;" +
-                "}" +
-                "edge.shipment {" +
-                "	fill-color: #999;" +
-                "	arrow-size: 6px,3px;" +
-                "}";
-
-    }
-
-    static Graph createMultiGraph(String name, String style) {
-        Graph g = new MultiGraph(name);
-        g.addAttribute("ui.quality");
-        g.addAttribute("ui.antialias");
-        g.addAttribute("ui.stylesheet", style);
-        return g;
-    }
-
-    private static ViewPanel createEmbeddedView(Graph graph) {
-        Viewer viewer = new Viewer(graph, Viewer.ThreadingModel.GRAPH_IN_GUI_THREAD);
-        ViewPanel view = viewer.addDefaultView(false);
-        view.setPreferredSize(new Dimension(570, 450));
-        return view;
-    }
+   private ViewPanel createEmbeddedView(Graph graph) {
+      Viewer viewer = new Viewer(graph, Viewer.ThreadingModel.GRAPH_IN_ANOTHER_THREAD);
+      ViewPanel view = viewer.addDefaultView(false);
+      view.setPreferredSize(new Dimension((int) (570 * scaling), (int) (450 * scaling)));
+      return view;
+   }
 
     public enum Label {
         NO_LABEL, ID, JOB_NAME, ARRIVAL_TIME, DEPARTURE_TIME, ACTIVITY
@@ -266,25 +191,19 @@ public class VisualView {
 
     public JPanel display() {
         System.setProperty("org.graphstream.ui.renderer", "org.graphstream.ui.j2dviewer.J2DGraphRenderer");
-        Graph g = createMultiGraph();
+        Graph g = createMultiGraph("g", STYLESHEET);
         ViewPanel view = createEmbeddedView(g);
-      //   JPanel graphStreamPanel = new JPanel();
-      //   graphStreamPanel.add(view);
         render(g, view);
-        return createJFrame(view);
-      //   return graphStreamPanel;
+        return createGraphPanel(view);
     }
 
-    private JPanel createJFrame(ViewPanel view) {
-      //   JFrame jframe = new JFrame();
-        JPanel basicPanel = new JPanel();
-        basicPanel.setLayout(new BoxLayout(basicPanel, BoxLayout.Y_AXIS));
+    private JPanel createGraphPanel(ViewPanel view) {
+        JPanel graphPanel = new JPanel();
+        graphPanel.setLayout(new BoxLayout(graphPanel, BoxLayout.Y_AXIS));
 
-        //result-panel
         JPanel resultPanel = createResultPanel();
+
         //graphstream-panel
-
-
         JPanel graphStreamPanel = new JPanel();
         graphStreamPanel.setPreferredSize(new Dimension((int) (570 * scaling), (int) (460 * scaling)));
 
@@ -294,78 +213,13 @@ public class VisualView {
         graphStreamBackPanel.add(view);
         graphStreamPanel.add(graphStreamBackPanel);
 
-        //setup basicPanel
-        basicPanel.add(resultPanel);
-        basicPanel.add(graphStreamPanel);
-//		basicPanel.add(legendPanel);
-
-      //   //put it together
-      //   jframe.add(basicPanel);
-
-      //   //conf jframe
-      //   jframe.setSize((int) (570 * scaling), (int) (580 * scaling));
-      //   jframe.setLocationRelativeTo(null);
-      //   jframe.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
-      //   jframe.setVisible(true);
-      //   jframe.pack();
-      //   jframe.setTitle("jsprit - GraphStream");
-        return basicPanel;
+        //setup graphPanel
+        graphPanel.add(resultPanel);
+        graphPanel.add(graphStreamPanel);
+        
+        return graphPanel;
     }
-
-    private Graph createMultiGraph() {
-        String STYLESHEET = "node {" +
-            "	size: 10px, 10px;" +
-            "   fill-color: #6CC644;" +
-            "	text-alignment: at-right;" +
-            " 	stroke-mode: plain;" +
-            "	stroke-color: #999;" +
-            "	stroke-width: 1.0;" +
-            "	text-font: couriernew;" +
-            " 	text-offset: 2,-5;" +
-            "	text-size: 8;" +
-            "}" +
-            "node.pickup {" +
-            " 	fill-color: #6CC644;" +
-            "}" +
-            "node.delivery {" +
-            " 	fill-color: #f93;" +
-            "}" +
-            "node.pickupInRoute {" +
-            "	fill-color: #6CC644;" +
-            " 	stroke-mode: plain;" +
-            "	stroke-color: #333;" +
-            "   stroke-width: 2.0;" +
-            "}" +
-            "node.deliveryInRoute {" +
-            " 	fill-color: #f93;" +
-            " 	stroke-mode: plain;" +
-            "	stroke-color: #333;" +
-            "   stroke-width: 2.0;" +
-            "}" +
-            "node.depot {" +
-            " 	fill-color: #BD2C00;" +
-            "	size: 10px, 10px;" +
-            " 	shape: box;" +
-            "}" +
-            "node.removed {" +
-            " 	fill-color: #BD2C00;" +
-            "	size: 10px, 10px;" +
-            " 	stroke-mode: plain;" +
-            "	stroke-color: #333;" +
-            "   stroke-width: 2.0;" +
-            "}" +
-
-            "edge {" +
-            "	fill-color: #333;" +
-            "	arrow-size: 6px,3px;" +
-            "}" +
-            "edge.shipment {" +
-            "	fill-color: #999;" +
-            "	arrow-size: 6px,3px;" +
-            "}";
-        return VisualView.createMultiGraph("g", STYLESHEET);
-    }
-
+   
     private void render(Graph g, ViewPanel view) {
         if (center != null) {
             view.resizeFrame(view.getWidth(), view.getHeight());

@@ -25,9 +25,10 @@ public class TourPlanning {
    private static VehicleImpl vehicle;
    private static VehicleRoutingProblem problem;
    private static VehicleRoutingProblemSolution bestSolution;
+   private static List<Shipment> requests = new ArrayList<>();
 
-   private void generateRequest(){
-      
+   public static void requestRegister(String ID, double pickup_X, double pickup_Y, double deliver_X, double deliver_Y) {
+      requests.add(Shipment.Builder.newInstance(ID).setPickupLocation(loc(Coordinate.newInstance(pickup_X, pickup_Y))).setDeliveryLocation(loc(Coordinate.newInstance(deliver_X, deliver_Y))).build());
    }
 
    private static void vehicleRegister(String vehicleID, double depot_X, double depot_Y) {
@@ -48,7 +49,7 @@ public class TourPlanning {
   
    }
 
-   private static void requestRegister() {
+   private static void setProblem() {
       List<Shipment> requests = TransportRequest.generateRequest(new ArrayList<>());
       
       VehicleRoutingProblem.Builder vrpBuilder = VehicleRoutingProblem.Builder.newInstance();
@@ -70,7 +71,7 @@ public class TourPlanning {
 
    public static JPanel tourVisualize(String vehicleID, double depot_X, double depot_Y) {
       vehicleRegister(vehicleID, depot_X, depot_Y);
-      requestRegister();
+      setProblem();
       tourOptimize();
       return new VisualView(problem, bestSolution).display();
    }

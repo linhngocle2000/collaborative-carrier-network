@@ -7,7 +7,6 @@ import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.concurrent.TimeUnit;
 import javax.swing.*;
 import javax.swing.border.*;
 
@@ -65,16 +64,30 @@ public class CarrierAgentGuiImpl extends JFrame implements CarrierAgentGui{
         visualPanel.setMinimumSize(new Dimension(590, 540));
         visualPanel.setPreferredSize(new Dimension(590, 540));
 
-
         // Visual Button
         JButton visualButton = new JButton("Visualization");
         visualButton.addActionListener(e -> {
-            try (Connection conn = connectToDB()) {
+            try {
+                Connection conn = connectToDB();
                 Statement stm = conn.createStatement();
+                // ResultSet result = stm.executeQuery("SELECT * FROM REQUESTS WHERE Agent_ID =" + myAgent.getAgentID());
+                // while (result.next()) {
+                //     String requestID = result.getString("Request_ID");
+                //     int pickup_X = result.getInt("Pickup_X");
+                //     int pickup_Y = result.getInt("Pickup_Y");
+                //     int deliver_X = result.getInt("Deliver_X");
+                //     int deliver_Y = result.getInt("Deliver_Y");
+                //     TourPlanning.requestRegister(requestID, pickup_X, pickup_Y, deliver_X, deliver_Y);                    
+                // }
+
                 ResultSet result = stm.executeQuery("SELECT * FROM AGENTS WHERE Agent_ID =" + myAgent.getAgentID());
                 myAgent.setVehicleID(result.getString("Vehicle_ID"));
+                visualPanel.removeAll();
                 visualPanel.add(TourPlanning.tourVisualize(myAgent.getVehicleID(), myAgent.getDepotX(), myAgent.getDepotY()));
-                revalidate();
+                visualPanel.revalidate();
+                result.close();
+                stm.close();
+                conn.close();
                 
             } catch (SQLException sqle) {
                 notifyUser("Failed to connect to database. Please try again later.");
@@ -107,7 +120,32 @@ public class CarrierAgentGuiImpl extends JFrame implements CarrierAgentGui{
         // Agent request Panel
         TitledBorder requestTitle = new TitledBorder("Agent request");
 
-        JScrollPane requestScrollPane = new JScrollPane();
+        DefaultListModel<String> requestListModel = new DefaultListModel<>();
+        try {
+            Connection conn = connectToDB();
+            Statement stm = conn.createStatement();
+            ResultSet result = stm.executeQuery("SELECT * FROM REQUESTS WHERE Agent_ID =" + myAgent.getAgentID());
+            while (result.next()) {
+                String requestID = result.getString("Request_ID");
+                requestListModel.addElement(requestID);
+            }
+            result.close();
+            stm.close();
+            conn.close();
+            
+        } catch (SQLException sqle) {
+            notifyUser("Failed to connect to database. Please try again later.");
+            sqle.printStackTrace();            
+        } catch (Exception ex) {
+            // notifyUser("Failed to show requests.");
+            ex.printStackTrace();
+        }
+
+        JList<String> requestList = new JList<>(requestListModel);
+        requestList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+        requestList.setLayoutOrientation(JList.VERTICAL);
+
+        JScrollPane requestScrollPane = new JScrollPane(requestList);
         requestScrollPane.setMinimumSize(new Dimension(200, 150));
         requestScrollPane.setPreferredSize(new Dimension(200, 150));
 
