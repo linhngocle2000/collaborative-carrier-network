@@ -3,6 +3,7 @@
 use CCN\Agent;
 use CCN\Database;
 use CCN\Route\Handler;
+use CCN\TransportRequest;
 use CCN\Util\TokenHelper;
 
 $handler = Handler::get();
@@ -13,6 +14,10 @@ $handler->register('login', [Agent::class, 'login']);
 $handler->register('getAgents', [Agent::class, 'getAgents']);
 $handler->register('getAuctioneers', [Agent::class, 'getAuctioneers']);
 $handler->register('getCarriers', [Agent::class, 'getCarriers']);
+
+// Transport request routes
+$handler->register('addRequest', [TransportRequest::class, 'addRequest']);
+$handler->register('getRequests', [TransportRequest::class, 'getRequests']);
 
 $handler->register('getAuctions', function ($data)
 {
