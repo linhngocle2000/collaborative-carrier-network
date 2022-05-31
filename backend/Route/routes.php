@@ -7,10 +7,12 @@ use CCN\Util\TokenHelper;
 
 $handler = Handler::get();
 
-// Agent methods
-$handler->register('register', [Agent::class, 'registerRoute']);
+// Agent routes
+$handler->register('register', [Agent::class, 'register']);
 $handler->register('login', [Agent::class, 'login']);
 $handler->register('getAgents', [Agent::class, 'getAgents']);
+$handler->register('getAuctioneers', [Agent::class, 'getAuctioneers']);
+$handler->register('getCarriers', [Agent::class, 'getCarriers']);
 
 $handler->register('getAuctions', function ($data)
 {
