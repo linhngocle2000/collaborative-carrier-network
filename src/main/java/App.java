@@ -60,23 +60,19 @@ public class App {
 
         registerRegisterBtn = RegisterUI.getRegisterBtn();
         registerRegisterBtn.addActionListener(e -> {
-
-            try {
-                if (!registerUI.areAllFieldsFilled()) {
-                    throw new Exception("Please fill out all fields.");
-                }
+            if (!registerUI.areAllFieldsFilled()) {
+                registerUI.setErrorLabel("Please fill out all fields.");
+            } else {
                 String name = registerUI.getNameText();
                 String username = registerUI.getUsernameText();
                 String password = registerUI.getPasswordText();
                 boolean isAuctioneer = registerUI.isAuctioneer();
                 if (!HTTPRequests.register(name, username, password, isAuctioneer)) {
-                    throw new Exception("Username " + username + " is already used.");
+                    registerUI.setErrorLabel("Username " + username + " is already used.");
                 } else {
                     registerUI.setErrorLabel("");
                     registerUI.showSuccessLabel();
                 }
-            } catch (Exception ex) {
-                registerUI.setErrorLabel(ex.getMessage());
             }
         });
 
