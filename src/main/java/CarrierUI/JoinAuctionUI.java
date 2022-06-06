@@ -6,7 +6,7 @@ import javax.swing.*;
 import javax.swing.border.Border;
 import java.awt.*;
 
-public class CarrierJoinAuctionUI extends JFrame {
+public class JoinAuctionUI extends JFrame {
 
     private static JButton bidBtn, activeAuctionsBtn, logoutBtn, backBtn;
     private JTextField auctionText, priceText;
@@ -20,7 +20,7 @@ public class CarrierJoinAuctionUI extends JFrame {
     private Border emptyBorder = UIData.getEmptyBorder();
 
 
-    public CarrierJoinAuctionUI() {
+    public JoinAuctionUI() {
 
         super();
 
@@ -74,7 +74,6 @@ public class CarrierJoinAuctionUI extends JFrame {
         nameLabel = new JLabel();
         nameLabel.setFont(font.deriveFont(Font.BOLD,14));
         nameLabel.setHorizontalAlignment(SwingConstants.CENTER);
-
 
         constraints = new GridBagConstraints();
         constraints.gridx = 1;

@@ -1,14 +1,14 @@
 import Agent.Agent;
-import AuctioneerUI.AuctioneerStartAuctionUI;
+import AuctioneerUI.AuctionUI;
+import AuctioneerUI.StartAuctionUI;
 import StartUI.LoginUI;
 import StartUI.RegisterUI;
 import StartUI.WelcomeUI;
-import CarrierUI.CarrierJoinAuctionUI;
+import CarrierUI.JoinAuctionUI;
 import CarrierUI.CarrierLoginUI;
 import UIResource.HTTPResource.HTTPRequests;
 
 import javax.swing.*;
-import java.util.Map.Entry;
 
 public class App {
 
@@ -16,8 +16,8 @@ public class App {
     private static LoginUI loginUI;
     private static RegisterUI registerUI;
     private static CarrierLoginUI carrierLoginUI;
-    private static CarrierJoinAuctionUI carrierJoinAuctionUI;
-    private static AuctioneerStartAuctionUI auctioneerUI;
+    private static JoinAuctionUI joinAuctionUI;
+    private static StartAuctionUI auctioneerUI;
 
     private static JButton welcomeLoginBtn, welcomeRegisterBtn,
             loginBackBtn, loginLoginBtn, registerBackBtn,
@@ -30,13 +30,12 @@ public class App {
 
     static public void main(String[] args) {
 
-
         welcomeUI = new WelcomeUI();
         loginUI = new LoginUI();
         registerUI = new RegisterUI();
         carrierLoginUI = new CarrierLoginUI();
-        carrierJoinAuctionUI = new CarrierJoinAuctionUI();
-        auctioneerUI = new AuctioneerStartAuctionUI();
+        joinAuctionUI = new JoinAuctionUI();
+        auctioneerUI = new StartAuctionUI();
 
         welcomeUI.setVisible(true);
 
@@ -109,8 +108,8 @@ public class App {
             loginUI.setVisible(false);
             loginUI.reset();
             if (user.isAuctioneer()) {
+                auctioneerUI.setNameLabel(user.getDisplayname());
                 auctioneerUI.setVisible(true);
-                auctioneerUI.setName(user.getDisplayname());
             } else {
                 carrierLoginUI.setNameLabel(user.getDisplayname());
                 carrierLoginUI.setVisible(true);
@@ -125,15 +124,15 @@ public class App {
 
         carrierLoginJoinAuctionBtn = CarrierLoginUI.getJoinAuctionBtn();
         carrierLoginJoinAuctionBtn.addActionListener(e -> {
-            carrierJoinAuctionUI.setNameLabel(user.getDisplayname());
+            joinAuctionUI.setNameLabel(user.getDisplayname());
             carrierLoginUI.setVisible(false);
-            carrierJoinAuctionUI.setVisible(true);
+            joinAuctionUI.setVisible(true);
         });
 
-        carrierJoinAuctionLogoutBtn = CarrierJoinAuctionUI.getLogoutBtn();
+        carrierJoinAuctionLogoutBtn = JoinAuctionUI.getLogoutBtn();
         carrierJoinAuctionLogoutBtn.addActionListener(e -> {
-            carrierJoinAuctionUI.setVisible(false);
-            carrierJoinAuctionUI.reset();
+            joinAuctionUI.setVisible(false);
+            joinAuctionUI.reset();
             welcomeUI.setVisible(true);
             // Reset data
             user = null;
@@ -141,7 +140,7 @@ public class App {
 
         });
 
-        auctioneerLogoutBtn = AuctioneerStartAuctionUI.getLogoutBtn();
+        auctioneerLogoutBtn = StartAuctionUI.getLogoutBtn();
         auctioneerLogoutBtn.addActionListener(e -> {
             auctioneerUI.setVisible(false);
             welcomeUI.setVisible(true);
@@ -149,8 +148,6 @@ public class App {
             user = null;
             HTTPRequests.logout();
         });
-
-
 
     }
 }
