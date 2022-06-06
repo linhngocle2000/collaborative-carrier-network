@@ -1,3 +1,4 @@
+import Agent.Agent;
 import AuctioneerUI.AuctioneerStartAuctionUI;
 import StartUI.LoginUI;
 import StartUI.RegisterUI;
@@ -7,7 +8,6 @@ import CarrierUI.CarrierLoginUI;
 import UIResource.HTTPResource.HTTPRequests;
 
 import javax.swing.*;
-import java.util.Map.Entry;
 
 public class App {
 
@@ -24,12 +24,9 @@ public class App {
             carrierJoinAuctionLogoutBtn, auctioneerLogoutBtn,
             registerRegisterBtn;
 
-    private static String displayName;
-
-    private static Boolean isAuctioneer;
+    private static Agent user;
 
     static public void main(String[] args) {
-
 
         welcomeUI = new WelcomeUI();
         loginUI = new LoginUI();
@@ -87,29 +84,20 @@ public class App {
         loginLoginBtn.addActionListener(e -> {
             String username = loginUI.getNameText();
             String password = loginUI.getPasswordText();
-            Boolean isAuctioneerAgent = null;
-            String name = null;
-            try {
-                Entry<String, Boolean> response = HTTPRequests.login(username, password);
-                if (response == null) {
-                    throw new Exception("Incorrect username/password.");
-                }
-                name = response.getKey();
-                isAuctioneerAgent = response.getValue();
-                loginUI.setVisible(false);
-                loginUI.reset();
-                if (isAuctioneerAgent) {
-                    auctioneerUI.setVisible(true);
-                    auctioneerUI.setNameLabel(name);
-                } else {
-                    carrierLoginUI.setNameLabel(name);
-                    carrierLoginUI.setVisible(true);
-                }
-            } catch (Exception exception) {
-                loginUI.setErrorLabel(exception.getMessage());
-            } finally {
-                displayName = name;
-                isAuctioneer = isAuctioneerAgent;
+            user = HTTPRequests.login(username, password);
+            if (user == null) {
+                loginUI.setErrorLabel("Incorrect username/password.");
+                return;
+            }
+
+            loginUI.setVisible(false);
+            loginUI.reset();
+            if (user.isAuctioneer()) {
+                auctioneerUI.setVisible(true);
+                auctioneerUI.setNameLabel(user.getDisplayname());
+            } else {
+                carrierLoginUI.setNameLabel(user.getDisplayname());
+                carrierLoginUI.setVisible(true);
             }
         });
 
@@ -121,7 +109,7 @@ public class App {
 
         carrierLoginJoinAuctionBtn = CarrierLoginUI.getJoinAuctionBtn();
         carrierLoginJoinAuctionBtn.addActionListener(e -> {
-            carrierJoinAuctionUI.setNameLabel(displayName);
+            carrierJoinAuctionUI.setNameLabel(user.getDisplayname());
             carrierLoginUI.setVisible(false);
             carrierJoinAuctionUI.setVisible(true);
         });
@@ -131,6 +119,10 @@ public class App {
             carrierJoinAuctionUI.setVisible(false);
             carrierJoinAuctionUI.reset();
             welcomeUI.setVisible(true);
+
+            // Reset data
+            user = null;
+            HTTPRequests.logout();
         });
 
         auctioneerLogoutBtn = AuctioneerStartAuctionUI.getLogoutBtn();
@@ -139,8 +131,6 @@ public class App {
             auctioneerUI.reset();
             welcomeUI.setVisible(true);
         });
-
-
-
     }
+
 }
