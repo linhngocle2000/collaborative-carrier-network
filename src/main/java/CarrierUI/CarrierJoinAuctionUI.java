@@ -8,7 +8,7 @@ import java.awt.*;
 
 public class CarrierJoinAuctionUI extends JFrame {
 
-    private static JButton bidBtn, activeAuctionsBtn, logoutBtn;
+    private static JButton bidBtn, activeAuctionsBtn, logoutBtn, backBtn;
     private JTextField auctionText, priceText;
     private JLabel errorLabel, nameLabel;
 
@@ -43,11 +43,28 @@ public class CarrierJoinAuctionUI extends JFrame {
         bottomPanel.setLayout(new GridBagLayout());
         bottomPanel.setBackground(background);
 
+        backBtn = new JButton();
+        backBtn.setText("\u2190");
+        backBtn.setFocusPainted(false);
+        backBtn.setBorder(emptyBorder);
+        backBtn.setBackground(background);
+        backBtn.setFont(font.deriveFont(Font.BOLD, 25));
+
+        GridBagConstraints constraints = new GridBagConstraints();
+        constraints.gridx = 0;
+        constraints.gridy = 0;
+        constraints.gridwidth = 1;
+        constraints.gridheight = 1;
+        constraints.weightx = constraints.weighty = 1.0;
+        constraints.anchor = GridBagConstraints.NORTHWEST;
+        constraints.insets = new java.awt.Insets(0, 20, 20, 0);
+        bottomPanel.add(backBtn, constraints);
+
         JLabel loginLabel = new JLabel("Login as: ");
         loginLabel.setFont(font.deriveFont(Font.BOLD, 14));
         loginLabel.setHorizontalAlignment(SwingConstants.CENTER);
 
-        GridBagConstraints constraints = new GridBagConstraints();
+        constraints = new GridBagConstraints();
         constraints.gridx = 0;
         constraints.gridy = 0;
         constraints.anchor = GridBagConstraints.NORTHWEST;
@@ -57,6 +74,7 @@ public class CarrierJoinAuctionUI extends JFrame {
         nameLabel = new JLabel();
         nameLabel.setFont(font.deriveFont(Font.BOLD,14));
         nameLabel.setHorizontalAlignment(SwingConstants.CENTER);
+
 
         constraints = new GridBagConstraints();
         constraints.gridx = 1;
@@ -187,6 +205,10 @@ public class CarrierJoinAuctionUI extends JFrame {
         auctionText.setText("");
         priceText.setText("");
         errorLabel.setText("");
+    }
+
+    public static JButton getBackBtn() {
+        return backBtn;
     }
 
 }

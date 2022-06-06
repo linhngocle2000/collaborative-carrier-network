@@ -8,6 +8,7 @@ import CarrierUI.CarrierLoginUI;
 import UIResource.HTTPResource.HTTPRequests;
 
 import javax.swing.*;
+import java.util.Map.Entry;
 
 public class App {
 
@@ -26,7 +27,9 @@ public class App {
 
     private static Agent user;
 
+
     static public void main(String[] args) {
+
 
         welcomeUI = new WelcomeUI();
         loginUI = new LoginUI();
@@ -57,19 +60,33 @@ public class App {
 
         registerRegisterBtn = RegisterUI.getRegisterBtn();
         registerRegisterBtn.addActionListener(e -> {
-            if (!registerUI.areAllFieldsFilled()) {
-                registerUI.setErrorLabel("Please fill out all fields.");
-            } else {
+
+            try {
+                registerUI.setErrorLabel("");
+                if (!registerUI.areAllFieldsFilled()) {
+                    throw new Exception("Please fill out all fields.");
+                }
                 String name = registerUI.getNameText();
                 String username = registerUI.getUsernameText();
                 String password = registerUI.getPasswordText();
                 boolean isAuctioneer = registerUI.isAuctioneer();
+                if (!isAuctioneer) {
+                    if(!registerUI.verifyTRInput()) {
+                        throw new Exception("Transport requests are not entered correctly.");
+                    }
+                    if (!registerUI.verifyPriceInput()) {
+                        throw new Exception("Price is not entered correctly.");
+                    }
+                }
                 if (!HTTPRequests.register(name, username, password, isAuctioneer)) {
-                    registerUI.setErrorLabel("Username " + username + " is already used.");
+                    throw new Exception("Username " + username + " is already used.");
                 } else {
                     registerUI.setErrorLabel("");
                     registerUI.showSuccessLabel();
+                    registerUI.deactivate();
                 }
+            } catch (Exception ex) {
+                registerUI.setErrorLabel(ex.getMessage());
             }
         });
 
@@ -89,12 +106,11 @@ public class App {
                 loginUI.setErrorLabel("Incorrect username/password.");
                 return;
             }
-
             loginUI.setVisible(false);
             loginUI.reset();
             if (user.isAuctioneer()) {
                 auctioneerUI.setVisible(true);
-                auctioneerUI.setNameLabel(user.getDisplayname());
+                auctioneerUI.setName(user.getDisplayname());
             } else {
                 carrierLoginUI.setNameLabel(user.getDisplayname());
                 carrierLoginUI.setVisible(true);
@@ -119,18 +135,22 @@ public class App {
             carrierJoinAuctionUI.setVisible(false);
             carrierJoinAuctionUI.reset();
             welcomeUI.setVisible(true);
-
             // Reset data
             user = null;
             HTTPRequests.logout();
+
         });
 
         auctioneerLogoutBtn = AuctioneerStartAuctionUI.getLogoutBtn();
         auctioneerLogoutBtn.addActionListener(e -> {
             auctioneerUI.setVisible(false);
-            auctioneerUI.reset();
             welcomeUI.setVisible(true);
+            // Reset data
+            user = null;
+            HTTPRequests.logout();
         });
-    }
 
+
+
+    }
 }
