@@ -353,7 +353,7 @@ public class RegisterUI extends JFrame {
         constraints.gridy = 11;
         constraints.gridwidth = GridBagConstraints.REMAINDER;
         constraints.anchor = GridBagConstraints.CENTER;
-        constraints.insets = new java.awt.Insets(20, 5, 10, 10);
+        constraints.insets = new java.awt.Insets(20, 5, 0, 10);
         rootPanel.add(registerBtn, constraints);
 
         errorLabel = new JLabel();
@@ -373,7 +373,7 @@ public class RegisterUI extends JFrame {
         constraints.gridy = 10;
         constraints.gridwidth = GridBagConstraints.REMAINDER;
         constraints.anchor = java.awt.GridBagConstraints.CENTER;
-        constraints.insets = new java.awt.Insets(10, 0, 0, 0);
+        constraints.insets = new java.awt.Insets(20, 0, 0, 0);
         rootPanel.add(errorLabel, constraints);
         rootPanel.add(successLabel, constraints);
 
@@ -445,9 +445,7 @@ public class RegisterUI extends JFrame {
 
     public boolean verifyTRInput() {
         String text = trText.getText().trim();
-        if (text.matches("^<\\(\\((-?)(0|([1-9][0-9]*))(\\.[0-9]+)?,(-?)(0|([1-9][0-9]*))(\\.[0-9]+)?\\),\\((-?)(0|([1-9][0-9]*))(\\.[0-9]+)?,(-?)(0|([1-9][0-9]*))(\\.[0-9]+)?\\)\\)(,\\(\\((-?)(0|([1-9][0-9]*))(\\.[0-9]+)?,(-?)(0|([1-9][0-9]*))(\\.[0-9]+)?\\),\\((-?)(0|([1-9][0-9]*))(\\.[0-9]+)?,(-?)(0|([1-9][0-9]*))(\\.[0-9]+)?\\)\\))*?>$"))
-            return true;
-        return false;
+        return text.matches("^<\\(\\((-?)(0|([1-9][0-9]*))(\\.[0-9]+)?,(-?)(0|([1-9][0-9]*))(\\.[0-9]+)?\\),\\((-?)(0|([1-9][0-9]*))(\\.[0-9]+)?,(-?)(0|([1-9][0-9]*))(\\.[0-9]+)?\\)\\)(,\\(\\((-?)(0|([1-9][0-9]*))(\\.[0-9]+)?,(-?)(0|([1-9][0-9]*))(\\.[0-9]+)?\\),\\((-?)(0|([1-9][0-9]*))(\\.[0-9]+)?,(-?)(0|([1-9][0-9]*))(\\.[0-9]+)?\\)\\))*?>$");
     }
 
     public boolean verifyPriceInput() {
@@ -455,12 +453,9 @@ public class RegisterUI extends JFrame {
         String price1 = baseRateAText.getText().trim();
         String price2 = baseRateBText.getText().trim();
         String price3 = baseInRateText.getText().trim();
-        if (price1.matches(regex) &&
+        return price1.matches(regex) &&
                 price2.matches(regex) &&
-                price3.matches(regex)) {
-            return true;
-        }
-        return false;
+                price3.matches(regex);
     }
 
     public void showSuccessLabel() {
