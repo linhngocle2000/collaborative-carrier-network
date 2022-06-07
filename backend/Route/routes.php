@@ -11,6 +11,7 @@ $handler = Handler::get();
 // Agent routes
 $handler->register('register', [Agent::class, 'register']);
 $handler->register('login', [Agent::class, 'login']);
+$handler->register('getAgent', [Agent::class, 'getAgent']);
 $handler->register('getAgents', [Agent::class, 'getAgents']);
 $handler->register('getAuctioneers', [Agent::class, 'getAuctioneers']);
 $handler->register('getCarriers', [Agent::class, 'getCarriers']);

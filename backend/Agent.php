@@ -3,6 +3,7 @@
 namespace CCN;
 
 use CCN\Util\TokenHelper;
+use Exception;
 
 class Agent
 {
@@ -101,6 +102,38 @@ class Agent
 			$db->rollback();
 			throw $ex;
 		}
+	}
+
+	/** @return array */
+	public static function getAgent($data)
+	{
+		TokenHelper::assertToken();
+
+		$db = Database::getConnection();
+		$username = $db->escape_string($data['Username']);
+		$result = $db->query("SELECT `Username`, `Name`, `IsAuctioneer`, `Vehicle`, `DepotLat`, `DepotLon` FROM `Agent` WHERE `Username` = $username");
+		if ($result === false || $result->num_rows == 0)
+		{
+			throw new Exception("$username not found");
+		}
+
+		$row = $result->fetch_assoc();
+		$isAuctioneer = boolval($row['IsAuctioneer']);
+
+		$agent = [
+			'Username' => $username = $row['Username'],
+			'Name' => $row['Name'],
+			'IsAuctioneer' => $isAuctioneer,
+		];
+
+		if (!$isAuctioneer)
+		{
+			$agent['Vehicle'] = $row['Vehicle'];
+			$agent['DepotLat'] = $row['DepotLat'];
+			$agent['DepotLon'] = $row['DepotLon'];
+		}
+
+		return $agent;
 	}
 
 	/** @return array List of agents */
