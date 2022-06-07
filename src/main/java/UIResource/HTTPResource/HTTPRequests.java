@@ -31,8 +31,8 @@ public class HTTPRequests {
             var json = send(RequestBody.register(name, username, password, isAuctioneer));
             var success = json.getBoolean("success");
             if (!success) {
-                // TODO: Find a better way to send error message to UI
-                lastError = new Exception(json.getString("message"));
+                JSONObject error = json.getJSONObject("error");
+                lastError = new Exception(error.getString("message"));
             }
             return success;
         } catch (IOException | InterruptedException e) {
