@@ -20,6 +20,7 @@ class Database
 			$passwd = 'a9xbgEsJz&fT';
 			
 			ini_set("mysql.default_socket", "/var/lib/mysql/mysql.sock");
+			mysqli_report(MYSQLI_REPORT_ERROR | MYSQLI_REPORT_STRICT);
 			Database::$connection = mysqli_connect($host, $user, $passwd, 'ckh1694');
 			if (!Database::$connection)
 			{
