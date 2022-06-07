@@ -10,6 +10,8 @@ import java.sql.Statement;
 import javax.swing.*;
 import javax.swing.border.*;
 
+import com.graphhopper.jsprit.core.problem.Location;
+
 import main.java.agent.TourPlanning;
 
 
@@ -70,20 +72,20 @@ public class CarrierAgentGuiImpl extends JFrame implements CarrierAgentGui{
             try {
                 Connection conn = connectToDB();
                 Statement stm = conn.createStatement();
-                // ResultSet result = stm.executeQuery("SELECT * FROM REQUESTS WHERE Agent_ID =" + myAgent.getAgentID());
-                // while (result.next()) {
-                //     String requestID = result.getString("Request_ID");
-                //     int pickup_X = result.getInt("Pickup_X");
-                //     int pickup_Y = result.getInt("Pickup_Y");
-                //     int deliver_X = result.getInt("Deliver_X");
-                //     int deliver_Y = result.getInt("Deliver_Y");
-                //     TourPlanning.requestRegister(requestID, pickup_X, pickup_Y, deliver_X, deliver_Y);                    
-                // }
 
-                ResultSet result = stm.executeQuery("SELECT * FROM AGENTS WHERE Agent_ID =" + myAgent.getAgentID());
-                myAgent.setVehicleID(result.getString("Vehicle_ID"));
+                Location depot = Location.newInstance(myAgent.getDepotX(), myAgent.getDepotY());
+                TourPlanning currentTour = new TourPlanning(depot, myAgent.getAgentID());
+
+                ResultSet result = stm.executeQuery("SELECT * FROM REQUESTS WHERE Agent_ID =" + myAgent.getAgentID());
+                while (result.next()) {
+                    String requestID = result.getString("Request_ID");
+                    Location pickup = Location.newInstance(result.getInt("Pickup_X"), result.getInt("Pickup_Y"));
+                    Location deliver = Location.newInstance(result.getInt("Deliver_X"), result.getInt("Deliver_Y"));
+                    currentTour.addRequest(requestID, pickup, deliver);
+                }
+
                 visualPanel.removeAll();
-                visualPanel.add(TourPlanning.tourVisualize(myAgent.getVehicleID(), myAgent.getDepotX(), myAgent.getDepotY()));
+                visualPanel.add(currentTour.visualize());
                 visualPanel.revalidate();
                 result.close();
                 stm.close();
@@ -135,9 +137,8 @@ public class CarrierAgentGuiImpl extends JFrame implements CarrierAgentGui{
             
         } catch (SQLException sqle) {
             notifyUser("Failed to connect to database. Please try again later.");
-            sqle.printStackTrace();            
+            sqle.printStackTrace();
         } catch (Exception ex) {
-            // notifyUser("Failed to show requests.");
             ex.printStackTrace();
         }
 
