@@ -16,18 +16,18 @@ class TokenHelper
 	{
 		if (empty(TokenHelper::$token))
 		{
-			throw new Exception("Not authorized");
+			throw new Exception("No token specified");
 		}
 
 		$db = Database::getConnection();
-		$result = $db->query("SELECT COUNT(*) FROM `Session` WHERE `Token` = '" . TokenHelper::$token . "'");
-		if ($result === false || $result->num_rows == 0)
+		$result = $db->query("SELECT COUNT(*) AS `Count` FROM `Session` WHERE `Token` = '" . TokenHelper::$token . "'");
+		if ($result === false || !($row = $result->fetch_assoc()) || $row['Count'] == 0)
 		{
 			throw new Exception("Not authorized");
 		}
 
-		$result = $db->query("SELECT COUNT(*) FROM `Session` WHERE `Token` = '" . TokenHelper::$token . "' AND `Expiration` > UTC_TIMESTAMP()");
-		if ($result === false || $result->num_rows == 0)
+		$result = $db->query("SELECT COUNT(*) AS `Count` FROM `Session` WHERE `Token` = '" . TokenHelper::$token . "' AND `Expiration` > UTC_TIMESTAMP()");
+		if ($result === false|| !($row = $result->fetch_assoc()) || $row['Count'] == 0)
 		{
 			throw new Exception("Session expired");
 		}
