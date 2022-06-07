@@ -1,0 +1,56 @@
+<?php
+
+namespace CCN;
+
+use CCN\Util\TokenHelper;
+
+class TransportRequest
+{
+	/** @return int ID of new request */
+	public static function addRequest($data)
+	{
+		TokenHelper::assertToken();
+
+		$db = Database::getConnection();		
+		$requests = [];
+		foreach ($data as $row)
+		{
+			$owner = $db->escape_string($row['Agent']);
+			$pickLat = floatval($row['PickupLat']);
+			$pickLon = floatval($row['PickupLon']);
+			$delLat = floatval($row['DeliveryLat']);
+			$delLon = floatval($row['DeliveryLon']);
+			$requests[] = "('$owner', NULL, 0, $pickLat, $pickLon, $delLat, $delLon)";
+		}
+		$valStr = implode(',', $requests);
+
+		$result = $db->query("INSERT INTO `TransportRequest`(`Owner`, `Auction`, `Cost`, `PickupLat`, `PickupLon`, `DeliveryLat`, `DeliveryLon`) VALUES $valStr");
+		if ($result === false)
+		{
+			throw new \Exception($db->error);
+		}
+
+		return $db->insert_id;
+	}
+
+	/** @return array List of requests */
+	public static function getRequests($data)
+	{
+		TokenHelper::assertToken();
+
+		$db = Database::getConnection();
+
+		$result = $db->query("SELECT `Owner`, `Auction`, `Cost`, `PickupLat`, `PickupLon`, `DeliveryLat`, `DeliveryLon` FROM `TransportRequest`");
+		if ($result === false)
+		{
+			throw new \Exception($db->error);
+		}
+
+		$requests = [];
+		while ($row = $result->fetch_assoc())
+		{
+			$requests[] = $row;
+		}
+		return $requests;
+	}
+}

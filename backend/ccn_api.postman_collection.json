@@ -1,0 +1,235 @@
+{
+	"info": {
+		"_postman_id": "fd770e26-46ec-49cc-9eaf-db72e09a5ea6",
+		"name": "Collaborative Carrier Network",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Agent",
+			"item": [
+				{
+					"name": "Register",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"Cmd\": \"register\",\r\n    \"Data\": {\r\n        \"Username\": \"hans\",\r\n        \"Name\": \"Hans Peter\",\r\n        \"Password\": \"hans\",\r\n        \"IsAuctioneer\": false,\r\n        \"Vehicle\": \"Ship_01\",\r\n        \"DepotLat\": 53.891299,\r\n        \"DepotLon\": 8.711086\r\n    }\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{URL}}",
+							"host": [
+								"{{URL}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Login",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"Cmd\": \"login\",\r\n    \"Data\": {\r\n        \"Username\": \"hans\",\r\n        \"Password\": \"hans\"\r\n    }\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{URL}}",
+							"host": [
+								"{{URL}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get agents",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"Cmd\": \"getAgents\",\r\n    \"Token\": \"{{AuthToken}}\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{URL}}",
+							"host": [
+								"{{URL}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get auctioneers",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"Cmd\": \"getAuctioneers\",\r\n    \"Token\": \"{{AuthToken}}\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{URL}}",
+							"host": [
+								"{{URL}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get carriers",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"Cmd\": \"getCarriers\",\r\n    \"Token\": \"{{AuthToken}}\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{URL}}",
+							"host": [
+								"{{URL}}"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "TransportRequest",
+			"item": [
+				{
+					"name": "Add request",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"Cmd\": \"addRequest\",\r\n    \"Token\": \"{{AuthToken}}\",\r\n    \"Data\": [\r\n        {\r\n            \"Agent\": \"chris\",\r\n            \"PickupLat\": {{$randomLatitude}},\r\n            \"PickupLon\": {{$randomLongitude}},\r\n            \"DeliveryLat\": {{$randomLatitude}},\r\n            \"DeliveryLon\": {{$randomLongitude}}\r\n        }\r\n    ]\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{URL}}",
+							"host": [
+								"{{URL}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get requests",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"Cmd\": \"getRequests\",\r\n    \"Token\": \"{{AuthToken}}\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{URL}}",
+							"host": [
+								"{{URL}}"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Get auctions",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"Cmd\": \"getAuctions\",\r\n    \"Token\": \"{{AuthToken}}\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{URL}}",
+					"host": [
+						"{{URL}}"
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "URL",
+			"value": "https://cgi.tu-harburg.de/~ckh1694/index.php",
+			"type": "default"
+		},
+		{
+			"key": "AuthToken",
+			"value": "39426cdc28c5290f625b839848622365",
+			"type": "default"
+		}
+	]
+}
