@@ -1,6 +1,7 @@
 {
 	"java.project.referencedLibraries": [
 		"lib/**/*.jar",
-		"jade/lib/jade.jar"
+		"jade/lib/jade.jar",
+		"gs-ui-swing-2.0.jar"
 	]
 }
