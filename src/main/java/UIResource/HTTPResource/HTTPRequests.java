@@ -45,9 +45,9 @@ public class HTTPRequests {
         }
     }
 
-    public static boolean registerCarrier(String name, String username, String password, float depotX, float depotY) {
+    public static boolean registerCarrier(String name, String username, String password, float depotX, float depotY, float pickupBaserate, float externalTravelCost, float loadBaserate, float internalTravelCost) {
         try {
-            var json = send(RequestBody.registerCarrier(name, username, password, depotX, depotY));
+            var json = send(RequestBody.registerCarrier(name, username, password, depotX, depotY, pickupBaserate, externalTravelCost, loadBaserate, internalTravelCost));
             var success = json.getBoolean("success");
             if (!success) {
                 JSONObject error = json.getJSONObject("error");

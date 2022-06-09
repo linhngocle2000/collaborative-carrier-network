@@ -24,15 +24,20 @@ public class RequestBody {
         return body("register", null, data);
     }
 
-    public static String registerCarrier(String name, String username, String password, float depotX, float depotY) {
+    public static String registerCarrier(String name, String username, String password, float depotX, float depotY,
+            float pickupBaserate, float externalTravelCost, float loadBaserate, float internalTravelCost) {
         JSONObject data = new JSONObject();
         data.put("Username", username);
         data.put("Name", name);
         data.put("Password", password);
         data.put("IsAuctioneer", false);
         data.put("Vehicle", username);
-        data.put("DepotLat", password);
-        data.put("DepotLon", password);
+        data.put("DepotLat", depotX);
+        data.put("DepotLon", depotY);
+        data.put("PickupBaserate", pickupBaserate);
+        data.put("TravelCostPerKM", externalTravelCost);
+        data.put("LoadBaserate", loadBaserate);
+        data.put("InternalTravelCostPerKM", internalTravelCost);
         return body("register", null, data);
     }
 
