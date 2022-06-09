@@ -11,6 +11,9 @@ import java.util.List;
 
 import org.json.*;
 
+import com.graphhopper.jsprit.core.problem.Location;
+import com.graphhopper.jsprit.core.problem.job.Shipment;
+
 import Agent.Agent;
 import Agent.AgentFactory;
 import Agent.AuctioneerAgent;
@@ -154,6 +157,27 @@ public class HTTPRequests {
                 float deliveryX = j.getFloat("DeliveryLat");
                 float deliveryY = j.getFloat("DeliveryLon");
                 result.add(new TransportRequest(id, owner, pickupX, pickupY, deliveryX, deliveryY));
+            });
+            return result;
+        } catch (IOException | InterruptedException e) {
+            e.printStackTrace();
+            lastError = e;
+            return null;
+        }
+    }
+
+    public static List<Shipment> getUserTransportRequests(String username) {
+        try {
+            // Load requests
+            var json = send(RequestBody.getAgent(username, token));
+            var array = json.getJSONArray("data");
+            List<Shipment> result = new ArrayList<Shipment>(array.length());
+            array.forEach(obj -> {
+                JSONObject j = (JSONObject)obj;
+                String id = j.getString("ID");
+                Location pickup = Location.newInstance(j.getFloat("PickupLat"), j.getFloat("PickupLon"));
+                Location delivery = Location.newInstance(j.getFloat("DeliveryLat"), j.getFloat("DeliveryLon"));
+                result.add(Shipment.Builder.newInstance(id).setPickupLocation(pickup).setDeliveryLocation(delivery).build());
             });
             return result;
         } catch (IOException | InterruptedException e) {
