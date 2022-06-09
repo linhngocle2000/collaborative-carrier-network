@@ -3,7 +3,6 @@
 namespace CCN;
 
 use CCN\Util\TokenHelper;
-use Exception;
 
 class Agent
 {
@@ -110,10 +109,10 @@ class Agent
 
 		$db = Database::getConnection();
 		$username = $db->escape_string($data['Username']);
-		$result = $db->query("SELECT `Username`, `Name`, `IsAuctioneer`, `DepotLat`, `DepotLon` FROM `Agent` WHERE `Username` = $username");
+		$result = $db->query("SELECT `Username`, `Name`, `IsAuctioneer`, `DepotLat`, `DepotLon` FROM `Agent` WHERE `Username` = '$username'");
 		if ($result === false || $result->num_rows == 0)
 		{
-			throw new Exception("$username not found");
+			throw new \Exception("$username not found");
 		}
 
 		$row = $result->fetch_assoc();
