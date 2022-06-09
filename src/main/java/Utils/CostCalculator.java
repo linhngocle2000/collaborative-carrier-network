@@ -3,7 +3,6 @@ package Utils;
 import java.util.List;
 
 import com.graphhopper.jsprit.core.problem.Location;
-import com.graphhopper.jsprit.core.problem.job.Shipment;
 import com.graphhopper.jsprit.core.problem.solution.route.VehicleRoute;
 import com.graphhopper.jsprit.core.problem.solution.route.activity.TourActivity;
 import com.graphhopper.jsprit.core.problem.solution.route.activity.TourActivity.JobActivity;
@@ -31,7 +30,7 @@ public class CostCalculator {
    public double revenueSum() {
       double total = 0;
       for (TransportRequest request : requests) {
-         total += profit(request.getShipmentObj());
+         total += profit(request);
       }
       return total;
    }
@@ -40,8 +39,8 @@ public class CostCalculator {
    /**
     * The actual profit for delivering a certain request while on tour
     */
-   public double profit(Shipment request) {
-      return transportCostIn(request.getPickupLocation(), request.getDeliveryLocation()) - transportCostOut(request.getId());
+   public double profit(TransportRequest request) {
+      return transportCostIn(request.getPickup(), request.getDelivery()) - transportCostOut(request.getId());
    }
 
 
