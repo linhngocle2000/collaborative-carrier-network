@@ -1,5 +1,6 @@
 import Agent.Agent;
 import AuctioneerUI.StartAuctionUI;
+import CarrierUI.AdministrationUI;
 import StartUI.LoginUI;
 import StartUI.RegisterUI;
 import StartUI.WelcomeUI;
@@ -29,7 +30,10 @@ public class App {
 
     static public void main(String[] args) {
 
-        welcomeUI = new WelcomeUI();
+        (new AdministrationUI(user)).setVisible(true);
+    }
+
+        /*welcomeUI = new WelcomeUI();
         loginUI = new LoginUI();
         registerUI = new RegisterUI();
         carrierLoginUI = new CarrierLoginUI();
@@ -156,5 +160,5 @@ public class App {
             HTTPRequests.logout();
         });
 
-    }
+    }*/
 }

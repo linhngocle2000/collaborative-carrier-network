@@ -1,22 +1,4 @@
-/*
- * Licensed to GraphHopper GmbH under one or more contributor
- * license agreements. See the NOTICE file distributed with this work for
- * additional information regarding copyright ownership.
- *
- * GraphHopper GmbH licenses this file to you under the Apache License,
- * Version 2.0 (the "License"); you may not use this file except in
- * compliance with the License. You may obtain a copy of the License at
- *
- *       http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
 package Utils;
-
 
 import com.graphhopper.jsprit.core.problem.VehicleRoutingProblem;
 import com.graphhopper.jsprit.core.problem.job.Activity;
@@ -43,70 +25,70 @@ import java.awt.*;
 
 public class VisualView {
 
-   private String STYLESHEET =   "node {" +
-                                 "	size: 10px, 10px;" +
-                                 "  fill-color: green;" +
-                                 "	text-alignment: at-right;" +
-                                 " 	stroke-mode: plain;" +
-                                 "	stroke-color: #999;" +
-                                 "	stroke-width: 1.0;" +
-                                 "	text-font: couriernew;" +
-                                 " 	text-offset: 2,-5;" +
-                                 "	text-size: 8;" +
-                                 "}" +
-                                 "node.pickup {" +
-                                 " 	fill-color: green;" +
-                                 "}" +
-                                 "node.delivery {" +
-                                 " 	fill-color: blue;" +
-                                 "}" +
-                                 "node.pickupInRoute {" +
-                                 "	fill-color: green;" +
-                                 " 	stroke-mode: plain;" +
-                                 "	stroke-color: #333;" +
-                                 "  stroke-width: 2.0;" +
-                                 "}" +
-                                 "node.deliveryInRoute {" +
-                                 " 	fill-color: blue;" +
-                                 " 	stroke-mode: plain;" +
-                                 "	stroke-color: #333;" +
-                                 "  stroke-width: 2.0;" +
-                                 "}" +
-                                 "node.depot {" +
-                                 " 	fill-color: red;" +
-                                 "	size: 10px, 10px;" +
-                                 " 	shape: box;" +
-                                 "}" +
-                                 "node.removed {" +
-                                 " 	fill-color: red;" +
-                                 "	size: 10px, 10px;" +
-                                 " 	stroke-mode: plain;" +
-                                 "	stroke-color: #333;" +
-                                 "  stroke-width: 2.0;" +
-                                 "}" +
-                                 "edge {" +
-                                 "	fill-color: #333;" +
-                                 "	arrow-size: 6px,3px;" +
-                                 "}" +
-                                 "edge.shipment {" +
-                                 "	fill-color: #999;" +
-                                 "	arrow-size: 6px,3px;" +
-                                 "}";
-    
-   static Graph createMultiGraph(String name, String style) {
-      Graph g = new MultiGraph(name);
-      g.addAttribute("ui.quality");
-      g.addAttribute("ui.antialias");
-      g.addAttribute("ui.stylesheet", style);
-      return g;
-   }
+    private String STYLESHEET =   "node {" +
+            "	size: 10px, 10px;" +
+            "  fill-color: green;" +
+            "	text-alignment: at-right;" +
+            " 	stroke-mode: plain;" +
+            "	stroke-color: #999;" +
+            "	stroke-width: 1.0;" +
+            "	text-font: couriernew;" +
+            " 	text-offset: 2,-5;" +
+            "	text-size: 8;" +
+            "}" +
+            "node.pickup {" +
+            " 	fill-color: green;" +
+            "}" +
+            "node.delivery {" +
+            " 	fill-color: blue;" +
+            "}" +
+            "node.pickupInRoute {" +
+            "	fill-color: green;" +
+            " 	stroke-mode: plain;" +
+            "	stroke-color: #333;" +
+            "  stroke-width: 2.0;" +
+            "}" +
+            "node.deliveryInRoute {" +
+            " 	fill-color: blue;" +
+            " 	stroke-mode: plain;" +
+            "	stroke-color: #333;" +
+            "  stroke-width: 2.0;" +
+            "}" +
+            "node.depot {" +
+            " 	fill-color: red;" +
+            "	size: 10px, 10px;" +
+            " 	shape: box;" +
+            "}" +
+            "node.removed {" +
+            " 	fill-color: red;" +
+            "	size: 10px, 10px;" +
+            " 	stroke-mode: plain;" +
+            "	stroke-color: #333;" +
+            "  stroke-width: 2.0;" +
+            "}" +
+            "edge {" +
+            "	fill-color: #333;" +
+            "	arrow-size: 6px,3px;" +
+            "}" +
+            "edge.shipment {" +
+            "	fill-color: #999;" +
+            "	arrow-size: 6px,3px;" +
+            "}";
 
-   private ViewPanel createEmbeddedView(Graph graph) {
-      Viewer viewer = new Viewer(graph, Viewer.ThreadingModel.GRAPH_IN_ANOTHER_THREAD);
-      ViewPanel view = viewer.addDefaultView(false);
-      view.setPreferredSize(new Dimension((int) (570 * scaling), (int) (450 * scaling)));
-      return view;
-   }
+    static Graph createMultiGraph(String name, String style) {
+        Graph g = new MultiGraph(name);
+        g.addAttribute("ui.quality");
+        g.addAttribute("ui.antialias");
+        g.addAttribute("ui.stylesheet", style);
+        return g;
+    }
+
+    private ViewPanel createEmbeddedView(Graph graph) {
+        Viewer viewer = new Viewer(graph, Viewer.ThreadingModel.GRAPH_IN_ANOTHER_THREAD);
+        ViewPanel view = viewer.addDefaultView(false);
+        view.setPreferredSize(new Dimension((int) (570 * scaling), (int) (450 * scaling)));
+        return view;
+    }
 
     public enum Label {
         NO_LABEL, ID, JOB_NAME, ARRIVAL_TIME, DEPARTURE_TIME, ACTIVITY
@@ -198,6 +180,7 @@ public class VisualView {
     }
 
     private JPanel createGraphPanel(ViewPanel view) {
+        JPanel tourPanel = createTourPanel();
         JPanel graphPanel = new JPanel();
         graphPanel.setLayout(new BoxLayout(graphPanel, BoxLayout.Y_AXIS));
         graphPanel.setPreferredSize(new Dimension((int) (570 * scaling), (int) (460 * scaling)));
@@ -207,10 +190,11 @@ public class VisualView {
 
         graphStreamPanel.add(view);
         graphPanel.add(graphStreamPanel);
-        
+        graphPanel.add(tourPanel);
+
         return graphPanel;
     }
-   
+
     private void render(Graph g, ViewPanel view) {
         if (center != null) {
             view.resizeFrame(view.getWidth(), view.getHeight());
@@ -235,6 +219,59 @@ public class VisualView {
                 routeId++;
             }
         }
+    }
+
+    private JPanel createTourPanel() {
+        int width = 570;
+        int height = 100;
+
+        JPanel panel = new JPanel();
+        panel.setPreferredSize(new Dimension((int) (width * scaling), (int) (height * scaling)));
+
+        JPanel subpanel = new JPanel();
+        subpanel.setLayout(new FlowLayout());
+        subpanel.setPreferredSize(new Dimension((int) (550 * scaling), (int) (100 * scaling)));
+        subpanel.setBorder(BorderFactory.createLineBorder(Color.LIGHT_GRAY, 1));
+
+        Font font = Font.decode("couriernew");
+        int i = 0;
+        String tour = "<HTML>";
+        int j = 0;
+        for (VehicleRoute route : solution.getRoutes()) {
+            if (i==0) {
+                tour += "[Start] (" + route.getVehicle().getStartLocation().getCoordinate().getX() + "," + route.getVehicle().getStartLocation().getCoordinate().getY()+")";
+                i = 1;
+                j++;
+            }
+
+            for (TourActivity act : route.getActivities()) {
+                tour += " \u2192 ";
+                if (act.getName().equals("pickupShipment")) {
+                    tour += "[Pickup] ("+ act.getLocation().getCoordinate().getX()+","+act.getLocation().getCoordinate().getY()+")";
+                    j++;
+                } else {
+                    tour += "[Deliver] ("+ act.getLocation().getCoordinate().getX()+","+act.getLocation().getCoordinate().getY()+")";
+                    j++;
+                }
+            }
+
+        }
+        tour += "</HTML>";
+
+
+        JTextPane tourTA = new JTextPane();
+        tourTA.setEditable(false);
+        tourTA.setForeground(Color.BLACK);
+        tourTA.setFont(font);
+        tourTA.setContentType("text/html");
+        tourTA.setText(tour);
+        JScrollPane jsp = new JScrollPane(tourTA);
+        jsp.setMinimumSize(new Dimension(550, 100));
+        jsp.setPreferredSize(new Dimension(550, 100));
+
+        panel.add(jsp);
+
+        return panel;
     }
 
     private void alignCamera(View view) {
@@ -341,3 +378,6 @@ public class VisualView {
     }
 
 }
+
+
+

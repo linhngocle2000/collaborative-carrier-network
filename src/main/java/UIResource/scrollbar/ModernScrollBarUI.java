@@ -14,7 +14,7 @@ import javax.swing.plaf.basic.BasicScrollBarUI;
 
 public class ModernScrollBarUI extends BasicScrollBarUI {
 
-    private int THUMB_SIZE = 100;
+    private int THUMB_SIZE;
 
     protected void setThumbSize(int elems) {
         THUMB_SIZE = (int)(((double)12/(double)elems)*(double)303);
