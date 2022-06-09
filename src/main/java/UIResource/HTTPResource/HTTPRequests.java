@@ -26,29 +26,13 @@ public class HTTPRequests {
 
     // Agent
 
-    public static boolean registerAuctioneer(String name, String username, String password, boolean isAuctioneer) {
+    public static boolean register(String name, String username, String password, boolean isAuctioneer) {
         try {
-            var json = send(RequestBody.registerAuctioneer(name, username, password, isAuctioneer));
+            var json = send(RequestBody.register(name, username, password, isAuctioneer));
             var success = json.getBoolean("success");
             if (!success) {
                 // TODO: Find a better way to send error message to UI
-                lastError = new Exception(json.getJSONObject("error").getString("message"));
-            }
-            return success;
-        } catch (IOException | InterruptedException e) {
-            lastError = e;
-            e.printStackTrace();
-            return false;
-        }
-    }
-
-    public static boolean registerCarrier(String name, String username, String password, boolean isAuctioneer, double depotX, double depotY) {
-        try {
-            var json = send(RequestBody.registerCarrier(name, username, password, isAuctioneer, depotX, depotY));
-            var success = json.getBoolean("success");
-            if (!success) {
-                // TODO: Find a better way to send error message to UI
-                lastError = new Exception(json.getJSONObject("error").getString("message"));
+                lastError = new Exception(json.getString("message"));
             }
             return success;
         } catch (IOException | InterruptedException e) {
@@ -150,10 +134,12 @@ public class HTTPRequests {
         }
     }
 
-    public static List<TransportRequest> getTransportRequestsOf(String username) {
+    public static List<TransportRequest> getAllTransportRequests() {
         try {
             // Hash all agents to populate owner of transport requests
-            Agent owner = getAgent(username);
+            var map = new HashMap<String, Agent>();
+            var agents = getAllAgents();
+            agents.forEach(agent -> map.put(agent.getUsername(), agent));
 
             // Load requests
             var json = send(RequestBody.getAuctioneerAgents(token));
@@ -161,14 +147,13 @@ public class HTTPRequests {
             List<TransportRequest> result = new ArrayList<TransportRequest>(array.length());
             array.forEach(obj -> {
                 JSONObject j = (JSONObject)obj;
-                if (j.getString("Owner").equals(username)) {
-                    int id = j.getInt("ID");
-                    float pickupX = j.getFloat("PickupLat");
-                    float pickupY = j.getFloat("PickupLon");
-                    float deliveryX = j.getFloat("DeliveryLat");
-                    float deliveryY = j.getFloat("DeliveryLon");
-                    result.add(new TransportRequest(id, owner, pickupX, pickupY, deliveryX, deliveryY));
-                }
+                int id = j.getInt("ID");
+                Agent owner = map.get(j.getString("Owner"));
+                float pickupX = j.getFloat("PickupLat");
+                float pickupY = j.getFloat("PickupLon");
+                float deliveryX = j.getFloat("DeliveryLat");
+                float deliveryY = j.getFloat("DeliveryLon");
+                result.add(new TransportRequest(id, owner, pickupX, pickupY, deliveryX, deliveryY));
             });
             return result;
         } catch (IOException | InterruptedException e) {

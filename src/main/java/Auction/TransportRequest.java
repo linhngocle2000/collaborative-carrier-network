@@ -1,5 +1,8 @@
 package Auction;
 
+import com.graphhopper.jsprit.core.problem.Location;
+import com.graphhopper.jsprit.core.problem.job.Shipment;
+
 import Agent.Agent;
 
 public class TransportRequest {
@@ -21,8 +24,20 @@ public class TransportRequest {
 
 	// Getters
 
-	public int getId() {
-		return id;
+	public Shipment getShipmentObj() {
+      return Shipment.Builder.newInstance(Integer.toString(id)).setPickupLocation(getPickup()).setDeliveryLocation(getDelivery()).build();
+	}
+
+	public Location getPickup() {
+		return Location.newInstance(pickupX, pickupY);
+	}
+
+	public Location getDelivery() {
+		return Location.newInstance(deliveryX, deliveryY);
+	}
+
+	public String getId() {
+		return Integer.toString(id);
 	}
 	public Agent getOwner() {
 		return owner;
