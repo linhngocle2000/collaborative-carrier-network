@@ -152,7 +152,7 @@ public class TourPlanning {
     */
    public double getProfit(TransportRequest request) {
       setCost();
-      return cost.profit(request.getShipmentObj());
+      return cost.profit(request);
    }
 
 
