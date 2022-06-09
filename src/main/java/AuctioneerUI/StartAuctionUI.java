@@ -1,6 +1,6 @@
 package AuctioneerUI;
 
-import UIResource.AuctionRequestData;
+import UIResource.TableData;
 
 import UIResource.UIData;
 import UIResource.scrollbar.ScrollBarCustom;
@@ -10,11 +10,8 @@ import javax.swing.border.Border;
 import javax.swing.border.CompoundBorder;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.MatteBorder;
-import javax.swing.event.ListSelectionEvent;
-import javax.swing.event.ListSelectionListener;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.TableCellRenderer;
-import javax.swing.table.TableColumn;
 import javax.swing.table.TableColumnModel;
 import java.awt.*;
 
@@ -141,11 +138,7 @@ public class StartAuctionUI extends JFrame {
         constraints.insets = new Insets(10, 0, 0, 0);
         topPanel.add(tableHeader, constraints);
 
-        JTable table = new JTable(data, AuctionRequestData.getColumnNames()) {
-            private Border outside = new MatteBorder(1, 0, 1, 0, Color.BLACK);
-            private Border inside = new EmptyBorder(0, 1, 0, 1);
-            private Border highlight = new CompoundBorder(outside, inside);
-
+        JTable table = new JTable(data, TableData.getAuctionColumnNames()) {
             public Component prepareRenderer(TableCellRenderer renderer, int row, int column)
             {
                 Component c = super.prepareRenderer(renderer, row, column);
@@ -154,7 +147,7 @@ public class StartAuctionUI extends JFrame {
                 // Add a border to the selected row
 
                 if (isRowSelected(row)) {
-                    jc.setBorder(highlight);
+                    jc.setBorder(emptyBorder);
                 }
 
                 return c;
@@ -162,6 +155,7 @@ public class StartAuctionUI extends JFrame {
         };
 
         table.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+        table.setShowHorizontalLines(false);
 
         table.setRowHeight(25);
         table.setIntercellSpacing(new Dimension(0, 0));
@@ -255,7 +249,6 @@ public class StartAuctionUI extends JFrame {
         getContentPane().add(rootPanel, BorderLayout.CENTER);
         getContentPane().add(topPanel, BorderLayout.NORTH);
         getContentPane().add(bottomPanel, BorderLayout.SOUTH);
-        getContentPane().setBackground(background);
 
         pack();
 

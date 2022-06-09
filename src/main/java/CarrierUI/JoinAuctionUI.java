@@ -29,7 +29,7 @@ public class JoinAuctionUI extends JFrame {
         setMinimumSize(new Dimension(width, height));
         setLocationRelativeTo(null);
 
-        setDefaultCloseOperation(EXIT_ON_CLOSE);
+        setDefaultCloseOperation(HIDE_ON_CLOSE);
 
         JPanel rootPanel = new JPanel();
         rootPanel.setLayout(new GridBagLayout());
