@@ -12,7 +12,7 @@ import java.text.SimpleDateFormat;
 public class AuctionUI extends JFrame {
 
     private static JLabel trReq, owner, startPrice, lowestBid,
-            currentBidder, remainingTimeLabel, iteration;
+            currentBidder, iteration;
 
     private Color background = UIData.getBackground();
     private int width = UIData.getWidth();

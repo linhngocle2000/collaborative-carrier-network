@@ -9,7 +9,7 @@ import java.awt.*;
 public class RegisterUI extends JFrame {
 
     private static JButton backBtn, registerBtn;
-    private JTextField nameText, trText, usernameText, baseRateAText, baseRateBText, baseInRateText;
+    private JTextField nameText, trText, usernameText, baseRateAText, basePriceText, baseRateBText, baseInRateText, depotLonText, depotLatText;
     private JPasswordField passwordText;
     private JLabel errorLabel,successLabel;
     private JComboBox<String> roleOptions;
@@ -26,7 +26,7 @@ public class RegisterUI extends JFrame {
 
         setTitle("CCN");
         setSize(480, 530);
-        setMinimumSize(new Dimension(480, 530));
+        setMinimumSize(new Dimension(500, 620));
         setLocationRelativeTo(null);
 
         setDefaultCloseOperation(EXIT_ON_CLOSE);
@@ -49,8 +49,6 @@ public class RegisterUI extends JFrame {
         GridBagConstraints constraints = new GridBagConstraints();
         constraints.gridx = 0;
         constraints.gridy = 0;
-        constraints.gridwidth = 1;
-        constraints.gridheight = 1;
         constraints.weightx = constraints.weighty = 1.0;
         constraints.anchor = GridBagConstraints.NORTHWEST;
         constraints.insets = new java.awt.Insets(0, 20, 10, 0);
@@ -64,7 +62,7 @@ public class RegisterUI extends JFrame {
         constraints.gridy = 0;
         constraints.gridwidth = GridBagConstraints.REMAINDER;
         constraints.anchor = GridBagConstraints.CENTER;
-        constraints.insets = new java.awt.Insets(10, 3, 35, 3);
+        constraints.insets = new java.awt.Insets(10, 3, 10, 3);
         rootPanel.add(emptyLabel, constraints);
 
         JLabel loginLabel = new JLabel("Registration");
@@ -120,7 +118,6 @@ public class RegisterUI extends JFrame {
         constraints.insets = new java.awt.Insets(15, 0, 0, 0);
         rootPanel.add(usernamePanel, constraints);
 
-        // Join name text field
         usernameText = new JTextField();
         usernameText.setPreferredSize(new Dimension(160, 22));
 
@@ -180,11 +177,15 @@ public class RegisterUI extends JFrame {
                 baseRateAText.setEditable(true);
                 baseRateBText.setEditable(true);
                 baseInRateText.setEditable(true);
+                depotLatText.setEditable(true);
+                depotLonText.setEditable(true);
             } else {
                 trText.setEditable(false);
                 baseRateAText.setEditable(false);
                 baseRateBText.setEditable(false);
                 baseInRateText.setEditable(false);
+                depotLatText.setEditable(false);
+                depotLonText.setEditable(false);
             }
         });
 
@@ -241,17 +242,6 @@ public class RegisterUI extends JFrame {
         JLabel baseRateALabel = new JLabel("Base rate A (\u20AC)");
         baseRateALabel.setHorizontalAlignment(SwingConstants.LEFT);
 
-        baseRateAText = new JTextField();
-        baseRateAText.setPreferredSize(new Dimension(105, 22));
-        baseRateAText.setEditable(false);
-
-        constraints = new GridBagConstraints();
-        constraints.gridx = 0;
-        constraints.gridy = 9;
-        constraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
-        constraints.insets = new java.awt.Insets(0, 5, 0, 0);
-        rootPanel.add(baseRateAText, constraints);
-
         JButton infoBtn2 = new JButton();
         infoBtn2.setText("\u24D8");
         infoBtn2.setFocusPainted(false);
@@ -261,8 +251,7 @@ public class RegisterUI extends JFrame {
 
         infoBtn2.setFont(font.deriveFont(Font.BOLD, 14));
         infoBtn2.setForeground(new Color(5, 170, 255, 255));
-        infoBtn2.setToolTipText("<HTML>Base rate to reach<br>the pickup point");
-        ToolTipManager.sharedInstance().setDismissDelay(Integer.MAX_VALUE);
+        infoBtn2.setToolTipText("<HTML>Base rate to reach<br>the pickup point</HTML>");
 
         JPanel panel2 = new JPanel();
         panel2.add(baseRateALabel);
@@ -276,20 +265,45 @@ public class RegisterUI extends JFrame {
         constraints.insets = new java.awt.Insets(15, 0, 0, 0);
         rootPanel.add(panel2, constraints);
 
-        JLabel baseRateBLabel = new JLabel("Base rate B (\u20AC)");
-        baseRateBLabel.setHorizontalAlignment(SwingConstants.LEFT);
-
-        baseRateBText = new JTextField();
-        baseRateBText.setPreferredSize(new Dimension(105, 22));
-        baseRateBText.setEditable(false);
+        baseRateAText = new JTextField();
+        baseRateAText.setPreferredSize(new Dimension(160, 22));
+        baseRateAText.setEditable(false);
 
         constraints = new GridBagConstraints();
         constraints.gridx = 0;
         constraints.gridy = 9;
-        constraints.gridwidth = 2;
         constraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
-        constraints.insets = new java.awt.Insets(0, 120, 0, 0);
-        rootPanel.add(baseRateBText, constraints);
+        constraints.insets = new java.awt.Insets(0, 5, 0, 0);
+        rootPanel.add(baseRateAText, constraints);
+
+        JLabel basePriceLabel = new JLabel("Price (\u20AC/km)");
+        basePriceLabel.setHorizontalAlignment(SwingConstants.LEFT);
+
+        JPanel panel5 = new JPanel();
+        panel5.add(basePriceLabel);
+        panel5.setBackground(background);
+
+        constraints = new GridBagConstraints();
+        constraints.gridx = 0;
+        constraints.gridy = 10;
+        constraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
+        constraints.insets = new java.awt.Insets(15, 0, 0, 0);
+        rootPanel.add(panel5, constraints);
+
+        basePriceText = new JTextField();
+        basePriceText.setPreferredSize(new Dimension(160, 22));
+        basePriceText.setEditable(false);
+
+        constraints = new GridBagConstraints();
+        constraints.gridx = 0;
+        constraints.gridy = 11;
+        constraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
+        constraints.insets = new java.awt.Insets(0, 5, 0, 0);
+        rootPanel.add(basePriceText, constraints);
+
+
+        JLabel baseRateBLabel = new JLabel("Base rate B (\u20AC)");
+        baseRateBLabel.setHorizontalAlignment(SwingConstants.LEFT);
 
         JButton infoBtn3 = new JButton();
         infoBtn3.setText("\u24D8");
@@ -297,11 +311,9 @@ public class RegisterUI extends JFrame {
 
         infoBtn3.setBorder(emptyBorder);
         infoBtn3.setBackground(background);
-
         infoBtn3.setFont(font.deriveFont(Font.BOLD, 14));
         infoBtn3.setForeground(new Color(5, 170, 255, 255));
-        infoBtn3.setToolTipText("<HTML>Base rate for (un-)loading");
-        ToolTipManager.sharedInstance().setDismissDelay(Integer.MAX_VALUE);
+        infoBtn3.setToolTipText("<HTML>Base rate for (un-)loading</HTML>");
 
         JPanel panel3 = new JPanel();
         panel3.add(baseRateBLabel);
@@ -309,51 +321,110 @@ public class RegisterUI extends JFrame {
         panel3.setBackground(background);
 
         constraints = new GridBagConstraints();
-        constraints.gridx = 0;
+        constraints.gridx = 1;
         constraints.gridy = 8;
-        constraints.gridwidth = 2;
         constraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
-        constraints.insets = new java.awt.Insets(15, 115, 0, 0);
+        constraints.insets = new java.awt.Insets(15, 10, 0, 0);
         rootPanel.add(panel3, constraints);
+
+        baseRateBText = new JTextField();
+        baseRateBText.setPreferredSize(new Dimension(160, 22));
+        baseRateBText.setEditable(false);
+
+        constraints = new GridBagConstraints();
+        constraints.gridx = 1;
+        constraints.gridy = 9;
+        constraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
+        constraints.insets = new java.awt.Insets(0, 15, 0, 0);
+        rootPanel.add(baseRateBText, constraints);
 
         JLabel baseInRateLabel = new JLabel("Internal rate (\u20AC/km)");
         baseInRateLabel.setHorizontalAlignment(SwingConstants.LEFT);
-
-        baseInRateText = new JTextField();
-        baseInRateText.setPreferredSize(new Dimension(105, 22));
-        baseInRateText.setEditable(false);
-
-        constraints = new GridBagConstraints();
-        constraints.gridx = 0;
-        constraints.gridy = 9;
-        constraints.gridwidth = 2;
-        constraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
-        constraints.insets = new java.awt.Insets(0, 235, 0, 0);
-        rootPanel.add(baseInRateText, constraints);
 
         JPanel panel4 = new JPanel();
         panel4.add(baseInRateLabel);
         panel4.setBackground(background);
 
         constraints = new GridBagConstraints();
-        constraints.gridx = 0;
-        constraints.gridy = 8;
-        constraints.gridwidth = 2;
+        constraints.gridx = 1;
+        constraints.gridy = 10;
         constraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
-        constraints.insets = new java.awt.Insets(15, 230, 0, 0);
+        constraints.insets = new java.awt.Insets(15, 10, 0, 0);
         rootPanel.add(panel4, constraints);
+
+        baseInRateText = new JTextField();
+        baseInRateText.setPreferredSize(new Dimension(160, 22));
+        baseInRateText.setEditable(false);
+
+        constraints = new GridBagConstraints();
+        constraints.gridx = 1;
+        constraints.gridy = 11;
+        constraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
+        constraints.insets = new java.awt.Insets(0, 15, 0, 0);
+        rootPanel.add(baseInRateText, constraints);
+
+
+        JLabel depotLatLabel = new JLabel("Depot latitude");
+        depotLatLabel.setHorizontalAlignment(SwingConstants.LEFT);
+
+        JPanel depotLatPanel = new JPanel();
+        depotLatPanel.add(depotLatLabel);
+        depotLatPanel.setBackground(background);
+
+        constraints = new GridBagConstraints();
+        constraints.gridx = 0;
+        constraints.gridy = 12;
+        constraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
+        constraints.insets = new java.awt.Insets(15, 0, 0, 0);
+        rootPanel.add(depotLatPanel, constraints);
+
+        depotLatText = new JTextField();
+        depotLatText.setPreferredSize(new Dimension(160, 22));
+        depotLatText.setEditable(false);
+
+        constraints = new GridBagConstraints();
+        constraints.gridx = 0;
+        constraints.gridy = 13;
+        constraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
+        constraints.insets = new java.awt.Insets(0, 5, 0, 0);
+        rootPanel.add(depotLatText, constraints);
+
+
+        JLabel depotLonLabel = new JLabel("Depot longitude");
+        depotLonLabel.setHorizontalAlignment(SwingConstants.LEFT);
+
+        JPanel depotLonPanel = new JPanel();
+        depotLonPanel.add(depotLonLabel);
+        depotLonPanel.setBackground(background);
+
+        constraints = new GridBagConstraints();
+        constraints.gridx = 1;
+        constraints.gridy = 12;
+        constraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
+        constraints.insets = new java.awt.Insets(15, 10, 0, 0);
+        rootPanel.add(depotLonPanel, constraints);
+
+        depotLonText = new JTextField();
+        depotLonText.setPreferredSize(new Dimension(160, 22));
+        depotLonText.setEditable(false);
+
+        constraints = new GridBagConstraints();
+        constraints.gridx = 1;
+        constraints.gridy = 13;
+        constraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
+        constraints.insets = new java.awt.Insets(0, 15, 0, 0);
+        rootPanel.add(depotLonText, constraints);
 
         registerBtn = new JButton();
         registerBtn.setText("Register");
         registerBtn.setFocusPainted(false);
 
-
         constraints = new GridBagConstraints();
         constraints.gridx = 0;
-        constraints.gridy = 11;
+        constraints.gridy = 14;
         constraints.gridwidth = GridBagConstraints.REMAINDER;
         constraints.anchor = GridBagConstraints.CENTER;
-        constraints.insets = new java.awt.Insets(20, 5, 0, 10);
+        constraints.insets = new java.awt.Insets(25, 5, 0, 10);
         rootPanel.add(registerBtn, constraints);
 
         errorLabel = new JLabel();
@@ -370,10 +441,10 @@ public class RegisterUI extends JFrame {
 
         constraints = new GridBagConstraints();
         constraints.gridx = 0;
-        constraints.gridy = 10;
+        constraints.gridy = 15;
         constraints.gridwidth = GridBagConstraints.REMAINDER;
         constraints.anchor = java.awt.GridBagConstraints.CENTER;
-        constraints.insets = new java.awt.Insets(20, 0, 0, 0);
+        constraints.insets = new java.awt.Insets(15, 0, 0, 0);
         rootPanel.add(errorLabel, constraints);
         rootPanel.add(successLabel, constraints);
 
@@ -403,8 +474,9 @@ public class RegisterUI extends JFrame {
         baseRateBText.setEditable(false);
         baseRateAText.setEditable(false);
         baseInRateText.setEditable(false);
+        depotLonText.setEditable(false);
+        depotLatText.setEditable(false);
         registerBtn.setEnabled(false);
-
     }
 
     public String getNameText() {
@@ -417,6 +489,16 @@ public class RegisterUI extends JFrame {
 
     public String getPasswordText() {
         return new String(passwordText.getPassword());
+    }
+
+    public double getDepotLatText() {
+        String s = depotLatText.getText().trim();
+        return Double.parseDouble(s);
+    }
+
+    public double getDepotLonText() {
+        String s = depotLonText.getText().trim();
+        return Double.parseDouble(s);
     }
 
     public boolean isAuctioneer() {
@@ -435,7 +517,10 @@ public class RegisterUI extends JFrame {
                     !trText.getText().trim().equals("") &&
                             !baseRateAText.getText().trim().equals("") &&
                             !baseRateBText.getText().trim().equals("") &&
-                            !baseInRateText.getText().trim().equals("");
+                            !baseInRateText.getText().trim().equals("") &&
+                            !basePriceText.getText().trim().equals("") &&
+                            !depotLatText.getText().trim().equals("") &&
+                            !depotLonText.getText().trim().equals("");
         }
     }
 
@@ -453,15 +538,21 @@ public class RegisterUI extends JFrame {
         String price1 = baseRateAText.getText().trim();
         String price2 = baseRateBText.getText().trim();
         String price3 = baseInRateText.getText().trim();
+        String price4 = basePriceText.getText().trim();
         return price1.matches(regex) &&
                 price2.matches(regex) &&
-                price3.matches(regex);
+                price3.matches(regex) &&
+                price4.matches(regex);
+    }
+
+    public boolean verifyDepotInput() {
+        String regex = "^-?[1-9][0-9]*?(\\.[0-9]+?)?$";
+        String depotX = depotLatText.getText().trim();
+        String depotY = depotLonText.getText().trim();
+        return depotX.matches(regex) && depotY.matches(regex);
     }
 
     public void showSuccessLabel() {
         successLabel.setVisible(true);
     }
-
-
-
 }

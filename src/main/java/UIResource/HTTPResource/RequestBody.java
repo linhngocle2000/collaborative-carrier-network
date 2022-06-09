@@ -15,12 +15,24 @@ public class RequestBody {
         return body("login", null, data);
     }
 
-    public static String register(String name, String username, String password, boolean isAuctioneer) {
+    public static String registerAuctioneer(String name, String username, String password, boolean isAuctioneer) {
         JSONObject data = new JSONObject();
         data.put("Username", username);
         data.put("Name", name);
         data.put("Password", password);
         data.put("IsAuctioneer", isAuctioneer);
+        return body("register", null, data);
+    }
+
+    public static String registerCarrier(String name, String username, String password, boolean isAuctioneer, double depotX, double depotY) {
+        JSONObject data = new JSONObject();
+        data.put("Username", username);
+        data.put("Name", name);
+        data.put("Password", password);
+        data.put("IsAuctioneer", isAuctioneer);
+        data.put("Vehicle", username);
+        data.put("DepotLat", depotX);
+        data.put("DepotLon", depotY);
         return body("register", null, data);
     }
 

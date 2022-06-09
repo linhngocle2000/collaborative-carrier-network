@@ -161,7 +161,7 @@ public class StartAuctionUI extends JFrame {
             }
         };
 
-        table.changeSelection(0, 0, false, false);
+        table.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 
         table.setRowHeight(25);
         table.setIntercellSpacing(new Dimension(0, 0));
