@@ -23,252 +23,252 @@ import java.util.List;
 import javax.swing.JPanel;
 
 public class TourPlanning {
-    private final CarrierAgent agent;
+   private final CarrierAgent agent;
 
-    private Location depot;
+   private Location depot;
 
-    private double costPerDistance;
-    private double fixedCost;
-    private double internalCost;
-    private double loadingCost;
+   private double costPerDistance;
+   private double fixedCost;
+   private double internalCost;
+   private double loadingCost;
+   
+   private VehicleImpl vehicle;
 
-    private VehicleImpl vehicle;
+   private VehicleRoutingProblem problem;
 
-    private VehicleRoutingProblem problem;
+   private VehicleRoutingProblemSolution bestSolution;
 
-    private VehicleRoutingProblemSolution bestSolution;
+   private List<TransportRequest> requests;
 
-    private List<TransportRequest> requests;
+   private CostCalculator cost;
 
-    private CostCalculator cost;
-
-
-    // // Initial a tour with depot location and username or username
-    // public TourPlanning(Location depot, String username) {
-    //    this.depot = depot;
-    //    this.username = username;
-    // }
-
-
-    /**
-     * Initial a tour with agent ID
-     */
-    public TourPlanning(CarrierAgent agent) {
-        this.agent = agent;
-        setDepot(agent.getDepotX(), agent.getDepotY());
-        // this.costPerDistance = agent.getCostPerDistance();
-        // this.fixedCost = agent.getFixedCost();
-        // this.internalCost = agent.getInternalCost();
-        // this.loadingCost = agent.getLoadingCost();
-        refreshRequests();
-    }
+   
+   // // Initial a tour with depot location and username or username
+   // public TourPlanning(Location depot, String username) {
+   //    this.depot = depot;
+   //    this.username = username;
+   // }
 
 
-    /**
-     * Refresh list of request
-     */
-    public void refreshRequests() {
-        this.requests = HTTPRequests.getTransportRequestsOfAgent(agent);
-    }
+   /**
+    * Initial a tour with agent ID
+    */
+   public TourPlanning(CarrierAgent agent) {
+      this.agent = agent;
+      setDepot(agent.getDepotX(), agent.getDepotY());
+      // this.costPerDistance = agent.getCostPerDistance();
+      // this.fixedCost = agent.getFixedCost();
+      // this.internalCost = agent.getInternalCost();
+      // this.loadingCost = agent.getLoadingCost();
+      refreshRequests();
+   }
 
 
-    /**
-     * Add new request to request list of current tour
-     */
-    public void addRequest(TransportRequest request) {
-        requests.add(request);
-    }
+   /**
+    * Refresh list of request
+    */
+   public void refreshRequests() {
+      this.requests = HTTPRequests.getTransportRequestsOfAgent(agent);
+   }
 
 
-    /**
-     * Visualize the optimal tour base on current list of request
-     */
-    public JPanel visualize() {
-        tourOptimize();
-        return new VisualView(problem, bestSolution).display();
-    }
+   /**
+    * Add new request to request list of current tour
+    */
+   public void addRequest(TransportRequest request) {
+      requests.add(request);
+   }
 
 
-    /**
-     * Tour optimize
-     */
-    private void tourOptimize() {
-        vehicleRegister();
-        setProblem();
-        setBestSolution();
-    }
+   /**
+    * Visualize the optimal tour base on current list of request
+    */
+   public JPanel visualize() {
+      tourOptimize();
+      return new VisualView(problem, bestSolution).display();
+   }
 
 
-    /**
-     * Build a vehicle with vehicle type, capacity, username and set it to depot location
-     */
-    private void vehicleRegister() {
-
-        final int WEIGHT_INDEX = 0;
-        VehicleTypeImpl.Builder vehicleTypeBuilder = VehicleTypeImpl.Builder.newInstance("MiniCooper").addCapacityDimension(WEIGHT_INDEX, 2);
-        VehicleType vehicleType = vehicleTypeBuilder.build();
-
-        Builder vehicleBuilder = VehicleImpl.Builder.newInstance(agent.getUsername());
-        vehicleBuilder.setStartLocation(depot);
-        vehicleBuilder.setType(vehicleType);
-        vehicle = vehicleBuilder.build();
-    }
+   /**
+    * Tour optimize
+    */
+   private void tourOptimize() {
+      vehicleRegister();
+      setProblem();
+      setBestSolution();
+   }
 
 
-    /**
-     * Setup VRP
-     */
-    private void setProblem() {
-        VehicleRoutingProblem.Builder vrpBuilder = VehicleRoutingProblem.Builder.newInstance();
-        vrpBuilder.addVehicle(vehicle);
-        for (TransportRequest request : requests) {
-            vrpBuilder.addJob(request.getShipmentObj());
-        }
-        problem = vrpBuilder.build();
-    }
+   /**
+    * Build a vehicle with vehicle type, capacity, username and set it to depot location
+    */
+   private void vehicleRegister() {
+      
+		final int WEIGHT_INDEX = 0;
+		VehicleTypeImpl.Builder vehicleTypeBuilder = VehicleTypeImpl.Builder.newInstance("MiniCooper").addCapacityDimension(WEIGHT_INDEX, 2);
+		VehicleType vehicleType = vehicleTypeBuilder.build();
+      
+      Builder vehicleBuilder = VehicleImpl.Builder.newInstance(agent.getUsername());
+		vehicleBuilder.setStartLocation(depot);
+		vehicleBuilder.setType(vehicleType);
+		vehicle = vehicleBuilder.build();
+   }
 
 
-    /**
-     * Solving VRP and get the best solution
-     */
-    private void setBestSolution() {
-        VehicleRoutingAlgorithm algorithm = new SchrimpfFactory().createAlgorithm(problem);
-        Collection<VehicleRoutingProblemSolution> solutions = algorithm.searchSolutions();
-        bestSolution = Solutions.bestOf(solutions);
-    }
+   /**
+    * Setup VRP
+    */ 
+   private void setProblem() {      
+      VehicleRoutingProblem.Builder vrpBuilder = VehicleRoutingProblem.Builder.newInstance();
+		vrpBuilder.addVehicle(vehicle);
+      for (TransportRequest request : requests) {
+         vrpBuilder.addJob(request.getShipmentObj());
+      }
+		problem = vrpBuilder.build();
+   }
+   
+
+   /**
+    * Solving VRP and get the best solution
+    */
+   private void setBestSolution() {
+      VehicleRoutingAlgorithm algorithm = new SchrimpfFactory().createAlgorithm(problem);
+      Collection<VehicleRoutingProblemSolution> solutions = algorithm.searchSolutions();
+      bestSolution = Solutions.bestOf(solutions);
+   }
 
 
-    /**
-     * Cost setup
-     */
-    private void setCost() {
-        tourOptimize();
-        cost = new CostCalculator(this);
-    }
+   /**
+    * Cost setup
+    */
+   private void setCost() {
+      tourOptimize();
+      cost = new CostCalculator(this);
+   }
 
 
-    /**
-     * Get profit of a certain request on tour
-     */
-    public double getProfit(TransportRequest request) {
-        setCost();
-        return cost.profit(request.getShipmentObj());
-    }
+   /**
+    * Get profit of a certain request on tour
+    */
+   public double getProfit(TransportRequest request) {
+      setCost();
+      return cost.profit(request.getShipmentObj());
+   }
 
 
-    /**
-     * Get the sum of profit made by delivering all request
-     */
-    public double getRevenueSum() {
-        setCost();
-        return cost.revenueSum();
-    }
+   /**
+    * Get the sum of profit made by delivering all request
+    */
+   public double getRevenueSum() {
+      setCost();
+      return cost.revenueSum();
+   }
+
+   
+   /**
+    * Get the total revenue
+    */
+   public double getRevenueTotal() {
+      setCost();
+      return cost.revenueTotal();
+   }
+
+   
+   /**
+    * Get total earning that carrier will get from customers after delivering all request
+    */
+   public double getTotalIn() {
+      setCost();
+      return cost.totalIn();
+   }
+
+   
+   /**
+    * Get total cost that carrier has to pay for delivering all request on a tour
+    */
+   public double getTotalOut() {
+      setCost();
+      return cost.totalOut();
+   }
+
+   
+   /**
+    * Get the earning that carrier will get from customer for delivering a certain request
+    */
+   public double getTransportCostIn(TransportRequest request) {
+      setCost();
+      return cost.transportCostIn(request.getPickup(), request.getDelivery());
+   }
+
+   
+   /**
+    * Get the cost that carrier has to pay for delivering a certain request while on tour
+    */
+   public double getTransportCostOut(TransportRequest request) {
+      setCost();
+      return cost.transportCostOut(request.getId());
+   }
+
+   
+   /**
+    * Get the total length of current tour
+    */
+   public double getTourLength() {
+      setCost();
+      return cost.tourLength();
+   }
 
 
-    /**
-     * Get the total revenue
-     */
-    public double getRevenueTotal() {
-        setCost();
-        return cost.revenueTotal();
-    }
+   /**
+    * Basic getters and setters needed
+    */
 
+   public double getCostPerDistance() {
+      return this.costPerDistance;
+   }
 
-    /**
-     * Get total earning that carrier will get from customers after delivering all request
-     */
-    public double getTotalIn() {
-        setCost();
-        return cost.totalIn();
-    }
+   // public void setCostPerDistance(double costPerDistance) {
+   //    this.costPerDistance = costPerDistance;
+   // }
 
+   public double getFixedCost() {
+      return this.fixedCost;
+   }
 
-    /**
-     * Get total cost that carrier has to pay for delivering all request on a tour
-     */
-    public double getTotalOut() {
-        setCost();
-        return cost.totalOut();
-    }
+   // public void setFixedCost(double fixCost) {
+   //    this.fixedCost = fixCost;
+   // }
 
+   public double getInternalCost() {
+      return this.internalCost;
+   }
 
-    /**
-     * Get the earning that carrier will get from customer for delivering a certain request
-     */
-    public double getTransportCostIn(TransportRequest request) {
-        setCost();
-        return cost.transportCostIn(request.getPickup(), request.getDelivery());
-    }
+   // public void setInternalCost(double internalCost) {
+   //    this.internalCost = internalCost;
+   // }
 
+   public double getLoadingCost() {
+      return this.loadingCost;
+   }
 
-    /**
-     * Get the cost that carrier has to pay for delivering a certain request while on tour
-     */
-    public double getTransportCostOut(TransportRequest request) {
-        setCost();
-        return cost.transportCostOut(request.getId());
-    }
+   // public void setLoadingCost(double loadingCost) {
+   //    this.loadingCost = loadingCost;
+   // }
 
+   public Location getDepot() {
+      return this.depot;
+   }
 
-    /**
-     * Get the total length of current tour
-     */
-    public double getTourLength() {
-        setCost();
-        return cost.tourLength();
-    }
+   public void setDepot(double depotX, double depotY) {
+      this.depot = Location.newInstance(depotX, depotY);
+   }
 
+   public VehicleRoutingProblemSolution getBestSolution() {
+      return this.bestSolution;
+   }
 
-    /**
-     * Basic getters and setters needed
-     */
-
-    public double getCostPerDistance() {
-        return this.costPerDistance;
-    }
-
-    // public void setCostPerDistance(double costPerDistance) {
-    //    this.costPerDistance = costPerDistance;
-    // }
-
-    public double getFixedCost() {
-        return this.fixedCost;
-    }
-
-    // public void setFixedCost(double fixCost) {
-    //    this.fixedCost = fixCost;
-    // }
-
-    public double getInternalCost() {
-        return this.internalCost;
-    }
-
-    // public void setInternalCost(double internalCost) {
-    //    this.internalCost = internalCost;
-    // }
-
-    public double getLoadingCost() {
-        return this.loadingCost;
-    }
-
-    // public void setLoadingCost(double loadingCost) {
-    //    this.loadingCost = loadingCost;
-    // }
-
-    public Location getDepot() {
-        return this.depot;
-    }
-
-    public void setDepot(double depotX, double depotY) {
-        this.depot = Location.newInstance(depotX, depotY);
-    }
-
-    public VehicleRoutingProblemSolution getBestSolution() {
-        return this.bestSolution;
-    }
-
-    public List<TransportRequest> getRequests() {
-        return this.requests;
-    }
-
+   public List<TransportRequest> getRequests() {
+      return this.requests;
+   }
+   
 }

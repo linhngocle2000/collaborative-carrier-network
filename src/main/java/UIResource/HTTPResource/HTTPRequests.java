@@ -45,9 +45,9 @@ public class HTTPRequests {
         }
     }
 
-    public static boolean registerCarrier(String name, String username, String password, float depotX, float depotY) {
+    public static boolean registerCarrier(String name, String username, String password, float depotX, float depotY, float pickupBaserate, float externalTravelCost, float loadBaserate, float internalTravelCost) {
         try {
-            var json = send(RequestBody.registerCarrier(name, username, password, depotX, depotY));
+            var json = send(RequestBody.registerCarrier(name, username, password, depotX, depotY, pickupBaserate, externalTravelCost, loadBaserate, internalTravelCost));
             var success = json.getBoolean("success");
             if (!success) {
                 JSONObject error = json.getJSONObject("error");
@@ -169,27 +169,6 @@ public class HTTPRequests {
                     float deliveryY = j.getFloat("DeliveryLon");
                     result.add(new TransportRequest(id, agent, pickupX, pickupY, deliveryX, deliveryY));
                 }
-            });
-            return result;
-        } catch (IOException | InterruptedException e) {
-            e.printStackTrace();
-            lastError = e;
-            return null;
-        }
-    }
-
-    public static List<Shipment> getUserTransportRequests(String username) {
-        try {
-            // Load requests
-            var json = send(RequestBody.getAgent(username, token));
-            var array = json.getJSONArray("data");
-            List<Shipment> result = new ArrayList<Shipment>(array.length());
-            array.forEach(obj -> {
-                JSONObject j = (JSONObject)obj;
-                String id = j.getString("ID");
-                Location pickup = Location.newInstance(j.getFloat("PickupLat"), j.getFloat("PickupLon"));
-                Location delivery = Location.newInstance(j.getFloat("DeliveryLat"), j.getFloat("DeliveryLon"));
-                result.add(Shipment.Builder.newInstance(id).setPickupLocation(pickup).setDeliveryLocation(delivery).build());
             });
             return result;
         } catch (IOException | InterruptedException e) {
