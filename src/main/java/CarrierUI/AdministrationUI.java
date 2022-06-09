@@ -1,6 +1,6 @@
 package CarrierUI;
 
-import Utils.TourPlanning;
+import Utils.TourPlanningUI;
 import UIResource.TableData;
 import UIResource.UIData;
 import UIResource.scrollbar.ScrollBarCustom;
@@ -70,13 +70,13 @@ public class AdministrationUI extends JFrame {
 
         JPanel leftVisualPanel = new JPanel();
         leftVisualPanel.setBorder(leftVisualTitle);
-        leftVisualPanel.setMinimumSize(new Dimension(600,650));
-        leftVisualPanel.setPreferredSize(new Dimension(600,650));
+        leftVisualPanel.setMinimumSize(new Dimension(600,615));
+        leftVisualPanel.setPreferredSize(new Dimension(600,615));
 
         JPanel rightVisualPanel = new JPanel();
         rightVisualPanel.setBorder(rightVisualTitle);
-        rightVisualPanel.setMinimumSize(new Dimension(600,650));
-        rightVisualPanel.setPreferredSize(new Dimension(600,650));
+        rightVisualPanel.setMinimumSize(new Dimension(600,615));
+        rightVisualPanel.setPreferredSize(new Dimension(600,615));
 
         rightPanel.add(leftVisualPanel);
         rightPanel.add(rightVisualPanel);
@@ -152,7 +152,7 @@ public class AdministrationUI extends JFrame {
         popupMenu.add(visualizeInP1);
         visualizeInP1.addActionListener(e -> {
             Location depot = Location.newInstance(23.76, 7.82);
-            TourPlanning currentTour = new TourPlanning(depot, "amy");
+            TourPlanningUI currentTour = new TourPlanningUI(depot, "amy");
             int selectedRow[] = table.getSelectedRows();
             float[] tr;
             String requestID;
@@ -174,7 +174,7 @@ public class AdministrationUI extends JFrame {
         popupMenu.add(visualizeInP2);
         visualizeInP2.addActionListener(e -> {
             Location depot = Location.newInstance(23.76, 7.82);
-            TourPlanning currentTour = new TourPlanning(depot, "amy");
+            TourPlanningUI currentTour = new TourPlanningUI(depot, "amy");
             int selectedRow[] = table.getSelectedRows();
             float[] tr;
             String requestID;

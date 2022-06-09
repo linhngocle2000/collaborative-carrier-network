@@ -183,10 +183,10 @@ public class VisualView {
         JPanel tourPanel = createTourPanel();
         JPanel graphPanel = new JPanel();
         graphPanel.setLayout(new BoxLayout(graphPanel, BoxLayout.Y_AXIS));
-        graphPanel.setPreferredSize(new Dimension((int) (570 * scaling), (int) (460 * scaling)));
+        graphPanel.setPreferredSize(new Dimension((int) (570 * scaling), (int) (570 * scaling)));
 
         JPanel graphStreamPanel = new JPanel();
-        graphStreamPanel.setPreferredSize(new Dimension((int) (550 * scaling), (int) (450 * scaling)));
+        graphStreamPanel.setPreferredSize(new Dimension((int) (550 * scaling), (int) (550 * scaling)));
 
         graphStreamPanel.add(view);
         graphPanel.add(graphStreamPanel);
@@ -228,10 +228,6 @@ public class VisualView {
         JPanel panel = new JPanel();
         panel.setPreferredSize(new Dimension((int) (width * scaling), (int) (height * scaling)));
 
-        JPanel subpanel = new JPanel();
-        subpanel.setLayout(new FlowLayout());
-        subpanel.setPreferredSize(new Dimension((int) (550 * scaling), (int) (100 * scaling)));
-        subpanel.setBorder(BorderFactory.createLineBorder(Color.LIGHT_GRAY, 1));
 
         Font font = Font.decode("couriernew");
         int i = 0;
