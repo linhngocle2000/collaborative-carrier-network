@@ -22,19 +22,19 @@ public class StartAuctionUI extends JFrame {
     private boolean auctionStarted;
 
     Object[][] data = {
-            {"((0,1),(2,3))", "Smith", "1000", "0"},
-            {"((0,1),(2,3))", "Amy", "1000", "0"},
-            {"((0,1),(2,3))", "Linh", "1000", "0"},
-            {"((0,1),(2,3))", "Peter", "1000", "0"},
-            {"((0,1),(2,3))", "Paul", "1000", "0"},
-            {"((0,1),(2,3))", "Jack", "1000", "0"},
-            {"((0,1),(2,3))", "Daniel", "1000", "0"},
-            {"((0,1),(2,3))", "Julia", "1000", "0"},
-            {"((0,1),(2,3))", "Emily", "1000", "0"},
-            {"((0,1),(2,3))", "Rachel", "1000", "0"},
-            {"((4,5),(5,6))", "John", "1000", "0"},
-            {"((4,5),(5,6))", "Josh", "1000", "0"},
-            {"((4,5),(5,6))", "May", "1000", "0"}
+            {"((0,1),(2,3))", "Smith", "0"},
+            {"((0,1),(2,3))", "Amy", "0"},
+            {"((0,1),(2,3))", "Linh", "0"},
+            {"((0,1),(2,3))", "Peter", "0"},
+            {"((0,1),(2,3))", "Paul", "0"},
+            {"((0,1),(2,3))", "Jack", "0"},
+            {"((0,1),(2,3))", "Daniel", "0"},
+            {"((0,1),(2,3))", "Julia", "0"},
+            {"((0,1),(2,3))", "Emily", "0"},
+            {"((0,1),(2,3))", "Rachel", "0"},
+            {"((4,5),(5,6))", "John", "0"},
+            {"((4,5),(5,6))", "Josh", "0"},
+            {"((4,5),(5,6))", "May", "0"}
     };
 
     public StartAuctionUI() {
@@ -42,8 +42,8 @@ public class StartAuctionUI extends JFrame {
         super();
 
         setTitle("CCN");
-        setSize(540, 580);
-        setMinimumSize(new Dimension(540, 580));
+        setSize(520, 580);
+        setMinimumSize(new Dimension(520, 580));
         setLocationRelativeTo(null);
 
         setDefaultCloseOperation(EXIT_ON_CLOSE);
@@ -163,11 +163,10 @@ public class StartAuctionUI extends JFrame {
         centerRenderer.setHorizontalAlignment(JLabel.CENTER);
 
         TableColumnModel columnModel = table.getColumnModel();
-        columnModel.getColumn(0).setPreferredWidth(125);
-        columnModel.getColumn(1).setPreferredWidth(95);
+        columnModel.getColumn(0).setPreferredWidth(200);
+        columnModel.getColumn(1).setPreferredWidth(180);
         columnModel.getColumn(2).setPreferredWidth(80);
-        columnModel.getColumn(3).setPreferredWidth(30);
-        for (int i = 0; i<4; i++) {
+        for (int i = 0; i<3; i++) {
             columnModel.getColumn(i).setCellRenderer(centerRenderer);
         }
         JScrollPane scrollPane = new JScrollPane(table);
@@ -176,10 +175,10 @@ public class StartAuctionUI extends JFrame {
         table.clearSelection();
 
         if (data.length <= 12) {
-            scrollPane.setPreferredSize(new Dimension(scrollPane.getPreferredSize().width, data.length*25+23));
+            scrollPane.setPreferredSize(new Dimension(460, data.length*25+23));
         } else {
-            scrollPane.setPreferredSize(new Dimension(scrollPane.getPreferredSize().width, 323));
-            scrollPane.setVerticalScrollBar(new ScrollBarCustom(data.length));
+            scrollPane.setPreferredSize(new Dimension(460, 323));
+            scrollPane.setVerticalScrollBar(new ScrollBarCustom(12, data.length));
         }
 
         JButton startBtn = new JButton();

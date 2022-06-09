@@ -26,6 +26,7 @@ public class AdministrationUI extends JFrame {
     private Border emptyBorder = UIData.getEmptyBorder();
     private VisualizationUI visUI;
     private JPanel leftVisualPanel, rightVisualPanel;
+    private CalculatorUI costCalcUI;
 
     Object[][] data = {
             {"((0,1),(2,3))", "1000"},
@@ -51,6 +52,8 @@ public class AdministrationUI extends JFrame {
         leftVisualPanel = visUI.getLeftVisualPanel();
         rightVisualPanel = visUI.getRightVisualPanel();
 
+        costCalcUI = new CalculatorUI();
+
 
         setTitle("CCN");
         setLocationRelativeTo(null);
@@ -63,8 +66,8 @@ public class AdministrationUI extends JFrame {
         leftPanel.setBackground(background);
         leftPanel.setLayout(new GridBagLayout());
 
-        leftPanel.setMinimumSize(new Dimension(400, 540));
-        leftPanel.setPreferredSize(new Dimension(400, 540));
+        leftPanel.setMinimumSize(new Dimension(450, 540));
+        leftPanel.setPreferredSize(new Dimension(450, 540));
 
 
         JLabel tableHeader = new JLabel("Transport requests");
@@ -103,8 +106,8 @@ public class AdministrationUI extends JFrame {
         centerRenderer.setHorizontalAlignment(JLabel.CENTER);
 
         TableColumnModel columnModel = table.getColumnModel();
-        columnModel.getColumn(0).setPreferredWidth(220);
-        columnModel.getColumn(1).setPreferredWidth(130);
+        columnModel.getColumn(0).setPreferredWidth(230);
+        columnModel.getColumn(1).setPreferredWidth(150);
         for (int i = 0; i<2; i++) {
             columnModel.getColumn(i).setCellRenderer(centerRenderer);
         }
@@ -114,10 +117,10 @@ public class AdministrationUI extends JFrame {
         table.clearSelection();
 
         if (data.length <= 12) {
-            scrollPane.setPreferredSize(new Dimension(350, data.length*25+23));
+            scrollPane.setPreferredSize(new Dimension(380, data.length*25+23));
         } else {
-            scrollPane.setPreferredSize(new Dimension(350, 323));
-            scrollPane.setVerticalScrollBar(new ScrollBarCustom(data.length));
+            scrollPane.setPreferredSize(new Dimension(380, 323));
+            scrollPane.setVerticalScrollBar(new ScrollBarCustom(12, data.length));
         }
 
         constraints = new GridBagConstraints();
@@ -132,6 +135,11 @@ public class AdministrationUI extends JFrame {
         auctionOff.setFocusPainted(false);
         JButton costCalc = new JButton("Cost calculator");
         costCalc.setFocusPainted(false);
+        costCalc.addActionListener(e -> {
+            if(!costCalcUI.isVisible()) {
+                costCalcUI.setVisible(true);
+            }
+        });
 
         JPopupMenu popupMenu = new JPopupMenu();
         JMenuItem visualizeInP1 = new JMenuItem("Panel 1");

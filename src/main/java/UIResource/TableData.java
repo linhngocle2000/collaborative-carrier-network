@@ -1,8 +1,8 @@
 package UIResource;
 
 public class TableData {
-    private static String[] auctionColumnNames = {"Transport request", "Owner", "Start price (\u20AC)", "Iteration"};
-    private static String[] requestColumnNames = {"Transport request", "Profit"};
+    private static String[] auctionColumnNames = {"Transport request", "Owner", "Iteration"};
+    private static String[] requestColumnNames = {"Transport request", "Profit (\u20AC)"};
 
     public static String[] getAuctionColumnNames() {
         return auctionColumnNames;

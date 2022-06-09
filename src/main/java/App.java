@@ -1,6 +1,7 @@
 import Agent.Agent;
 import AuctioneerUI.StartAuctionUI;
 import CarrierUI.AdministrationUI;
+import CarrierUI.CalculatorUI;
 import StartUI.LoginUI;
 import StartUI.RegisterUI;
 import StartUI.WelcomeUI;

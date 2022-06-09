@@ -16,8 +16,8 @@ public class ModernScrollBarUI extends BasicScrollBarUI {
 
     private int THUMB_SIZE;
 
-    protected void setThumbSize(int elems) {
-        THUMB_SIZE = (int)(((double)12/(double)elems)*(double)303);
+    protected void setThumbSize(int max, int elems) {
+        THUMB_SIZE = (int)(((double)max/(double)elems)*(double)303);
     }
 
     @Override
@@ -83,10 +83,7 @@ public class ModernScrollBarUI extends BasicScrollBarUI {
         int y = rctngl.y;
         int width = rctngl.width;
         int height = rctngl.height;
-        if (scrollbar.getOrientation() == JScrollBar.VERTICAL) {
-            y += 0;
-            height -= 0;
-        } else {
+        if (scrollbar.getOrientation() != JScrollBar.VERTICAL) {
             x += 8;
             width -= 16;
         }
