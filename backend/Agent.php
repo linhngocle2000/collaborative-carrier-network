@@ -20,6 +20,10 @@ class Agent
 		$isAuctioneer = intval(boolval($data['IsAuctioneer']));
 		$depotLat = $isAuctioneer ? 0 : floatval($data['DepotLat']);
 		$depotLon = $isAuctioneer ? 0 : floatval($data['DepotLon']);
+		$pickup = $isAuctioneer ? 0 : floatval($data['PickupBaserate']);
+		$travelExtern = $isAuctioneer ? 0 : floatval($data['TravelCostPerKM']);
+		$load = $isAuctioneer ? 0 : floatval($data['LoadBaserate']);
+		$travelIntern = $isAuctioneer ? 0 : floatval($data['InternalTravelCostPerKM']);
 		$hash = password_hash($password, PASSWORD_DEFAULT);
 
 		$result = $db->query("SELECT COUNT(*) AS `Count` FROM `Agent` WHERE `Username` = '$username'");
@@ -33,7 +37,7 @@ class Agent
 			throw new \Exception("Username $username is alread used");
 		}
 
-		$result = $db->query("INSERT INTO `Agent` (`Username`, `Name`, `Password`, `IsAuctioneer`, `DepotLat`, `DepotLon`) VALUES ('$username', '$name', '$hash', $isAuctioneer, $depotLat, $depotLon)");
+		$result = $db->query("INSERT INTO `Agent` (`Username`, `Name`, `Password`, `IsAuctioneer`, `DepotLat`, `DepotLon`, `PickupBaserate`, `TravelCostPerKM`, `LoadBaserate`, `InternalTravelCostPerKM`) VALUES ('$username', '$name', '$hash', $isAuctioneer, $depotLat, $depotLon, $pickup, $travelExtern, $load, $travelIntern)");
 		if ($result === false)
 		{
 			throw new \Exception($db->error);
@@ -109,7 +113,7 @@ class Agent
 
 		$db = Database::getConnection();
 		$username = $db->escape_string($data['Username']);
-		$result = $db->query("SELECT `Username`, `Name`, `IsAuctioneer`, `DepotLat`, `DepotLon` FROM `Agent` WHERE `Username` = '$username'");
+		$result = $db->query("SELECT `Username`, `Name`, `IsAuctioneer`, `DepotLat`, `DepotLon`, `PickupBaserate`, `TravelCostPerKM`, `LoadBaserate`, `InternalTravelCostPerKM` FROM `Agent` WHERE `Username` = '$username'");
 		if ($result === false || $result->num_rows == 0)
 		{
 			throw new \Exception("$username not found");
@@ -128,6 +132,10 @@ class Agent
 		{
 			$agent['DepotLat'] = $row['DepotLat'];
 			$agent['DepotLon'] = $row['DepotLon'];
+			$agent['PickupBaserate'] = $row['PickupBaserate'];
+			$agent['TravelCostPerKM'] = $row['TravelCostPerKM'];
+			$agent['LoadBaserate'] = $row['LoadBaserate'];
+			$agent['InternalTravelCostPerKM'] = $row['InternalTravelCostPerKM'];
 		}
 
 		return $agent;
@@ -139,7 +147,7 @@ class Agent
 		TokenHelper::assertToken();
 
 		$db = Database::getConnection();
-		$result = $db->query("SELECT a.Username, a.Name AS UserDisplayname, a.IsAuctioneer, a.DepotLat, a.DepotLon, ac.ID AS AuctionID, ac.Name AS AuctionName FROM `Agent` a LEFT JOIN `Auction` ac ON a.Username = ac.Auctioneer");
+		$result = $db->query("SELECT a.Username, a.Name AS UserDisplayname, a.IsAuctioneer, a.DepotLat, a.DepotLon, a.PickupBaserate, a.TravelCostPerKM, a.LoadBaserate, a.InternalTravelCostPerKM, ac.ID AS AuctionID, ac.Name AS AuctionName FROM `Agent` a LEFT JOIN `Auction` ac ON a.Username = ac.Auctioneer");
 		$agents = [];
 		while ($row = $result->fetch_assoc())
 		{
@@ -162,6 +170,10 @@ class Agent
 				{
 					$agents[$username]['DepotLat'] = $row['DepotLat'];
 					$agents[$username]['DepotLon'] = $row['DepotLon'];
+					$agents[$username]['PickupBaserate'] = $row['PickupBaserate'];
+					$agents[$username]['TravelCostPerKM'] = $row['TravelCostPerKM'];
+					$agents[$username]['LoadBaserate'] = $row['LoadBaserate'];
+					$agents[$username]['InternalTravelCostPerKM'] = $row['InternalTravelCostPerKM'];
 				}
 			}
 
@@ -216,7 +228,7 @@ class Agent
 		TokenHelper::assertToken();
 
 		$db = Database::getConnection();
-		$result = $db->query("SELECT `Username`, `Name`, `DepotLat`, `DepotLon` FROM `Agent` WHERE NOT `IsAuctioneer`");
+		$result = $db->query("SELECT `Username`, `Name`, `DepotLat`, `DepotLon`, `PickupBaserate`, `TravelCostPerKM`, `LoadBaserate`, `InternalTravelCostPerKM` FROM `Agent` WHERE NOT `IsAuctioneer`");
 		$agents = [];
 		while ($row = $result->fetch_assoc())
 		{
