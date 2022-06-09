@@ -9,9 +9,11 @@ import com.graphhopper.jsprit.core.problem.solution.route.activity.TourActivity;
 import com.graphhopper.jsprit.core.problem.solution.route.activity.TourActivity.JobActivity;
 import com.graphhopper.jsprit.core.util.EuclideanDistanceCalculator;
 
+import Auction.TransportRequest;
+
 public class CostCalculator {
    private TourPlanning currentTour;
-   private List<Shipment> requests;
+   private List<TransportRequest> requests;
 
 
    /**
@@ -28,8 +30,8 @@ public class CostCalculator {
     */
    public double revenueSum() {
       double total = 0;
-      for (Shipment request : requests) {
-         total += profit(request);
+      for (TransportRequest request : requests) {
+         total += profit(request.getShipmentObj());
       }
       return total;
    }
@@ -56,8 +58,8 @@ public class CostCalculator {
     */
    public double totalIn() {
       double total = 0;
-      for (Shipment request : requests) {
-         total += transportCostIn(request.getPickupLocation(), request.getDeliveryLocation());
+      for (TransportRequest request : requests) {
+         total += transportCostIn(request.getPickup(), request.getDelivery());
       }
       return total;
    }

@@ -178,27 +178,6 @@ public class HTTPRequests {
         }
     }
 
-    public static List<Shipment> getUserTransportRequests(String username) {
-        try {
-            // Load requests
-            var json = send(RequestBody.getAgent(username, token));
-            var array = json.getJSONArray("data");
-            List<Shipment> result = new ArrayList<Shipment>(array.length());
-            array.forEach(obj -> {
-                JSONObject j = (JSONObject)obj;
-                String id = j.getString("ID");
-                Location pickup = Location.newInstance(j.getFloat("PickupLat"), j.getFloat("PickupLon"));
-                Location delivery = Location.newInstance(j.getFloat("DeliveryLat"), j.getFloat("DeliveryLon"));
-                result.add(Shipment.Builder.newInstance(id).setPickupLocation(pickup).setDeliveryLocation(delivery).build());
-            });
-            return result;
-        } catch (IOException | InterruptedException e) {
-            e.printStackTrace();
-            lastError = e;
-            return null;
-        }
-    }
-
     // Auction
 
     // Helper methods

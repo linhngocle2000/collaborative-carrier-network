@@ -12,6 +12,7 @@ import com.graphhopper.jsprit.core.problem.vehicle.VehicleType;
 import com.graphhopper.jsprit.core.problem.vehicle.VehicleTypeImpl;
 import com.graphhopper.jsprit.core.util.Solutions;
 
+import Agent.Agent;
 import Agent.CarrierAgent;
 import Auction.TransportRequest;
 import UIResource.HTTPResource.HTTPRequests;
@@ -37,7 +38,7 @@ public class TourPlanning {
 
    private VehicleRoutingProblemSolution bestSolution;
 
-   private List<Shipment> requests;
+   private List<TransportRequest> requests;
 
    private CostCalculator cost;
 
@@ -52,8 +53,8 @@ public class TourPlanning {
    /**
     * Initial a tour with agent ID
     */
-   public TourPlanning(String username) {
-      this.agent = (CarrierAgent) HTTPRequests.getAgent(username);
+   public TourPlanning(CarrierAgent agent) {
+      this.agent = agent;
       setDepot(agent.getDepotX(), agent.getDepotY());
       // this.costPerDistance = agent.getCostPerDistance();
       // this.fixedCost = agent.getFixedCost();
@@ -67,7 +68,7 @@ public class TourPlanning {
     * Refresh list of request
     */
    public void refreshRequests() {
-      this.requests = HTTPRequests.getUserTransportRequests(agent.getUsername());
+      this.requests = HTTPRequests.getTransportRequestsOfAgent(agent);
    }
 
 
@@ -75,7 +76,7 @@ public class TourPlanning {
     * Add new request to request list of current tour
     */
    public void addRequest(TransportRequest request) {
-      requests.add(request.getShipmentObj());
+      requests.add(request);
    }
 
 
@@ -120,8 +121,8 @@ public class TourPlanning {
    private void setProblem() {      
       VehicleRoutingProblem.Builder vrpBuilder = VehicleRoutingProblem.Builder.newInstance();
 		vrpBuilder.addVehicle(vehicle);
-      for (Shipment request : requests) {
-         vrpBuilder.addJob(request);
+      for (TransportRequest request : requests) {
+         vrpBuilder.addJob(request.getShipmentObj());
       }
 		problem = vrpBuilder.build();
    }
@@ -266,7 +267,7 @@ public class TourPlanning {
       return this.bestSolution;
    }
 
-   public List<Shipment> getRequests() {
+   public List<TransportRequest> getRequests() {
       return this.requests;
    }
    
