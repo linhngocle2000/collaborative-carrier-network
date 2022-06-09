@@ -19,6 +19,7 @@ $handler->register('getCarriers', [Agent::class, 'getCarriers']);
 // Transport request routes
 $handler->register('addRequest', [TransportRequest::class, 'addRequest']);
 $handler->register('getRequests', [TransportRequest::class, 'getRequests']);
+$handler->register('getRequestsOfAgent', [TransportRequest::class, 'getRequestsOfAgent']);
 
 $handler->register('getAuctions', function ($data)
 {

@@ -53,4 +53,21 @@ class TransportRequest
 		}
 		return $requests;
 	}
+
+	/** @return array List of requests that belong to the agent */
+	public static function getRequestsOfAgent($data)
+	{
+		TokenHelper::assertToken();
+
+		$db = Database::getConnection();
+		$username = $db->escape_string($data['Agent']);
+		$result = $db->query("SELECT `Owner`, `Auction`, `Cost`, `PickupLat`, `PickupLon`, `DeliveryLat`, `DeliveryLon` FROM `TransportRequest` WHERE `Owner` = '$username'");
+
+		$requests = [];
+		while ($row = $result->fetch_assoc())
+		{
+			$requests[] = $row;
+		}
+		return $requests;
+	}
 }
