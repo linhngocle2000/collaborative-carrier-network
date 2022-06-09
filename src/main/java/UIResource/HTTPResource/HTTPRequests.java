@@ -153,24 +153,21 @@ public class HTTPRequests {
         }
     }
 
-    public static List<TransportRequest> getTransportRequestsOf(String username) {
+    public static List<TransportRequest> getTransportRequestsOfAgent(Agent agent) {
         try {
-            // Hash all agents to populate owner of transport requests
-            Agent owner = getAgent(username);
-
             // Load requests
-            var json = send(RequestBody.getAuctioneerAgents(token));
+            var json = send(RequestBody.getTransportRequestsOfAgent(agent, token));
             var array = json.getJSONArray("data");
             List<TransportRequest> result = new ArrayList<TransportRequest>(array.length());
             array.forEach(obj -> {
                 JSONObject j = (JSONObject)obj;
-                if (j.getString("Owner").equals(username)) {
+                if (j.getString("Owner").equals(agent.getUsername())) {
                     int id = j.getInt("ID");
                     float pickupX = j.getFloat("PickupLat");
                     float pickupY = j.getFloat("PickupLon");
                     float deliveryX = j.getFloat("DeliveryLat");
                     float deliveryY = j.getFloat("DeliveryLon");
-                    result.add(new TransportRequest(id, owner, pickupX, pickupY, deliveryX, deliveryY));
+                    result.add(new TransportRequest(id, agent, pickupX, pickupY, deliveryX, deliveryY));
                 }
             });
             return result;
