@@ -70,6 +70,12 @@ public class RequestBody {
         return body("getRequests", token, null);
     }
 
+    public static String getTransportRequestsOfAgent(Agent agent, String token) {
+        JSONObject data = new JSONObject();
+        data.put("Agent", agent.getUsername());
+        return body("getRequestsOfAgent", token, data);
+    }
+
     // Helper
 
     private static String body(String command, String token, JSONObject data) {

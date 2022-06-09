@@ -3,5 +3,6 @@
 		"lib/**/*.jar",
 		"jade/lib/jade.jar",
 		"gs-ui-swing-2.0.jar"
-	]
+	],
+	"java.configuration.updateBuildConfiguration": "automatic"
 }
