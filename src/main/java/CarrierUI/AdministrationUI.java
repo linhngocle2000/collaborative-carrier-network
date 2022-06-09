@@ -24,6 +24,8 @@ public class AdministrationUI extends JFrame {
     private Font font = UIData.getFont();
     private Color errorColor = UIData.getErrorColor();
     private Border emptyBorder = UIData.getEmptyBorder();
+    private VisualizationUI visUI;
+    private JPanel leftVisualPanel, rightVisualPanel;
 
     Object[][] data = {
             {"((0,1),(2,3))", "1000"},
@@ -45,6 +47,11 @@ public class AdministrationUI extends JFrame {
 
         super();
 
+        visUI = new VisualizationUI();
+        leftVisualPanel = visUI.getLeftVisualPanel();
+        rightVisualPanel = visUI.getRightVisualPanel();
+
+
         setTitle("CCN");
         setLocationRelativeTo(null);
 
@@ -55,31 +62,10 @@ public class AdministrationUI extends JFrame {
         leftBottomPanel.setBackground(background);
         leftPanel.setBackground(background);
         leftPanel.setLayout(new GridBagLayout());
-        JPanel rightPanel = new JPanel();
 
         leftPanel.setMinimumSize(new Dimension(400, 540));
         leftPanel.setPreferredSize(new Dimension(400, 540));
 
-        TitledBorder leftVisualTitle = new TitledBorder("Panel 1");
-        leftVisualTitle.setTitleJustification(TitledBorder.CENTER);
-        leftVisualTitle.setTitlePosition(TitledBorder.TOP);
-
-        TitledBorder rightVisualTitle = new TitledBorder("Panel 2");
-        rightVisualTitle.setTitleJustification(TitledBorder.CENTER);
-        rightVisualTitle.setTitlePosition(TitledBorder.TOP);
-
-        JPanel leftVisualPanel = new JPanel();
-        leftVisualPanel.setBorder(leftVisualTitle);
-        leftVisualPanel.setMinimumSize(new Dimension(600,615));
-        leftVisualPanel.setPreferredSize(new Dimension(600,615));
-
-        JPanel rightVisualPanel = new JPanel();
-        rightVisualPanel.setBorder(rightVisualTitle);
-        rightVisualPanel.setMinimumSize(new Dimension(600,615));
-        rightVisualPanel.setPreferredSize(new Dimension(600,615));
-
-        rightPanel.add(leftVisualPanel);
-        rightPanel.add(rightVisualPanel);
 
         JLabel tableHeader = new JLabel("Transport requests");
         tableHeader.setFont(font.deriveFont(Font.BOLD, 16));
@@ -151,9 +137,12 @@ public class AdministrationUI extends JFrame {
         JMenuItem visualizeInP1 = new JMenuItem("Panel 1");
         popupMenu.add(visualizeInP1);
         visualizeInP1.addActionListener(e -> {
+            if(!visUI.isVisible()) {
+                visUI.setVisible(true);
+            }
             Location depot = Location.newInstance(23.76, 7.82);
             TourPlanningUI currentTour = new TourPlanningUI(depot, "amy");
-            int selectedRow[] = table.getSelectedRows();
+            int[] selectedRow = table.getSelectedRows();
             float[] tr;
             String requestID;
             for (int i = 0; i < table.getSelectedRowCount(); i++) {
@@ -173,9 +162,12 @@ public class AdministrationUI extends JFrame {
         JMenuItem visualizeInP2 = new JMenuItem("Panel 2");
         popupMenu.add(visualizeInP2);
         visualizeInP2.addActionListener(e -> {
+            if(!visUI.isVisible()) {
+                visUI.setVisible(true);
+            }
             Location depot = Location.newInstance(23.76, 7.82);
             TourPlanningUI currentTour = new TourPlanningUI(depot, "amy");
-            int selectedRow[] = table.getSelectedRows();
+            int[] selectedRow = table.getSelectedRows();
             float[] tr;
             String requestID;
             for (int i = 0; i < table.getSelectedRowCount(); i++) {
@@ -194,9 +186,11 @@ public class AdministrationUI extends JFrame {
         });
 
         TextIcon icon = new TextIcon(leftBottomPanel, "Show in", TextIcon.Layout.HORIZONTAL);
-        icon.setFont(font.deriveFont(Font.BOLD, 12));;
+        icon.setFont(font.deriveFont(Font.BOLD, 12));
         JButton showIn = DropDownButtonFactory.createDropDownButton(icon, popupMenu);
         showIn.setFocusPainted(false);
+        showIn.setEnabled(false);
+        table.getSelectionModel().addListSelectionListener(event -> showIn.setEnabled(table.getSelectedRowCount() > 0));
 
         auctionOff.setPreferredSize(costCalc.getPreferredSize());
 
@@ -213,8 +207,7 @@ public class AdministrationUI extends JFrame {
         leftPanel.add(leftBottomPanel, constraints);
 
 
-        getContentPane().add(leftPanel, BorderLayout.LINE_START);
-        getContentPane().add(rightPanel, BorderLayout.CENTER);
+        getContentPane().add(leftPanel, BorderLayout.CENTER);
 
         pack();
 
