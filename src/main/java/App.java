@@ -69,8 +69,8 @@ public class App {
                 String password = registerUI.getPasswordText();
                 boolean isAuctioneer = registerUI.isAuctioneer();
                 if (!isAuctioneer) {
-                    double depotX = registerUI.getDepotLatText();
-                    double depotY = registerUI.getDepotLonText();
+                    float depotX = registerUI.getDepotLatText();
+                    float depotY = registerUI.getDepotLonText();
                     if(!registerUI.verifyTRInput()) {
                         throw new Exception("Transport requests are not entered correctly.");
                     }
@@ -80,13 +80,13 @@ public class App {
                     if (!registerUI.verifyDepotInput()) {
                         throw new Exception("Depot is not entered correctly.");
                     }
-                    if (!HTTPRequests.registerCarrier(name, username, password, false, depotX, depotY)) {
+                    if (!HTTPRequests.registerCarrier(name, username, password, depotX, depotY)) {
                         throw new Exception("Username " + username + " is already used.");
                     }
                 } else {
-//                    if (!HTTPRequests.registerAuctioneer(name, username, password, true)) {
-//                        throw new Exception("Username " + username + " is already used.");
-//                    }
+                    if (!HTTPRequests.registerAuctioneer(name, username, password)) {
+                        throw new Exception("Username " + username + " is already used.");
+                    }
                 }
                 registerUI.setErrorLabel("");
                 registerUI.showSuccessLabel();

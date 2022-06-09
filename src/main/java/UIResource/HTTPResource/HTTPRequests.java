@@ -11,6 +11,9 @@ import java.util.List;
 
 import org.json.*;
 
+import com.graphhopper.jsprit.core.problem.Location;
+import com.graphhopper.jsprit.core.problem.job.Shipment;
+
 import Agent.Agent;
 import Agent.AgentFactory;
 import Agent.AuctioneerAgent;
@@ -26,13 +29,29 @@ public class HTTPRequests {
 
     // Agent
 
-    public static boolean register(String name, String username, String password, boolean isAuctioneer) {
+    public static boolean registerAuctioneer(String name, String username, String password) {
         try {
-            var json = send(RequestBody.register(name, username, password, isAuctioneer));
+            var json = send(RequestBody.registerAuctioneer(name, username, password));
             var success = json.getBoolean("success");
             if (!success) {
-                // TODO: Find a better way to send error message to UI
-                lastError = new Exception(json.getString("message"));
+                JSONObject error = json.getJSONObject("error");
+                lastError = new Exception(error.getString("message"));
+            }
+            return success;
+        } catch (IOException | InterruptedException e) {
+            lastError = e;
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    public static boolean registerCarrier(String name, String username, String password, float depotX, float depotY) {
+        try {
+            var json = send(RequestBody.registerCarrier(name, username, password, depotX, depotY));
+            var success = json.getBoolean("success");
+            if (!success) {
+                JSONObject error = json.getJSONObject("error");
+                lastError = new Exception(error.getString("message"));
             }
             return success;
         } catch (IOException | InterruptedException e) {
@@ -49,7 +68,7 @@ public class HTTPRequests {
             if (!success) {
                 return null;
             }
-            
+
             var data = json.getJSONObject("data");
             token = data.getString("Token");
             Agent agent = AgentFactory.fromJSON(data.getJSONObject("Agent"));
@@ -134,12 +153,10 @@ public class HTTPRequests {
         }
     }
 
-    public static List<TransportRequest> getAllTransportRequests() {
+    public static List<TransportRequest> getTransportRequestsOf(String username) {
         try {
             // Hash all agents to populate owner of transport requests
-            var map = new HashMap<String, Agent>();
-            var agents = getAllAgents();
-            agents.forEach(agent -> map.put(agent.getUsername(), agent));
+            Agent owner = getAgent(username);
 
             // Load requests
             var json = send(RequestBody.getAuctioneerAgents(token));
@@ -147,13 +164,35 @@ public class HTTPRequests {
             List<TransportRequest> result = new ArrayList<TransportRequest>(array.length());
             array.forEach(obj -> {
                 JSONObject j = (JSONObject)obj;
-                int id = j.getInt("ID");
-                Agent owner = map.get(j.getString("Owner"));
-                float pickupX = j.getFloat("PickupLat");
-                float pickupY = j.getFloat("PickupLon");
-                float deliveryX = j.getFloat("DeliveryLat");
-                float deliveryY = j.getFloat("DeliveryLon");
-                result.add(new TransportRequest(id, owner, pickupX, pickupY, deliveryX, deliveryY));
+                if (j.getString("Owner").equals(username)) {
+                    int id = j.getInt("ID");
+                    float pickupX = j.getFloat("PickupLat");
+                    float pickupY = j.getFloat("PickupLon");
+                    float deliveryX = j.getFloat("DeliveryLat");
+                    float deliveryY = j.getFloat("DeliveryLon");
+                    result.add(new TransportRequest(id, owner, pickupX, pickupY, deliveryX, deliveryY));
+                }
+            });
+            return result;
+        } catch (IOException | InterruptedException e) {
+            e.printStackTrace();
+            lastError = e;
+            return null;
+        }
+    }
+
+    public static List<Shipment> getUserTransportRequests(String username) {
+        try {
+            // Load requests
+            var json = send(RequestBody.getAgent(username, token));
+            var array = json.getJSONArray("data");
+            List<Shipment> result = new ArrayList<Shipment>(array.length());
+            array.forEach(obj -> {
+                JSONObject j = (JSONObject)obj;
+                String id = j.getString("ID");
+                Location pickup = Location.newInstance(j.getFloat("PickupLat"), j.getFloat("PickupLon"));
+                Location delivery = Location.newInstance(j.getFloat("DeliveryLat"), j.getFloat("DeliveryLon"));
+                result.add(Shipment.Builder.newInstance(id).setPickupLocation(pickup).setDeliveryLocation(delivery).build());
             });
             return result;
         } catch (IOException | InterruptedException e) {

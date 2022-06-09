@@ -491,14 +491,14 @@ public class RegisterUI extends JFrame {
         return new String(passwordText.getPassword());
     }
 
-    public double getDepotLatText() {
+    public float getDepotLatText() {
         String s = depotLatText.getText().trim();
-        return Double.parseDouble(s);
+        return Float.parseFloat(s);
     }
 
-    public double getDepotLonText() {
+    public float getDepotLonText() {
         String s = depotLonText.getText().trim();
-        return Double.parseDouble(s);
+        return Float.parseFloat(s);
     }
 
     public boolean isAuctioneer() {
