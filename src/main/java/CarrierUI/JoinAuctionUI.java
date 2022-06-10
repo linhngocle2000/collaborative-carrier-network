@@ -14,7 +14,7 @@ import java.awt.*;
 
 public class JoinAuctionUI extends JFrame {
 
-    private static JButton bidBtn, activeAuctionsBtn, logoutBtn, backBtn;
+    private JButton bidBtn, logoutBtn;
     private JTextField auctionText, priceText;
     private JLabel errorLabel, nameLabel;
 
@@ -70,28 +70,12 @@ public class JoinAuctionUI extends JFrame {
         bottomPanel.setLayout(new GridBagLayout());
         bottomPanel.setBackground(background);
 
-        backBtn = new JButton();
-        backBtn.setText("\u2190");
-        backBtn.setFocusPainted(false);
-        backBtn.setBorder(emptyBorder);
-        backBtn.setBackground(background);
-        backBtn.setFont(font.deriveFont(Font.BOLD, 25));
-
-        GridBagConstraints constraints = new GridBagConstraints();
-        constraints.gridx = 0;
-        constraints.gridy = 0;
-        constraints.gridwidth = 1;
-        constraints.gridheight = 1;
-        constraints.weightx = constraints.weighty = 1.0;
-        constraints.anchor = GridBagConstraints.NORTHWEST;
-        constraints.insets = new java.awt.Insets(0, 20, 20, 0);
-        bottomPanel.add(backBtn, constraints);
 
         JLabel loginLabel = new JLabel("Login as: ");
         loginLabel.setFont(font.deriveFont(Font.BOLD, 14));
         loginLabel.setHorizontalAlignment(SwingConstants.CENTER);
 
-        constraints = new GridBagConstraints();
+        GridBagConstraints constraints = new GridBagConstraints();
         constraints.gridx = 0;
         constraints.gridy = 0;
         constraints.anchor = GridBagConstraints.NORTHWEST;
@@ -275,7 +259,7 @@ public class JoinAuctionUI extends JFrame {
         setResizable(false);
     }
 
-    public static JButton getLogoutBtn() {
+    public JButton getLogoutBtn() {
         return logoutBtn;
     }
 
@@ -289,8 +273,5 @@ public class JoinAuctionUI extends JFrame {
         errorLabel.setText("");
     }
 
-    public static JButton getBackBtn() {
-        return backBtn;
-    }
 
 }

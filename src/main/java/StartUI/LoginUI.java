@@ -8,10 +8,10 @@ import java.awt.*;
 
 public class LoginUI extends JFrame {
 
-    private static JButton backBtn, loginBtn;
+    private JButton backBtn, loginBtn;
     private JTextField nameText;
     private JPasswordField passwordText;
-    private static JLabel errorLabel;
+    private JLabel errorLabel;
 
     private Color background = UIData.getBackground();
     private int width = UIData.getWidth();
@@ -157,11 +157,11 @@ public class LoginUI extends JFrame {
         setResizable(false);
     }
 
-    public static JButton getBackBtn() {
+    public JButton getBackBtn() {
         return backBtn;
     }
 
-    public static JButton getLoginBtn() {
+    public JButton getLoginBtn() {
         return loginBtn;
     }
 

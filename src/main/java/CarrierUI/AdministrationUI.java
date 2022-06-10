@@ -54,6 +54,9 @@ public class AdministrationUI extends JFrame {
 
         costCalcUI = new CalculatorUI();
 
+        setMinimumSize(new Dimension(450, 540));
+        setPreferredSize(new Dimension(450, 540));
+
 
         setTitle("CCN");
         setLocationRelativeTo(null);
@@ -61,13 +64,13 @@ public class AdministrationUI extends JFrame {
         setDefaultCloseOperation(HIDE_ON_CLOSE);
 
         JPanel leftPanel = new JPanel();
-        JPanel leftBottomPanel = new JPanel();
-        leftBottomPanel.setBackground(background);
         leftPanel.setBackground(background);
         leftPanel.setLayout(new GridBagLayout());
+        JPanel leftBottomPanel = new JPanel();
+        leftBottomPanel.setBackground(background);
 
-        leftPanel.setMinimumSize(new Dimension(450, 540));
-        leftPanel.setPreferredSize(new Dimension(450, 540));
+
+
 
 
         JLabel tableHeader = new JLabel("Transport requests");

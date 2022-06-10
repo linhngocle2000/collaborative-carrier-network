@@ -8,7 +8,7 @@ import java.awt.*;
 
 public class CarrierLoginUI extends JFrame {
 
-    private static JButton joinAuctionBtn, administrationBtn, logoutBtn;
+    private JButton joinAuctionBtn, administrationBtn, logoutBtn;
     private JLabel nameLabel;
 
     private Color background = UIData.getBackground();
@@ -112,15 +112,15 @@ public class CarrierLoginUI extends JFrame {
         setResizable(false);
     }
 
-    public static JButton getAdministrationBtn() {
+    public JButton getAdministrationBtn() {
         return administrationBtn;
     }
 
-    public static JButton getJoinAuctionBtn() {
+    public JButton getJoinAuctionBtn() {
         return joinAuctionBtn;
     }
 
-    public static JButton getLogoutBtn() {
+    public JButton getLogoutBtn() {
         return logoutBtn;
     }
 

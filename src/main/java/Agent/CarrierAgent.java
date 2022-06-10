@@ -2,9 +2,8 @@ package Agent;
 
 public class CarrierAgent extends Agent {
 
-	public CarrierAgent(String username, String displayname, String vehicle, float depotX, float depotY) {
+	public CarrierAgent(String username, String displayname, float depotX, float depotY) {
 		super(username, displayname);
-		this.vehicle = vehicle;
 		this.depotX = depotX;
 		this.depotY = depotY;
 	}
@@ -16,14 +15,9 @@ public class CarrierAgent extends Agent {
 
 	// Variables
 
-	private String vehicle;
 	private float depotX, depotY;
 
 	// Getters
-
-	public String getVehicle() {
-		return vehicle;
-	}
 
 	public float getDepotX() {
 		return depotX;

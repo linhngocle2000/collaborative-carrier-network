@@ -8,7 +8,7 @@ import java.awt.*;
 
 public class RegisterUI extends JFrame {
 
-    private static JButton backBtn, registerBtn;
+    private JButton backBtn, registerBtn;
     private JTextField nameText, trText, usernameText, baseRateAText, basePriceText, baseRateBText, baseInRateText, depotLonText, depotLatText;
     private JPasswordField passwordText;
     private JLabel errorLabel,successLabel;
@@ -177,6 +177,7 @@ public class RegisterUI extends JFrame {
                 baseRateAText.setEditable(true);
                 baseRateBText.setEditable(true);
                 baseInRateText.setEditable(true);
+                basePriceText.setEditable(true);
                 depotLatText.setEditable(true);
                 depotLonText.setEditable(true);
             } else {
@@ -184,6 +185,7 @@ public class RegisterUI extends JFrame {
                 baseRateAText.setEditable(false);
                 baseRateBText.setEditable(false);
                 baseInRateText.setEditable(false);
+                basePriceText.setEditable(false);
                 depotLatText.setEditable(false);
                 depotLonText.setEditable(false);
             }
@@ -457,11 +459,11 @@ public class RegisterUI extends JFrame {
         setResizable(false);
     }
 
-    public static JButton getBackBtn() {
+    public JButton getBackBtn() {
         return backBtn;
     }
 
-    public static JButton getRegisterBtn() {
+    public JButton getRegisterBtn() {
         return registerBtn;
     }
 
@@ -489,6 +491,30 @@ public class RegisterUI extends JFrame {
 
     public String getPasswordText() {
         return new String(passwordText.getPassword());
+    }
+
+    public String getTrText() {
+        return trText.getText().trim().replaceAll(" ","");
+    }
+
+    public float getBaseRateAText() {
+        String s = baseRateAText.getText().trim();
+        return Float.parseFloat(s);
+    }
+
+    public float getBaseRateBText() {
+        String s = baseRateBText.getText().trim();
+        return Float.parseFloat(s);
+    }
+
+    public float getBasePriceText() {
+        String s = basePriceText.getText().trim();
+        return Float.parseFloat(s);
+    }
+
+    public float getBaseInRateText() {
+        String s = baseInRateText.getText().trim();
+        return Float.parseFloat(s);
     }
 
     public float getDepotLatText() {
@@ -529,7 +555,7 @@ public class RegisterUI extends JFrame {
     }
 
     public boolean verifyTRInput() {
-        String text = trText.getText().trim();
+        String text = getTrText();
         return text.matches("^<\\(\\((-?)(0|([1-9][0-9]*))(\\.[0-9]+)?,(-?)(0|([1-9][0-9]*))(\\.[0-9]+)?\\),\\((-?)(0|([1-9][0-9]*))(\\.[0-9]+)?,(-?)(0|([1-9][0-9]*))(\\.[0-9]+)?\\)\\)(,\\(\\((-?)(0|([1-9][0-9]*))(\\.[0-9]+)?,(-?)(0|([1-9][0-9]*))(\\.[0-9]+)?\\),\\((-?)(0|([1-9][0-9]*))(\\.[0-9]+)?,(-?)(0|([1-9][0-9]*))(\\.[0-9]+)?\\)\\))*?>$");
     }
 

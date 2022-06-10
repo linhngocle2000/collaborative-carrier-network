@@ -16,10 +16,9 @@ public class AgentFactory {
 	public static CarrierAgent carrierFromJSON(JSONObject json) {
 		String username = json.getString("Username");
 		String displayname = json.getString("Name");
-		String vehicle = json.getString("Vehicle");
 		float depotX = json.getFloat("DepotLat");
 		float depotY = json.getFloat("DepotLon");
-		CarrierAgent agent = new CarrierAgent(username, displayname, vehicle, depotX, depotY);
+		CarrierAgent agent = new CarrierAgent(username, displayname, depotX, depotY);
 		return agent;
 	}
 

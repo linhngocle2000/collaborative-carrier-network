@@ -231,11 +231,13 @@ public class VisualView {
 
         Font font = Font.decode("couriernew");
         int i = 0;
-        String tour = "<HTML>";
+        String tour = "";
+        String depot = "";
         int j = 0;
         for (VehicleRoute route : solution.getRoutes()) {
             if (i==0) {
-                tour += "[Start] (" + route.getVehicle().getStartLocation().getCoordinate().getX() + "," + route.getVehicle().getStartLocation().getCoordinate().getY()+")";
+                depot = "[Depot] (" + route.getVehicle().getStartLocation().getCoordinate().getX() + "," + route.getVehicle().getStartLocation().getCoordinate().getY()+")";
+                tour += depot;
                 i = 1;
                 j++;
             }
@@ -250,9 +252,9 @@ public class VisualView {
                     j++;
                 }
             }
-
         }
-        tour += "</HTML>";
+        tour += " \u2192 " +depot;
+        
 
 
         JTextPane tourTA = new JTextPane();

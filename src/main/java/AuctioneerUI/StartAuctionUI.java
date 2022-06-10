@@ -17,7 +17,7 @@ import java.awt.*;
 
 
 public class StartAuctionUI extends JFrame {
-    private static JButton logoutBtn;
+    private JButton logoutBtn;
     private JLabel errorLabel, nameLabel;
     private boolean auctionStarted;
 
@@ -255,7 +255,7 @@ public class StartAuctionUI extends JFrame {
     }
 
 
-    public static JButton getLogoutBtn() {
+    public JButton getLogoutBtn() {
         return logoutBtn;
     }
 

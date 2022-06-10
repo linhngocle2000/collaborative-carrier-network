@@ -8,8 +8,8 @@ import java.awt.*;
 
 public class WelcomeUI extends JFrame {
 
-    private static JButton loginBtn;
-    private static JButton registerBtn;
+    private JButton loginBtn;
+    private JButton registerBtn;
 
     private Color background = UIData.getBackground();
     private int width = UIData.getWidth();
@@ -88,11 +88,11 @@ public class WelcomeUI extends JFrame {
     }
 
 
-    public static JButton getRegisterBtn() {
+    public JButton getRegisterBtn() {
         return registerBtn;
     }
 
-    public static JButton getLoginBtn() {
+    public JButton getLoginBtn() {
         return loginBtn;
     }
 
