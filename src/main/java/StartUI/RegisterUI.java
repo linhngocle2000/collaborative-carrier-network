@@ -25,7 +25,7 @@ public class RegisterUI extends JFrame {
         super();
 
         setTitle("CCN");
-        setSize(480, 530);
+        setSize(500, 620);
         setMinimumSize(new Dimension(500, 620));
         setLocationRelativeTo(null);
 
@@ -476,6 +476,7 @@ public class RegisterUI extends JFrame {
         baseRateBText.setEditable(false);
         baseRateAText.setEditable(false);
         baseInRateText.setEditable(false);
+        basePriceText.setEditable(false);
         depotLonText.setEditable(false);
         depotLatText.setEditable(false);
         registerBtn.setEnabled(false);

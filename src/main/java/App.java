@@ -1,13 +1,11 @@
 import Agent.Agent;
-import Agent.CarrierAgent;
 import AuctioneerUI.StartAuctionUI;
 import CarrierUI.AdministrationUI;
-import CarrierUI.CalculatorUI;
+import CarrierUI.CarrierLoginUI;
 import StartUI.LoginUI;
 import StartUI.RegisterUI;
 import StartUI.WelcomeUI;
 import CarrierUI.JoinAuctionUI;
-import CarrierUI.CarrierLoginUI;
 import UIResource.HTTPResource.HTTPRequests;
 import UIResource.Utils;
 import javax.swing.*;
@@ -18,16 +16,9 @@ public class App {
     private static WelcomeUI welcomeUI;
     private static LoginUI loginUI;
     private static RegisterUI registerUI;
-    private static CarrierLoginUI carrierLoginUI;
     private static JoinAuctionUI joinAuctionUI;
     private static StartAuctionUI auctioneerUI;
     private static AdministrationUI adminUI;
-
-    private static JButton welcomeLoginBtn, welcomeRegisterBtn,
-            loginBackBtn, loginLoginBtn, registerBackBtn,
-            carrierLoginLogoutBtn, carrierLoginJoinAuctionBtn,
-            carrierJoinAuctionLogoutBtn, auctioneerLogoutBtn,
-            registerRegisterBtn, carrierLoginAdminBtn;
 
     private static Agent user;
 
@@ -37,33 +28,32 @@ public class App {
         welcomeUI = new WelcomeUI();
         loginUI = new LoginUI();
         registerUI = new RegisterUI();
-        carrierLoginUI = new CarrierLoginUI();
         joinAuctionUI = new JoinAuctionUI();
         auctioneerUI = new StartAuctionUI();
 
+        welcomeUI = new WelcomeUI();
         welcomeUI.setVisible(true);
 
-        welcomeLoginBtn = welcomeUI.getLoginBtn();
+        JButton welcomeLoginBtn = welcomeUI.getLoginBtn();
         welcomeLoginBtn.addActionListener(e -> {
             welcomeUI.setVisible(false);
             loginUI.setVisible(true);
         });
 
-        welcomeRegisterBtn = welcomeUI.getRegisterBtn();
+        JButton welcomeRegisterBtn = welcomeUI.getRegisterBtn();
         welcomeRegisterBtn.addActionListener(e -> {
             welcomeUI.setVisible(false);
             registerUI.setVisible(true);
         });
 
-        loginBackBtn = loginUI.getBackBtn();
+        JButton loginBackBtn = loginUI.getBackBtn();
         loginBackBtn.addActionListener(e -> {
             loginUI.setVisible(false);
             welcomeUI.setVisible(true);
         });
 
-        registerRegisterBtn = registerUI.getRegisterBtn();
+        JButton registerRegisterBtn = registerUI.getRegisterBtn();
         registerRegisterBtn.addActionListener(e -> {
-
             try {
                 registerUI.setErrorLabel("");
                 if (!registerUI.areAllFieldsFilled()) {
@@ -94,7 +84,9 @@ public class App {
                         throw new Exception("Username " + username + " is already used.");
                     }
                     ArrayList<Float> tr = Utils.convertStringToTR(transReq);
+                    Agent agent = HTTPRequests.login(username, password);
                     for (int i = 0; i<(tr.size()); i+=4) {
+                        HTTPRequests.addTransportRequest(agent, tr.get(i), tr.get(i+1), tr.get(i+2), tr.get(i+3));
                     }
                 } else {
                     if (!HTTPRequests.registerAuctioneer(name, username, password)) {
@@ -109,13 +101,13 @@ public class App {
             }
         });
 
-        registerBackBtn = registerUI.getBackBtn();
+        JButton registerBackBtn = registerUI.getBackBtn();
         registerBackBtn.addActionListener(e -> {
             registerUI.setVisible(false);
             welcomeUI.setVisible(true);
         });
 
-        loginLoginBtn = loginUI.getLoginBtn();
+        JButton loginLoginBtn = loginUI.getLoginBtn();
         loginUI.getRootPane().setDefaultButton(loginLoginBtn);
         loginLoginBtn.addActionListener(e -> {
             String username = loginUI.getNameText();
@@ -131,41 +123,32 @@ public class App {
                 auctioneerUI.setNameLabel(user.getDisplayname());
                 auctioneerUI.setVisible(true);
             } else {
-                carrierLoginUI.setNameLabel(user.getDisplayname());
-                carrierLoginUI.setVisible(true);
                 adminUI = new AdministrationUI(user);
+                joinAuctionUI.setNameLabel(user.getDisplayname());
+                joinAuctionUI.setVisible(true);
             }
         });
 
-        carrierLoginLogoutBtn = carrierLoginUI.getLogoutBtn();
-        carrierLoginLogoutBtn.addActionListener(e -> {
-            carrierLoginUI.setVisible(false);
-            welcomeUI.setVisible(true);
-        });
-
-        carrierLoginJoinAuctionBtn = carrierLoginUI.getJoinAuctionBtn();
-        carrierLoginJoinAuctionBtn.addActionListener(e -> {
-            joinAuctionUI.setNameLabel(user.getDisplayname());
-            joinAuctionUI.setVisible(true);
-        });
-
-        carrierLoginAdminBtn = carrierLoginUI.getAdministrationBtn();
-        carrierLoginAdminBtn.addActionListener(e -> {
+        JButton carrierJoinAuctionMyTRBtn = joinAuctionUI.getMyTRBtn();
+        carrierJoinAuctionMyTRBtn.addActionListener(e -> {
             adminUI.setVisible(true);
-        });
-
-        carrierJoinAuctionLogoutBtn = joinAuctionUI.getLogoutBtn();
-        carrierJoinAuctionLogoutBtn.addActionListener(e -> {
-            joinAuctionUI.setVisible(false);
-            joinAuctionUI.reset();
-            welcomeUI.setVisible(true);
             // Reset data
             user = null;
             HTTPRequests.logout();
 
         });
 
-        auctioneerLogoutBtn = auctioneerUI.getLogoutBtn();
+        JButton carrierJoinAuctionLogoutBtn = joinAuctionUI.getLogoutBtn();
+        carrierJoinAuctionLogoutBtn.addActionListener(e -> {
+            adminUI.setVisible(false);
+            joinAuctionUI.setVisible(false);
+            welcomeUI.setVisible(true);
+            // Reset data
+            user = null;
+            HTTPRequests.logout();
+        });
+
+        JButton auctioneerLogoutBtn = auctioneerUI.getLogoutBtn();
         auctioneerLogoutBtn.addActionListener(e -> {
             auctioneerUI.setVisible(false);
             welcomeUI.setVisible(true);

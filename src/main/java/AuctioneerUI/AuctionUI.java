@@ -11,7 +11,7 @@ import java.text.SimpleDateFormat;
 
 public class AuctionUI extends JFrame {
 
-    private static JLabel trReq, owner, startPrice, lowestBid,
+    private static JLabel trReq, owner, lowestBid,
             currentBidder, iteration;
 
     private Color background = UIData.getBackground();
@@ -94,27 +94,6 @@ public class AuctionUI extends JFrame {
         constraints.insets = new Insets(15, 0, 0, 0);
         topPanel.add(owner, constraints);
 
-        JLabel startPriceLabel = new JLabel("Start price (\u20AC): ");
-        startPriceLabel.setFont(font.deriveFont(Font.BOLD, 12));
-        startPriceLabel.setHorizontalAlignment(SwingConstants.CENTER);
-
-        constraints = new GridBagConstraints();
-        constraints.gridx = 0;
-        constraints.gridy = 2;
-        constraints.anchor = GridBagConstraints.NORTHWEST;
-        constraints.insets = new Insets(15, 0, 0, 15);
-        topPanel.add(startPriceLabel, constraints);
-
-        startPrice = new JLabel("1000.00");
-        startPrice.setFont(font.deriveFont(Font.PLAIN, 12));
-        startPrice.setHorizontalAlignment(SwingConstants.CENTER);
-
-        constraints = new GridBagConstraints();
-        constraints.gridx = 1;
-        constraints.gridy = 2;
-        constraints.anchor = GridBagConstraints.NORTHWEST;
-        constraints.insets = new Insets(15, 0, 0, 0);
-        topPanel.add(startPrice, constraints);
 
         JLabel iterationLabel = new JLabel("Iteration: ");
         iterationLabel.setFont(font.deriveFont(Font.BOLD, 12));
@@ -122,7 +101,7 @@ public class AuctionUI extends JFrame {
 
         constraints = new GridBagConstraints();
         constraints.gridx = 0;
-        constraints.gridy = 3;
+        constraints.gridy = 2;
         constraints.anchor = GridBagConstraints.NORTHWEST;
         constraints.insets = new Insets(15, 0, 15, 15);
         topPanel.add(iterationLabel, constraints);
@@ -133,7 +112,7 @@ public class AuctionUI extends JFrame {
 
         constraints = new GridBagConstraints();
         constraints.gridx = 1;
-        constraints.gridy = 3;
+        constraints.gridy = 2;
         constraints.anchor = GridBagConstraints.NORTHWEST;
         constraints.insets = new Insets(15, 0, 15, 0);
         topPanel.add(iteration, constraints);
@@ -222,9 +201,6 @@ public class AuctionUI extends JFrame {
         owner.setText(s);
     }
 
-    public void setStartPrice(String s) {
-        startPrice.setText(s);
-    }
 
     public void setIteration(String s) {
         iteration.setText(s);

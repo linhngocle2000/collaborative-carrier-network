@@ -198,10 +198,9 @@ public class StartAuctionUI extends JFrame {
 
         startBtn.addActionListener(e -> {
             AuctionUI auctionUI = new AuctionUI();
-            int iter = Integer.parseInt(table.getModel().getValueAt(table.getSelectedRow(), 3).toString());
+            int iter = Integer.parseInt(table.getModel().getValueAt(table.getSelectedRow(), 2).toString());
             auctionUI.setTrReq(table.getModel().getValueAt(table.getSelectedRow(), 0).toString());
             auctionUI.setOwner(table.getModel().getValueAt(table.getSelectedRow(), 1).toString());
-            auctionUI.setStartPrice(table.getModel().getValueAt(table.getSelectedRow(), 2).toString());
             auctionUI.setIteration(Integer.toString(iter+1));
             auctionUI.setVisible(true);
             startBtn.setEnabled(false);

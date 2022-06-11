@@ -71,8 +71,7 @@ public class HTTPRequests {
 
             var data = json.getJSONObject("data");
             token = data.getString("Token");
-            Agent agent = AgentFactory.fromJSON(data.getJSONObject("Agent"));
-            return agent;
+            return AgentFactory.fromJSON(data.getJSONObject("Agent"));
         } catch (IOException | InterruptedException e) {
             lastError = e;
             return null;
@@ -88,8 +87,7 @@ public class HTTPRequests {
     public static Agent getAgent(String username) {
         try {
             var json = send(RequestBody.getAgent(username, token));
-            var agent = AgentFactory.fromJSON(json);
-            return agent;
+            return AgentFactory.fromJSON(json);
         } catch (IOException | InterruptedException e) {
             e.printStackTrace();
             lastError = e;
@@ -101,7 +99,7 @@ public class HTTPRequests {
         try {
             var json = send(RequestBody.getAllAgents(token));
             var array = json.getJSONArray("data");
-            List<Agent> result = new ArrayList<Agent>(array.length());
+            List<Agent> result = new ArrayList<>(array.length());
             array.forEach(obj -> result.add(AgentFactory.fromJSON((JSONObject)obj)));
             return result;
         } catch (IOException | InterruptedException e) {
@@ -115,7 +113,7 @@ public class HTTPRequests {
         try {
             var json = send(RequestBody.getCarrierAgents(token));
             var array = json.getJSONArray("data");
-            List<CarrierAgent> result = new ArrayList<CarrierAgent>(array.length());
+            List<CarrierAgent> result = new ArrayList<>(array.length());
             array.forEach(obj -> result.add(AgentFactory.carrierFromJSON((JSONObject) obj)));
             return result;
         } catch (IOException | InterruptedException e) {
@@ -129,7 +127,7 @@ public class HTTPRequests {
         try {
             var json = send(RequestBody.getAuctioneerAgents(token));
             var array = json.getJSONArray("data");
-            List<AuctioneerAgent> result = new ArrayList<AuctioneerAgent>(array.length());
+            List<AuctioneerAgent> result = new ArrayList<>(array.length());
             array.forEach(obj -> result.add(AgentFactory.auctioneerFromJSON((JSONObject) obj)));
             return result;
         } catch (IOException | InterruptedException e) {
@@ -141,15 +139,12 @@ public class HTTPRequests {
 
     // Transport request
 
-    public static TransportRequest addTransportRequest(Agent agent, float pickupX, float pickupY, float deliveryX, float deliveryY) {
+    public static void addTransportRequest(Agent agent, float pickupX, float pickupY, float deliveryX, float deliveryY) {
         try {
-            var json = send(RequestBody.addTransportRequest(agent, pickupX, pickupY, deliveryX, deliveryY, token));
-            int id = json.getInt("data");
-            return new TransportRequest(id, agent, pickupX, pickupY, deliveryX, deliveryY);
+            send(RequestBody.addTransportRequest(agent, pickupX, pickupY, deliveryX, deliveryY, token));
         } catch (IOException | InterruptedException e) {
             e.printStackTrace();
             lastError = e;
-            return null;
         }
     }
 
@@ -158,7 +153,7 @@ public class HTTPRequests {
             // Load requests
             var json = send(RequestBody.getTransportRequestsOfAgent(agent, token));
             var array = json.getJSONArray("data");
-            List<TransportRequest> result = new ArrayList<TransportRequest>(array.length());
+            List<TransportRequest> result = new ArrayList<>(array.length());
             array.forEach(obj -> {
                 JSONObject j = (JSONObject)obj;
                 if (j.getString("Owner").equals(agent.getUsername())) {
@@ -197,7 +192,6 @@ public class HTTPRequests {
                 .POST(HttpRequest.BodyPublishers.ofString(body))
                 .build();
         HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
-        JSONObject obj = new JSONObject(response.body());
-        return obj;
+        return new JSONObject(response.body());
     }
 }

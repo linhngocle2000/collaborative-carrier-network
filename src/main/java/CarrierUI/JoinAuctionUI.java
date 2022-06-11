@@ -14,7 +14,7 @@ import java.awt.*;
 
 public class JoinAuctionUI extends JFrame {
 
-    private JButton bidBtn, logoutBtn;
+    private JButton bidBtn, logoutBtn, myTRBtn;
     private JTextField auctionText, priceText;
     private JLabel errorLabel, nameLabel;
 
@@ -147,6 +147,22 @@ public class JoinAuctionUI extends JFrame {
         constraints.insets = new java.awt.Insets(30, 3, 10, 3);
         rootPanel.add(bidBtn, constraints);
 
+        myTRBtn = new JButton();
+        myTRBtn.setText("<HTML><U>My transport requests</U></HTML>");
+        myTRBtn.setFocusPainted(false);
+        myTRBtn.setBorder(emptyBorder);
+        myTRBtn.setBackground(background);
+        myTRBtn.setFont(font.deriveFont(Font.PLAIN, 12));
+
+        constraints = new GridBagConstraints();
+        constraints.gridx = 0;
+        constraints.gridy = 1;
+        constraints.gridwidth = GridBagConstraints.REMAINDER;
+        constraints.anchor = GridBagConstraints.CENTER;
+        constraints.insets = new java.awt.Insets(0, 0, 25, 0);
+        rootPanel.add(myTRBtn, constraints);
+
+
 
         logoutBtn = new JButton();
         logoutBtn.setText("<HTML><U>Logout</U></HTML>");
@@ -261,6 +277,10 @@ public class JoinAuctionUI extends JFrame {
 
     public JButton getLogoutBtn() {
         return logoutBtn;
+    }
+
+    public JButton getMyTRBtn() {
+        return myTRBtn;
     }
 
     public void setNameLabel(String s) {

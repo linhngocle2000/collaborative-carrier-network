@@ -1,5 +1,6 @@
 package UIResource.HTTPResource;
 
+import org.json.JSONArray;
 import org.json.JSONObject;
 
 import Agent.Agent;
@@ -62,12 +63,14 @@ public class RequestBody {
     // Transport request
 
     public static String addTransportRequest(Agent agent, float pickX, float pickY, float delX, float delY, String token) {
-        JSONObject data = new JSONObject();
-        data.put("Agent", agent.getUsername());
-        data.put("PickupLat", pickX);
-        data.put("PickupLon", pickY);
-        data.put("DeliveryLat", delX);
-        data.put("DeliveryLon", delY);
+        JSONArray data = new JSONArray();
+        JSONObject objInArray = new JSONObject();
+        objInArray.put("Agent", agent.getUsername());
+        objInArray.put("PickupLat", pickX);
+        objInArray.put("PickupLon", pickY);
+        objInArray.put("DeliveryLat", delX);
+        objInArray.put("DeliveryLon", delY);
+        data.put(objInArray);
         return body("addRequest", token, data);
     }
 
@@ -83,7 +86,7 @@ public class RequestBody {
 
     // Helper
 
-    private static String body(String command, String token, JSONObject data) {
+    private static String body(String command, String token, Object data) {
         JSONObject requestBody = new JSONObject();
         requestBody.put("Cmd", command);
         if (token != null) {
