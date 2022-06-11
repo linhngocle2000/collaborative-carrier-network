@@ -1,11 +1,13 @@
 package CarrierUI;
 
-import Utils.TourPlanningUI;
+import Auction.TransportRequest;
+import Utils.TourPlanning;
+import Utils.TourVisual;
 import UIResource.TableData;
 import UIResource.UIData;
 import UIResource.scrollbar.ScrollBarCustom;
 import UIResource.TextIcon;
-import Agent.Agent;
+import Agent.CarrierAgent;
 
 import javax.swing.*;
 import javax.swing.border.*;
@@ -13,8 +15,9 @@ import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableColumnModel;
 import java.awt.*;
+import java.util.List;
 
-import UIResource.Utils;
+import Utils.Converter;
 import com.graphhopper.jsprit.core.problem.Location;
 import org.openide.awt.*;
 
@@ -27,35 +30,28 @@ public class AdministrationUI extends JFrame {
     private VisualizationUI visUI;
     private JPanel leftVisualPanel, rightVisualPanel;
     private CalculatorUI costCalcUI;
+    private TourPlanning tour;
 
-    Object[][] data = {
-            {"((0,1),(2,3))", "1000"},
-            {"((4,5),(8,9))", "1000"},
-            {"((32,5),(13,53))", "1000"},
-            {"((76,32),(-87,34))", "1000"},
-            {"((76,22),(4,93))", "1000"},
-            {"((62,13),(76,23))", "1000"},
-            {"((20,46),(78,23))", "1000"},
-            {"((10,3),(82,6))", "1000"},
-            {"((9,34),(29,98))", "1000"},
-            {"((14,97),(2,41))", "1000"},
-            {"((83,37),(25,6))", "1000"},
-            {"((94,87),(85,45))", "1000"},
-            {"((43,1),(36,64))", "1000"}
-    };
+    Object[][] data;
 
-    public AdministrationUI(Agent user) {
+    public AdministrationUI(CarrierAgent carrier) {
 
         super();
 
+        tour = new TourPlanning(carrier);
+        List<TransportRequest> trList = tour.getRequests();
+        float[] profit
+        for (TransportRequest tr : trList)
+
+        data = TableData.createRequestObject(carrier);
         visUI = new VisualizationUI();
         leftVisualPanel = visUI.getLeftVisualPanel();
         rightVisualPanel = visUI.getRightVisualPanel();
 
         costCalcUI = new CalculatorUI();
 
-        setMinimumSize(new Dimension(450, 540));
-        setPreferredSize(new Dimension(450, 540));
+        setMinimumSize(new Dimension(550, 700));
+        setPreferredSize(new Dimension(550, 700));
 
 
         setTitle("CCN");
@@ -66,11 +62,12 @@ public class AdministrationUI extends JFrame {
         JPanel leftPanel = new JPanel();
         leftPanel.setBackground(background);
         leftPanel.setLayout(new GridBagLayout());
+
         JPanel leftBottomPanel = new JPanel();
         leftBottomPanel.setBackground(background);
 
-
-
+        JPanel totalPanel = new JPanel();
+        leftBottomPanel.setBackground(background);
 
 
         JLabel tableHeader = new JLabel("Transport requests");
@@ -109,9 +106,10 @@ public class AdministrationUI extends JFrame {
         centerRenderer.setHorizontalAlignment(JLabel.CENTER);
 
         TableColumnModel columnModel = table.getColumnModel();
-        columnModel.getColumn(0).setPreferredWidth(230);
-        columnModel.getColumn(1).setPreferredWidth(150);
-        for (int i = 0; i<2; i++) {
+        columnModel.getColumn(0).setPreferredWidth(70);
+        columnModel.getColumn(1).setPreferredWidth(230);
+        columnModel.getColumn(2).setPreferredWidth(150);
+        for (int i = 0; i<3; i++) {
             columnModel.getColumn(i).setCellRenderer(centerRenderer);
         }
         JScrollPane scrollPane = new JScrollPane(table);
@@ -120,9 +118,9 @@ public class AdministrationUI extends JFrame {
         table.clearSelection();
 
         if (data.length <= 12) {
-            scrollPane.setPreferredSize(new Dimension(380, data.length*25+23));
+            scrollPane.setPreferredSize(new Dimension(450, data.length*25+23));
         } else {
-            scrollPane.setPreferredSize(new Dimension(380, 323));
+            scrollPane.setPreferredSize(new Dimension(450, 323));
             scrollPane.setVerticalScrollBar(new ScrollBarCustom(12, data.length));
         }
 
@@ -133,6 +131,8 @@ public class AdministrationUI extends JFrame {
         constraints.anchor = GridBagConstraints.CENTER;
         constraints.insets = new Insets(0, 0, 0, 0);
         leftPanel.add(scrollPane, constraints);
+
+
 
         JButton auctionOff = new JButton("Auction off");
         auctionOff.setFocusPainted(false);
@@ -152,13 +152,13 @@ public class AdministrationUI extends JFrame {
                 visUI.setVisible(true);
             }
             Location depot = Location.newInstance(23.76, 7.82);
-            TourPlanningUI currentTour = new TourPlanningUI(depot, "amy");
+            TourVisual currentTour = new TourVisual(depot, carrier.getUsername());
             int[] selectedRow = table.getSelectedRows();
             float[] tr;
             String requestID;
             for (int i = 0; i < table.getSelectedRowCount(); i++) {
-                requestID = Integer.toString(i);
-                tr = Utils.convertTransportRequests(table.getValueAt(selectedRow[i],0).toString());
+                requestID = table.getValueAt(selectedRow[i],0).toString();
+                tr = Converter.convertTransportRequests(table.getValueAt(selectedRow[i],1).toString());
                 Location pickup = Location.newInstance(tr[0], tr[1]);
                 Location deliver = Location.newInstance(tr[2], tr[3]);
                 currentTour.addRequest(requestID, pickup, deliver);
@@ -177,13 +177,13 @@ public class AdministrationUI extends JFrame {
                 visUI.setVisible(true);
             }
             Location depot = Location.newInstance(23.76, 7.82);
-            TourPlanningUI currentTour = new TourPlanningUI(depot, "amy");
+            TourVisual currentTour = new TourVisual(depot, carrier.getUsername());
             int[] selectedRow = table.getSelectedRows();
             float[] tr;
             String requestID;
             for (int i = 0; i < table.getSelectedRowCount(); i++) {
-                requestID = Integer.toString(i);
-                tr = Utils.convertTransportRequests(table.getValueAt(selectedRow[i],0).toString());
+                requestID = table.getValueAt(selectedRow[i],0).toString();
+                tr = Converter.convertTransportRequests(table.getValueAt(selectedRow[i],1).toString());
                 Location pickup = Location.newInstance(tr[0], tr[1]);
                 Location deliver = Location.newInstance(tr[2], tr[3]);
                 currentTour.addRequest(requestID, pickup, deliver);

@@ -1,10 +1,10 @@
-package UIResource;
+package Utils;
 
 import java.util.ArrayList;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class Utils {
+public class Converter {
 
     public static float[] convertTransportRequests(String s){
         float[] res = new float [4];

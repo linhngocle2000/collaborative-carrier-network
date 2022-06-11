@@ -42,13 +42,6 @@ public class TourPlanning {
 
    private CostCalculator cost;
 
-   
-   // // Initial a tour with depot location and username or username
-   // public TourPlanning(Location depot, String username) {
-   //    this.depot = depot;
-   //    this.username = username;
-   // }
-
 
    /**
     * Initial a tour with agent ID
@@ -56,10 +49,10 @@ public class TourPlanning {
    public TourPlanning(CarrierAgent agent) {
       this.agent = agent;
       setDepot(agent.getDepotX(), agent.getDepotY());
-      // this.costPerDistance = agent.getCostPerDistance();
-      // this.fixedCost = agent.getFixedCost();
-      // this.internalCost = agent.getInternalCost();
-      // this.loadingCost = agent.getLoadingCost();
+      this.costPerDistance = agent.getCostPerDistance();
+      this.fixedCost = agent.getFixedCost();
+      this.internalCost = agent.getInternalCost();
+      this.loadingCost = agent.getLoadingCost();
       refreshRequests();
    }
 
@@ -70,24 +63,6 @@ public class TourPlanning {
    public void refreshRequests() {
       this.requests = HTTPRequests.getTransportRequestsOfAgent(agent);
    }
-
-
-   /**
-    * Add new request to request list of current tour
-    */
-   public void addRequest(TransportRequest request) {
-      requests.add(request);
-   }
-
-
-   /**
-    * Visualize the optimal tour base on current list of request
-    */
-   public JPanel visualize() {
-      tourOptimize();
-      return new VisualView(problem, bestSolution).display();
-   }
-
 
    /**
     * Tour optimize
@@ -103,15 +78,15 @@ public class TourPlanning {
     * Build a vehicle with vehicle type, capacity, username and set it to depot location
     */
    private void vehicleRegister() {
-      
-		final int WEIGHT_INDEX = 0;
-		VehicleTypeImpl.Builder vehicleTypeBuilder = VehicleTypeImpl.Builder.newInstance("MiniCooper").addCapacityDimension(WEIGHT_INDEX, 2);
-		VehicleType vehicleType = vehicleTypeBuilder.build();
+
+      final int WEIGHT_INDEX = 0;
+      VehicleTypeImpl.Builder vehicleTypeBuilder = VehicleTypeImpl.Builder.newInstance("MiniCooper").addCapacityDimension(WEIGHT_INDEX, 2);
+      VehicleType vehicleType = vehicleTypeBuilder.build();
       
       Builder vehicleBuilder = VehicleImpl.Builder.newInstance(agent.getUsername());
-		vehicleBuilder.setStartLocation(depot);
-		vehicleBuilder.setType(vehicleType);
-		vehicle = vehicleBuilder.build();
+      vehicleBuilder.setStartLocation(depot);
+      vehicleBuilder.setType(vehicleType);
+      vehicle = vehicleBuilder.build();
    }
 
 
@@ -227,33 +202,18 @@ public class TourPlanning {
       return this.costPerDistance;
    }
 
-   // public void setCostPerDistance(double costPerDistance) {
-   //    this.costPerDistance = costPerDistance;
-   // }
-
    public double getFixedCost() {
       return this.fixedCost;
    }
 
-   // public void setFixedCost(double fixCost) {
-   //    this.fixedCost = fixCost;
-   // }
 
    public double getInternalCost() {
       return this.internalCost;
    }
 
-   // public void setInternalCost(double internalCost) {
-   //    this.internalCost = internalCost;
-   // }
-
    public double getLoadingCost() {
       return this.loadingCost;
    }
-
-   // public void setLoadingCost(double loadingCost) {
-   //    this.loadingCost = loadingCost;
-   // }
 
    public Location getDepot() {
       return this.depot;

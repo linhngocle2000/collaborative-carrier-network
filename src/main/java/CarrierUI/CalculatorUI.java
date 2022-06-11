@@ -1,7 +1,5 @@
 package CarrierUI;
 import UIResource.UIData;
-import Utils.TourPlanningUI;
-import com.graphhopper.jsprit.core.problem.Location;
 
 import javax.swing.*;
 import javax.swing.border.Border;

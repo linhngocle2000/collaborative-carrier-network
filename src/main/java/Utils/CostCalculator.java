@@ -1,6 +1,7 @@
 package Utils;
 
 import java.util.List;
+import java.util.Objects;
 
 import com.graphhopper.jsprit.core.problem.Location;
 import com.graphhopper.jsprit.core.problem.solution.route.VehicleRoute;
@@ -16,7 +17,7 @@ public class CostCalculator {
 
 
    /**
-    * Initial the calculation based on current tour
+    * Initial the calculation base on current tour
     */
    public CostCalculator(TourPlanning currentTour) {
       this.currentTour = currentTour;
@@ -100,7 +101,7 @@ public class CostCalculator {
    				jobID = ((JobActivity) act).getJob().getId();
    				deliver = act.getLocation();
    				distance += EuclideanDistanceCalculator.calculateDistance(pickup.getCoordinate(), deliver.getCoordinate());
-   				if (jobID == requestID && act.getName() == "deliverShipment") {
+   				if (Objects.equals(jobID, requestID) && Objects.equals(act.getName(), "deliverShipment")) {
    					break;
    				}
    				pickup = deliver;

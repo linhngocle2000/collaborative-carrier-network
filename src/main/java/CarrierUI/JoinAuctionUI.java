@@ -51,7 +51,7 @@ public class JoinAuctionUI extends JFrame {
         setMinimumSize(new Dimension(width, height));
         setLocationRelativeTo(null);
 
-        setDefaultCloseOperation(HIDE_ON_CLOSE);
+        setDefaultCloseOperation(EXIT_ON_CLOSE);
 
         JPanel leftPanel = new JPanel();
         leftPanel.setLayout(new BorderLayout());

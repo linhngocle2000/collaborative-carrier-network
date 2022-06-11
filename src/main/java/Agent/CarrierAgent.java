@@ -23,6 +23,22 @@ public class CarrierAgent extends Agent {
 		return depotX;
 	}
 
+	public float getCostPerDistance() {
+		return (float) 1000.00;
+	}
+
+	public float getFixedCost() {
+		return (float) 1000.00;
+	}
+
+	public float getInternalCost() {
+		return (float) 1000.00;
+	}
+
+	public float getLoadingCost() {
+		return (float) 1000.00;
+	}
+
 	public float getDepotY() {
 		return depotY;
 	}

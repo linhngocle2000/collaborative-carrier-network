@@ -4,28 +4,39 @@ import com.graphhopper.jsprit.core.algorithm.VehicleRoutingAlgorithm;
 import com.graphhopper.jsprit.core.algorithm.box.SchrimpfFactory;
 import com.graphhopper.jsprit.core.problem.Location;
 import com.graphhopper.jsprit.core.problem.VehicleRoutingProblem;
+import com.graphhopper.jsprit.core.problem.job.Activity;
+import com.graphhopper.jsprit.core.problem.job.Job;
 import com.graphhopper.jsprit.core.problem.job.Shipment;
 import com.graphhopper.jsprit.core.problem.solution.VehicleRoutingProblemSolution;
 import com.graphhopper.jsprit.core.problem.solution.route.VehicleRoute;
-import com.graphhopper.jsprit.core.problem.solution.route.activity.TourActivity;
+import com.graphhopper.jsprit.core.problem.solution.route.activity.DeliveryActivity;
+import com.graphhopper.jsprit.core.problem.solution.route.activity.PickupActivity;
+
+import com.graphhopper.jsprit.core.problem.vehicle.Vehicle;
 import com.graphhopper.jsprit.core.problem.vehicle.VehicleImpl;
 import com.graphhopper.jsprit.core.problem.vehicle.VehicleImpl.Builder;
 import com.graphhopper.jsprit.core.problem.vehicle.VehicleType;
 import com.graphhopper.jsprit.core.problem.vehicle.VehicleTypeImpl;
-import com.graphhopper.jsprit.core.util.EuclideanDistanceCalculator;
 import com.graphhopper.jsprit.core.util.Solutions;
+import com.graphhopper.jsprit.core.util.Time;
+import org.graphstream.graph.Edge;
+import org.graphstream.graph.Graph;
+import org.graphstream.graph.Node;
+import org.graphstream.graph.implementations.MultiGraph;
+import org.graphstream.ui.swingViewer.ViewPanel;
+import org.graphstream.ui.view.View;
+import org.graphstream.ui.view.Viewer;
+
+import javax.swing.*;
+import java.awt.*;
 
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-import javax.swing.JPanel;
 
-public class TourPlanningUI {
-    private double costPerDistance = 1.0;
-    private double fixedCost = 0.0;
-    private double internalCost = 0.0;
-    private double loadingCost = 0.0;
+public class TourVisual {
+
     private Location depot;
     private String vehicleID;
 
@@ -37,7 +48,7 @@ public class TourPlanningUI {
 
     private List<Shipment> requests = new ArrayList<>();
 
-    public TourPlanningUI(Location depot, String vehicleID) {
+    public TourVisual(Location depot, String vehicleID) {
         this.depot = depot;
         this.vehicleID = vehicleID;
     }
@@ -66,7 +77,6 @@ public class TourPlanningUI {
     }
 
     private void setProblem() {
-        // List<Shipment> requests = TransportRequest.generateRequest(new ArrayList<>());
 
         VehicleRoutingProblem.Builder vrpBuilder = VehicleRoutingProblem.Builder.newInstance();
         vrpBuilder.addVehicle(vehicle);
@@ -78,38 +88,26 @@ public class TourPlanningUI {
     }
 
 
+
     private void tourOptimize() {
         VehicleRoutingAlgorithm algorithm = new SchrimpfFactory().createAlgorithm(problem);
         Collection<VehicleRoutingProblemSolution> solutions = algorithm.searchSolutions();
         bestSolution = Solutions.bestOf(solutions);
 
-        // SolutionPrinter.print(problem, bestSolution, SolutionPrinter.Print.VERBOSE);
     }
 
     public JPanel visualize() {
         vehicleRegister();
         setProblem();
         tourOptimize();
-        // CostCalculator cost = new CostCalculator(this);
         return new VisualView(problem, bestSolution).display();
-    }
-
-
-    public Location getDepot() {
-        return this.depot;
-    }
-
-    public void setDepot(Location depot) {
-        this.depot = depot;
     }
 
     public VehicleRoutingProblemSolution getBestSolution() {
         return this.bestSolution;
     }
 
-    public List<Shipment> getRequests() {
-        return this.requests;
-    }
-
 }
+
+
 

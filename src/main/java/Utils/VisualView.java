@@ -22,7 +22,6 @@ import org.graphstream.ui.view.Viewer;
 import javax.swing.*;
 import java.awt.*;
 
-
 public class VisualView {
 
     private String STYLESHEET =   "node {" +
@@ -231,30 +230,30 @@ public class VisualView {
 
         Font font = Font.decode("couriernew");
         int i = 0;
-        String tour = "";
+        StringBuilder tour = new StringBuilder();
         String depot = "";
         int j = 0;
         for (VehicleRoute route : solution.getRoutes()) {
             if (i==0) {
                 depot = "[Depot] (" + route.getVehicle().getStartLocation().getCoordinate().getX() + "," + route.getVehicle().getStartLocation().getCoordinate().getY()+")";
-                tour += depot;
+                tour.append(depot);
                 i = 1;
                 j++;
             }
 
             for (TourActivity act : route.getActivities()) {
-                tour += " \u2192 ";
+                tour.append(" \u2192 ");
                 if (act.getName().equals("pickupShipment")) {
-                    tour += "[Pickup] ("+ act.getLocation().getCoordinate().getX()+","+act.getLocation().getCoordinate().getY()+")";
+                    tour.append("[Pickup] (").append(act.getLocation().getCoordinate().getX()).append(",").append(act.getLocation().getCoordinate().getY()).append(")");
                     j++;
                 } else {
-                    tour += "[Deliver] ("+ act.getLocation().getCoordinate().getX()+","+act.getLocation().getCoordinate().getY()+")";
+                    tour.append("[Deliver] (").append(act.getLocation().getCoordinate().getX()).append(",").append(act.getLocation().getCoordinate().getY()).append(")");
                     j++;
                 }
             }
         }
-        tour += " \u2192 " +depot;
-        
+        tour.append(" \u2192 ").append(depot);
+
 
 
         JTextPane tourTA = new JTextPane();
@@ -262,7 +261,7 @@ public class VisualView {
         tourTA.setForeground(Color.BLACK);
         tourTA.setFont(font);
         tourTA.setContentType("text/html");
-        tourTA.setText(tour);
+        tourTA.setText(tour.toString());
         JScrollPane jsp = new JScrollPane(tourTA);
         jsp.setMinimumSize(new Dimension(550, 100));
         jsp.setPreferredSize(new Dimension(550, 100));
@@ -376,6 +375,3 @@ public class VisualView {
     }
 
 }
-
-
-

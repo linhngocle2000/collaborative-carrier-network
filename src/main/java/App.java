@@ -1,13 +1,13 @@
 import Agent.Agent;
+import Agent.CarrierAgent;
 import AuctioneerUI.StartAuctionUI;
 import CarrierUI.AdministrationUI;
-import CarrierUI.CarrierLoginUI;
 import StartUI.LoginUI;
 import StartUI.RegisterUI;
 import StartUI.WelcomeUI;
 import CarrierUI.JoinAuctionUI;
 import UIResource.HTTPResource.HTTPRequests;
-import UIResource.Utils;
+import Utils.Converter;
 import javax.swing.*;
 import java.util.ArrayList;
 
@@ -83,7 +83,7 @@ public class App {
                     if (!HTTPRequests.registerCarrier(name, username, password, depotX, depotY, pickupBaserate, externalTravelCost, loadBaserate, internalTravelCost)) {
                         throw new Exception("Username " + username + " is already used.");
                     }
-                    ArrayList<Float> tr = Utils.convertStringToTR(transReq);
+                    ArrayList<Float> tr = Converter.convertStringToTR(transReq);
                     Agent agent = HTTPRequests.login(username, password);
                     for (int i = 0; i<(tr.size()); i+=4) {
                         HTTPRequests.addTransportRequest(agent, tr.get(i), tr.get(i+1), tr.get(i+2), tr.get(i+3));
@@ -117,26 +117,21 @@ public class App {
                 loginUI.setErrorLabel("Incorrect username/password.");
                 return;
             }
-            loginUI.setVisible(false);
-            loginUI.reset();
             if (user.isAuctioneer()) {
                 auctioneerUI.setNameLabel(user.getDisplayname());
                 auctioneerUI.setVisible(true);
             } else {
-                adminUI = new AdministrationUI(user);
+                CarrierAgent carrier = HTTPRequests.getCarrierAgent(username);
+                adminUI = new AdministrationUI(carrier);
                 joinAuctionUI.setNameLabel(user.getDisplayname());
                 joinAuctionUI.setVisible(true);
             }
+            loginUI.setVisible(false);
+            loginUI.reset();
         });
 
         JButton carrierJoinAuctionMyTRBtn = joinAuctionUI.getMyTRBtn();
-        carrierJoinAuctionMyTRBtn.addActionListener(e -> {
-            adminUI.setVisible(true);
-            // Reset data
-            user = null;
-            HTTPRequests.logout();
-
-        });
+        carrierJoinAuctionMyTRBtn.addActionListener(e -> adminUI.setVisible(true));
 
         JButton carrierJoinAuctionLogoutBtn = joinAuctionUI.getLogoutBtn();
         carrierJoinAuctionLogoutBtn.addActionListener(e -> {
