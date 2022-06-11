@@ -1,15 +1,10 @@
 package AuctioneerUI;
 
-import UIResource.TableData;
-
 import UIResource.UIData;
 import UIResource.scrollbar.ScrollBarCustom;
 import javax.swing.*;
 import javax.swing.border.Border;
 
-import javax.swing.border.CompoundBorder;
-import javax.swing.border.EmptyBorder;
-import javax.swing.border.MatteBorder;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableColumnModel;
@@ -20,6 +15,7 @@ public class StartAuctionUI extends JFrame {
     private JButton logoutBtn;
     private JLabel errorLabel, nameLabel;
     private boolean auctionStarted;
+    private String[] auctionColumnNames = {"Transport request", "Owner", "Iteration"};
 
     Object[][] data = {
             {"((0,1),(2,3))", "Smith", "0"},
@@ -138,7 +134,7 @@ public class StartAuctionUI extends JFrame {
         constraints.insets = new Insets(10, 0, 0, 0);
         topPanel.add(tableHeader, constraints);
 
-        JTable table = new JTable(data, TableData.getAuctionColumnNames()) {
+        JTable table = new JTable(data, auctionColumnNames) {
             public Component prepareRenderer(TableCellRenderer renderer, int row, int column)
             {
                 Component c = super.prepareRenderer(renderer, row, column);

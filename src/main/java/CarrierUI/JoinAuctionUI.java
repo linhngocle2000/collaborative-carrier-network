@@ -1,12 +1,10 @@
 package CarrierUI;
 
-import UIResource.TableData;
 import UIResource.UIData;
 import UIResource.scrollbar.ScrollBarCustom;
 
 import javax.swing.*;
 import javax.swing.border.Border;
-import javax.swing.border.TitledBorder;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableColumnModel;

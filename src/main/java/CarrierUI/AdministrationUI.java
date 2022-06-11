@@ -3,7 +3,6 @@ package CarrierUI;
 import Auction.TransportRequest;
 import Utils.TourPlanning;
 import Utils.TourVisual;
-import UIResource.TableData;
 import UIResource.UIData;
 import UIResource.scrollbar.ScrollBarCustom;
 import UIResource.TextIcon;
@@ -31,19 +30,16 @@ public class AdministrationUI extends JFrame {
     private JPanel leftVisualPanel, rightVisualPanel;
     private CalculatorUI costCalcUI;
     private TourPlanning tour;
+    private String[] requestColumnNames = {"ID", "Transport request", "Profit (\u20AC)"};
 
-    Object[][] data;
+    private Object[][] data;
 
     public AdministrationUI(CarrierAgent carrier) {
 
         super();
 
         tour = new TourPlanning(carrier);
-        List<TransportRequest> trList = tour.getRequests();
-        float[] profit
-        for (TransportRequest tr : trList)
-
-        data = TableData.createRequestObject(carrier);
+        data = createRequestObject(tour);
         visUI = new VisualizationUI();
         leftVisualPanel = visUI.getLeftVisualPanel();
         rightVisualPanel = visUI.getRightVisualPanel();
@@ -67,7 +63,13 @@ public class AdministrationUI extends JFrame {
         leftBottomPanel.setBackground(background);
 
         JPanel totalPanel = new JPanel();
-        leftBottomPanel.setBackground(background);
+        TitledBorder totalTitle = new TitledBorder("Revenue report");
+        totalTitle.setTitleJustification(TitledBorder.CENTER);
+        totalTitle.setTitlePosition(TitledBorder.TOP);
+        totalPanel.setBorder(totalTitle);
+        totalPanel.setLayout(new GridBagLayout());
+        totalPanel.setMinimumSize(new Dimension(500, 100));
+        totalPanel.setPreferredSize(new Dimension(500, 100));
 
 
         JLabel tableHeader = new JLabel("Transport requests");
@@ -82,7 +84,7 @@ public class AdministrationUI extends JFrame {
         constraints.insets = new Insets(0, 0, 30, 0);
         leftPanel.add(tableHeader, constraints);
 
-        JTable table = new JTable(data, TableData.getRequestColumnNames()) {
+        JTable table = new JTable(data, requestColumnNames) {
 
             public Component prepareRenderer(TableCellRenderer renderer, int row, int column)
             {
@@ -132,7 +134,97 @@ public class AdministrationUI extends JFrame {
         constraints.insets = new Insets(0, 0, 0, 0);
         leftPanel.add(scrollPane, constraints);
 
+        JLabel totalCostLabel = new JLabel("Total cost (\u20AC):");
+        totalCostLabel.setHorizontalAlignment(SwingConstants.CENTER);
 
+        constraints = new GridBagConstraints();
+        constraints.gridx = 0;
+        constraints.gridy = 0;
+        constraints.anchor = GridBagConstraints.NORTHWEST;
+        constraints.insets = new Insets(20, 0, 0, 5);
+        totalPanel.add(totalCostLabel, constraints);
+
+        JLabel totalCost = new JLabel();
+        totalCost.setText(String.format("%.2f", tour.getTotalOut()).replace(",","."));
+        totalCost.setHorizontalAlignment(SwingConstants.CENTER);
+
+        constraints = new GridBagConstraints();
+        constraints.gridx = 1;
+        constraints.gridy = 0;
+        constraints.anchor = GridBagConstraints.NORTHWEST;
+        constraints.insets = new Insets(20, 0, 0, 70);
+        totalPanel.add(totalCost, constraints);
+
+        JLabel totalEarningLabel = new JLabel("Total earning (\u20AC):");
+        totalEarningLabel.setHorizontalAlignment(SwingConstants.CENTER);
+
+        constraints = new GridBagConstraints();
+        constraints.gridx = 2;
+        constraints.gridy = 0;
+        constraints.anchor = GridBagConstraints.NORTHWEST;
+        constraints.insets = new Insets(20, 0, 0, 5);
+        totalPanel.add(totalEarningLabel, constraints);
+
+        JLabel totalEarning = new JLabel();
+        totalEarning.setText(String.format("%.2f", tour.getTotalIn()).replace(",","."));
+        totalEarning.setHorizontalAlignment(SwingConstants.CENTER);
+
+        constraints = new GridBagConstraints();
+        constraints.gridx = 3;
+        constraints.gridy = 0;
+        constraints.anchor = GridBagConstraints.NORTHWEST;
+        constraints.insets = new Insets(20, 0, 0, 0);
+        totalPanel.add(totalEarning, constraints);
+
+        JLabel totalRevenueLabel = new JLabel("Total revenue (\u20AC):");
+        totalRevenueLabel.setHorizontalAlignment(SwingConstants.CENTER);
+
+        constraints = new GridBagConstraints();
+        constraints.gridx = 0;
+        constraints.gridy = 1;
+        constraints.anchor = GridBagConstraints.NORTHWEST;
+        constraints.insets = new Insets(10, 0, 20, 5);
+        totalPanel.add(totalRevenueLabel, constraints);
+
+        JLabel totalRevenue = new JLabel();
+        totalRevenue.setText(String.format("%.2f", tour.getRevenueTotal()).replace(",","."));
+        totalRevenue.setHorizontalAlignment(SwingConstants.CENTER);
+
+        constraints = new GridBagConstraints();
+        constraints.gridx = 1;
+        constraints.gridy = 1;
+        constraints.anchor = GridBagConstraints.NORTHWEST;
+        constraints.insets = new Insets(10, 0, 20, 70);
+        totalPanel.add(totalRevenue, constraints);
+
+        JLabel totalProfitLabel = new JLabel("Total profit (\u20AC):");
+        totalProfitLabel.setHorizontalAlignment(SwingConstants.CENTER);
+
+        constraints = new GridBagConstraints();
+        constraints.gridx = 2;
+        constraints.gridy = 1;
+        constraints.anchor = GridBagConstraints.NORTHWEST;
+        constraints.insets = new Insets(10, 0, 20, 5);
+        totalPanel.add(totalProfitLabel, constraints);
+
+        JLabel totalProfit = new JLabel();
+        totalProfit.setText(String.format("%.2f", tour.getRevenueSum()).replace(",","."));
+        totalProfit.setHorizontalAlignment(SwingConstants.CENTER);
+
+        constraints = new GridBagConstraints();
+        constraints.gridx = 3;
+        constraints.gridy = 1;
+        constraints.anchor = GridBagConstraints.NORTHWEST;
+        constraints.insets = new Insets(10, 0, 20, 0);
+        totalPanel.add(totalProfit, constraints);
+
+        constraints = new GridBagConstraints();
+        constraints.gridx = 0;
+        constraints.gridy = 2;
+        constraints.gridwidth = GridBagConstraints.REMAINDER;
+        constraints.anchor = GridBagConstraints.CENTER;
+        constraints.insets = new Insets(30, 0, 0, 0);
+        leftPanel.add(totalPanel, constraints);
 
         JButton auctionOff = new JButton("Auction off");
         auctionOff.setFocusPainted(false);
@@ -211,7 +303,7 @@ public class AdministrationUI extends JFrame {
 
         constraints = new GridBagConstraints();
         constraints.gridx = 0;
-        constraints.gridy = 2;
+        constraints.gridy = 3;
         constraints.gridwidth = GridBagConstraints.REMAINDER;
         constraints.anchor = GridBagConstraints.CENTER;
         constraints.insets = new Insets(35, 0, 0, 0);
@@ -224,8 +316,19 @@ public class AdministrationUI extends JFrame {
 
         setResizable(false);
 
+    }
 
-
-
+    public static Object[][] createRequestObject(TourPlanning tour) {
+        List<TransportRequest> trList = tour.getRequests();
+        Object[][] res = new Object[trList.size()][3];
+        for (int i = 0; i < trList.size(); i++) {
+            res[i][0] = trList.get(i).getId();
+            res[i][1] = "((" + trList.get(i).getPickupX() + "," +
+                    trList.get(i).getPickupX() + "),(" +
+                    trList.get(i).getDeliveryX() + "," +
+                    trList.get(i).getDeliveryY() + "))";
+            res[i][2] = String.format("%.2f", tour.getProfit(trList.get(i))).replace(",",".");
+        }
+        return res;
     }
 }
