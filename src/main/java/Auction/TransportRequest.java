@@ -1,6 +1,5 @@
 package Auction;
 
-import Agent.Agent;
 import com.graphhopper.jsprit.core.problem.Location;
 import com.graphhopper.jsprit.core.problem.job.Shipment;
 
@@ -35,6 +34,14 @@ public class TransportRequest {
 
 	public Location getDelivery() {
 		return Location.newInstance(deliveryX, deliveryY);
+	}
+
+	/**
+	 * Converts pickup and delivery of the request to a tuple of tuples, e.g. ((1,2),(2,3)).
+	 * Digits after the decimal mark are cut off, e.g. 23.484 becomes 23.
+	 */
+	public String getRouteString() {
+		return String.format("((%.0f, %.0f),(%.0f,%.0f))", pickupX, pickupY, deliveryX, deliveryY);
 	}
 
 	public String getId() {
