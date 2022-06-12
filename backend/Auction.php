@@ -50,6 +50,7 @@ class Auction
 		$auctions = [];
 		while ($row = $result->fetch_assoc())
 		{
+			$row['IsActive'] = boolval($row['IsActive']);
 			$auctions[] = $row;
 		}
 		return $auctions;
