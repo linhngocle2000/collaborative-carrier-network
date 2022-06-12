@@ -18,7 +18,8 @@ class Auction
 
 		$db = Database::getConnection();
 		$auctioneer = $agent->getUsername();
-		$result = $db->query("INSERT INTO `Auction` (`Auctioneer`, `IsActive`, `Iteration`) VALUES ('$auctioneer', 0, 0)");
+		$type = $db->escape_string($data['Type']);
+		$result = $db->query("INSERT INTO `Auction` (`Auctioneer`, `Type`, `IsActive`, `Iteration`) VALUES ('$auctioneer', '$type', 0, 0)");
 		if (empty($result))
 		{
 			throw new Exception('Could not add auction');
@@ -31,7 +32,7 @@ class Auction
 	{
 		TokenHelper::assertToken();
 		
-		$query = "SELECT `ID`, `Auctioneer`, `IsActive`, `Iteration` FROM `Auction`";
+		$query = "SELECT `ID`, `Auctioneer`, `Type`, `IsActive`, `Iteration` FROM `Auction`";
 		$agent = Agent::getAgentFromToken(TokenHelper::getToken());
 		if ($agent->isAuctioneer())
 		{
