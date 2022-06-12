@@ -9,7 +9,8 @@ class TokenHelper
 {
 	public static function setSession($token)
 	{
-		TokenHelper::$token = $token;
+		$db = Database::getConnection();
+		TokenHelper::$token = $db->escape_string($token);
 	}
 
 	public static function assertToken()
@@ -31,6 +32,11 @@ class TokenHelper
 		{
 			throw new Exception("Session expired");
 		}
+	}
+
+	public static function getToken()
+	{
+		return TokenHelper::$token;
 	}
 
 	/** @var string $token */

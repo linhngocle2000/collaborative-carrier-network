@@ -3,6 +3,7 @@
 namespace CCN;
 
 use CCN\Util\TokenHelper;
+use Exception;
 
 class Agent
 {
@@ -43,7 +44,7 @@ class Agent
 			throw new \Exception($db->error);
 		}
 
-		return new Agent($username, $name, $isAuctioneer, $depotLat, $depotLon);
+		return new Agent($username, $name, $isAuctioneer);
 	}
 
 	/**
@@ -238,20 +239,51 @@ class Agent
 	}
 
 	/**
+	 * @param  string $token Session token of an auctioneer agent
+	 * @return Agent
+	 */
+	public static function getAgentFromToken($token)
+	{
+		$db = Database::getConnection();
+		$token = $db->escape_string($token);
+		$result = $db->query("SELECT * FROM `Session` s LEFT JOIN `Agent` a ON s.Agent = a.Username WHERE s.Token = '$token'");
+		if (empty($result))
+		{
+			throw new Exception('Token not matched to an agent');
+		}
+		$row = $result->fetch_assoc();
+		$username = $row['Username'];
+		$name = $row['Name'];
+		$isAuctioneer = $row['IsAuctioneer'];
+
+		return new Agent($username, $name, $isAuctioneer);
+	}
+
+	/**
 	 * Only call this constructor if you know this user exists!
 	 * @param string $username The unique username used to identify the agent
 	 * @param string $name A display name for the Gui
 	 * @param bool $isAuctioneer True if this agent is the auctioneer
-	 * @param float $depotLat Latitude of the depot
-	 * @param float $depotLon Longitude of the depot
 	 */
-	function __construct($username, $name, $isAuctioneer, $depotLat, $depotLon)
+	function __construct($username, $name, $isAuctioneer) //, $depotLat, $depotLon)
 	{
+		//  * @param float $depotLat Latitude of the depot
+		//  * @param float $depotLon Longitude of the depot
 		$this->username = $username;
 		$this->name = $name;
 		$this->isAuctioneer = $isAuctioneer;
-		$this->depotLat = $depotLat;
-		$this->depotLon = $depotLon;
+		// $this->depotLat = $depotLat;
+		// $this->depotLon = $depotLon;
+	}
+
+	public function getUsername()
+	{
+		return $this->username;
+	}
+
+	public function isAuctioneer()
+	{
+		return $this->isAuctioneer;
 	}
 
 	/** @var string $username */
@@ -260,8 +292,8 @@ class Agent
 	private $name;
 	/** @var bool $isAuctioneer */
 	private $isAuctioneer;
-	/** @var string|float $depotLat */
-	private $depotLat;
-	/** @var string|float $depotLon */
-	private $depotLon;
+	// /** @var string|float $depotLat */
+	// private $depotLat;
+	// /** @var string|float $depotLon */
+	// private $depotLon;
 }
