@@ -70,4 +70,20 @@ class TransportRequest
 		}
 		return $requests;
 	}
+
+	public static function getRequestsOfAuction($data)
+	{
+		TokenHelper::assertToken();
+
+		$db = Database::getConnection();
+		$auction = intval($data['Auction']);
+		$result = $db->query("SELECT `ID`, `Owner`, `Auction`, `Cost`, `PickupLat`, `PickupLon`, `DeliveryLat`, `DeliveryLon` FROM `TransportRequest` WHERE `Auction` = $auction");
+
+		$requests = [];
+		while ($row = $result->fetch_assoc())
+		{
+			$requests[] = $row;
+		}
+		return $requests;
+	}
 }
