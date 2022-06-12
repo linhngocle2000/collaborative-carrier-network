@@ -61,7 +61,7 @@ class Agent
 			$username = $db->escape_string($data['Username']);
 			$password = $db->escape_string($data['Password']);
 
-			$result = $db->query("SELECT `Username`, `Name`, `Password`, `IsAuctioneer`, `DepotLat`, `DepotLon` FROM `Agent` WHERE `Username` LIKE '$username'");
+			$result = $db->query("SELECT `Username`, `Name`, `Password`, `IsAuctioneer`, `DepotLat`, `DepotLon`, `PickupBaserate`, `TravelCostPerKM`, `LoadBaserate`, `InternalTravelCostPerKM` FROM `Agent` WHERE `Username` LIKE '$username'");
 			if ($result === false)
 			{
 				throw new \Exception($db->error);
