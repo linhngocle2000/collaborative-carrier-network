@@ -127,6 +127,7 @@ public class App {
             if (user.isAuctioneer()) {
                 carrier = null;
                 auctioneer = (AuctioneerAgent)user;
+                auctioneerUI.setAgent(auctioneer);
                 auctioneerUI.setNameLabel(auctioneer.getDisplayname());
                 auctioneerUI.setVisible(true);
             } else {

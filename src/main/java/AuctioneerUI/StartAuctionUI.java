@@ -1,6 +1,7 @@
 package AuctioneerUI;
 
 import UIResource.UIData;
+import UIResource.HTTPResource.HTTPRequests;
 import UIResource.scrollbar.ScrollBarCustom;
 import javax.swing.*;
 import javax.swing.border.Border;
@@ -8,7 +9,12 @@ import javax.swing.border.Border;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableColumnModel;
+
+import Agent.AuctioneerAgent;
+import Auction.Auction;
+
 import java.awt.*;
+import java.util.List;
 
 
 public class StartAuctionUI extends JFrame {
@@ -18,6 +24,7 @@ public class StartAuctionUI extends JFrame {
     private String[] auctionColumnNames = {"Transport request", "Owner", "Iteration"};
     private Color background = UIData.getBackground();
     private Border emptyBorder = UIData.getEmptyBorder();
+    private AuctioneerAgent agent;
     AuctionUI auctionUI;
 
     Object[][] data = {
@@ -37,8 +44,6 @@ public class StartAuctionUI extends JFrame {
     };
 
     public StartAuctionUI() {
-
-        super();
 
 ///////////
 // Frame
@@ -114,7 +119,9 @@ public class StartAuctionUI extends JFrame {
         constraints.insets = new Insets(10, 0, 0, 0);
         topPanel.add(tableHeader, constraints);
 
-        JTable table = new JTable(data, auctionColumnNames) {
+        List<Auction> auctions = HTTPRequests.getAuctions(agent);
+        AuctionTableModel model = new AuctionTableModel(auctions);
+        JTable table = new JTable(model) {
             public Component prepareRenderer(TableCellRenderer renderer, int row, int column)
             {
                 Component c = super.prepareRenderer(renderer, row, column);
@@ -137,10 +144,11 @@ public class StartAuctionUI extends JFrame {
         DefaultTableCellRenderer centerRenderer = new DefaultTableCellRenderer();
         centerRenderer.setHorizontalAlignment(JLabel.CENTER);
         TableColumnModel columnModel = table.getColumnModel();
-        columnModel.getColumn(0).setPreferredWidth(200);
-        columnModel.getColumn(1).setPreferredWidth(180);
-        columnModel.getColumn(2).setPreferredWidth(80);
-        for (int i = 0; i<3; i++) {
+        columnModel.getColumn(0).setPreferredWidth(40);
+        columnModel.getColumn(1).setPreferredWidth(200);
+        columnModel.getColumn(2).setPreferredWidth(180);
+        columnModel.getColumn(3).setPreferredWidth(80);
+        for (int i = 0; i<4; i++) {
             columnModel.getColumn(i).setCellRenderer(centerRenderer);
         }
 
@@ -266,11 +274,14 @@ public class StartAuctionUI extends JFrame {
         setResizable(false);
     }
 
-
     public JButton getLogoutBtn() {
         return logoutBtn;
     }
 
+    public void setAgent(AuctioneerAgent agent) {
+        this.agent = agent;
+        nameLabel.setText(agent.getDisplayname());
+    }
 
     public void setNameLabel(String s) {
         nameLabel.setText(s);
