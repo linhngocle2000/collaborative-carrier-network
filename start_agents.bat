@@ -1,1 +1,1 @@
-java -cp ./jade/lib/jade.jar;./dbdriver.jar -jar ./ccn.jar
+java -cp  -jar ./ccn.jar
