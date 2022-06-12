@@ -152,17 +152,15 @@ public class HTTPRequests {
             var json = send(RequestBody.getAllTransportRequests(token));
             var array = json.getJSONArray("data");
             List<TransportRequest> result = new ArrayList<>(array.length());
-            int id = 20;
             for(Object obj : array) {
                 JSONObject j = (JSONObject) obj;
                 if (((JSONObject)obj).getString("Owner").equals(agent.getUsername())) {
-                    //int id = j.getInt("ID");
+                    int id = j.getInt("ID");
                     float pickupX = j.getFloat("PickupLat");
                     float pickupY = j.getFloat("PickupLon");
                     float deliveryX = j.getFloat("DeliveryLat");
                     float deliveryY = j.getFloat("DeliveryLon");
                     result.add(new TransportRequest(id, agent, pickupX, pickupY, deliveryX, deliveryY));
-                    id++;
                 }
             }
             return result;
