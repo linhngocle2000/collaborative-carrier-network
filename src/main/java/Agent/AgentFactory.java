@@ -18,7 +18,11 @@ public class AgentFactory {
 		String displayname = json.getString("Name");
 		float depotX = json.getFloat("DepotLat");
 		float depotY = json.getFloat("DepotLon");
-		return new CarrierAgent(username, displayname, depotX, depotY);
+		float pickupBaserate = json.getFloat("PickupBaserate");
+		float externalTravelCost = json.getFloat("TravelCostPerKM");
+		float loadBaserate = json.getFloat("LoadBaserate");
+		float internalTravelCost = json.getFloat("InternalTravelCostPerKM");
+		return new CarrierAgent(username, displayname, depotX, depotY, pickupBaserate, externalTravelCost, loadBaserate, internalTravelCost);
 	}
 
 	public static AuctioneerAgent auctioneerFromJSON(JSONObject json) {

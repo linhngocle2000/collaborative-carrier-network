@@ -4,7 +4,6 @@ import com.graphhopper.jsprit.core.algorithm.VehicleRoutingAlgorithm;
 import com.graphhopper.jsprit.core.algorithm.box.SchrimpfFactory;
 import com.graphhopper.jsprit.core.problem.Location;
 import com.graphhopper.jsprit.core.problem.VehicleRoutingProblem;
-import com.graphhopper.jsprit.core.problem.job.Shipment;
 import com.graphhopper.jsprit.core.problem.solution.VehicleRoutingProblemSolution;
 import com.graphhopper.jsprit.core.problem.vehicle.VehicleImpl;
 import com.graphhopper.jsprit.core.problem.vehicle.VehicleImpl.Builder;
@@ -12,15 +11,12 @@ import com.graphhopper.jsprit.core.problem.vehicle.VehicleType;
 import com.graphhopper.jsprit.core.problem.vehicle.VehicleTypeImpl;
 import com.graphhopper.jsprit.core.util.Solutions;
 
-import Agent.Agent;
 import Agent.CarrierAgent;
 import Auction.TransportRequest;
 import UIResource.HTTPResource.HTTPRequests;
 
 import java.util.Collection;
 import java.util.List;
-
-import javax.swing.JPanel;
 
 public class TourPlanning {
    private final CarrierAgent agent;

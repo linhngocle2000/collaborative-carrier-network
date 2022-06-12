@@ -2,10 +2,15 @@ package Agent;
 
 public class CarrierAgent extends Agent {
 
-	public CarrierAgent(String username, String displayname, float depotX, float depotY) {
+	public CarrierAgent(String username, String displayname, float depotX, float depotY, float pickupBaserate,
+			float externalTravelCost, float loadBaserate, float internalTravelCost) {
 		super(username, displayname);
 		this.depotX = depotX;
 		this.depotY = depotY;
+		this.pickupBaserate = pickupBaserate;
+		this.externalTravelCost = externalTravelCost;
+		this.loadBaserate = loadBaserate;
+		this.internalTravelCost = internalTravelCost;
 	}
 
 	@Override
@@ -15,7 +20,7 @@ public class CarrierAgent extends Agent {
 
 	// Variables
 
-	private float depotX, depotY;
+	private float depotX, depotY, pickupBaserate, externalTravelCost, loadBaserate, internalTravelCost;
 
 	// Getters
 
@@ -24,23 +29,23 @@ public class CarrierAgent extends Agent {
 	}
 
 	public float getCostPerDistance() {
-		return (float) 1000.00;
+		return externalTravelCost;
 	}
 
 	public float getFixedCost() {
-		return (float) 1000.00;
+		return pickupBaserate;
 	}
 
 	public float getInternalCost() {
-		return (float) 1000.00;
+		return internalTravelCost;
 	}
 
 	public float getLoadingCost() {
-		return (float) 1000.00;
+		return loadBaserate;
 	}
 
 	public float getDepotY() {
 		return depotY;
 	}
-	
+
 }
