@@ -2,6 +2,10 @@
 	"java.project.referencedLibraries": [
 		"lib/jsprit.jar",
 		"lib/gs-core-2.0.jar",
-		"lib/gs-ui-swing-2.0.jar"
+		"lib/gs-ui-swing-2.0.jar",
+		"lib/json-20220320.jar",
+		"lib/org-openide-awt.jar",
+		"lib/slf4j-api-1.7.36.jar",
+		"lib/slf4j-simple-1.7.36.jar"
 	]
 }
