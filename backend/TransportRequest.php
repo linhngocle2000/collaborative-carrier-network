@@ -40,7 +40,7 @@ class TransportRequest
 
 		$db = Database::getConnection();
 
-		$result = $db->query("SELECT `Owner`, `Auction`, `Cost`, `PickupLat`, `PickupLon`, `DeliveryLat`, `DeliveryLon` FROM `TransportRequest`");
+		$result = $db->query("SELECT `ID`, `Owner`, `Auction`, `Cost`, `PickupLat`, `PickupLon`, `DeliveryLat`, `DeliveryLon` FROM `TransportRequest`");
 		if ($result === false)
 		{
 			throw new \Exception($db->error);
@@ -61,7 +61,7 @@ class TransportRequest
 
 		$db = Database::getConnection();
 		$username = $db->escape_string($data['Agent']);
-		$result = $db->query("SELECT `Owner`, `Auction`, `Cost`, `PickupLat`, `PickupLon`, `DeliveryLat`, `DeliveryLon` FROM `TransportRequest` WHERE `Owner` = '$username'");
+		$result = $db->query("SELECT `ID`, `Owner`, `Auction`, `Cost`, `PickupLat`, `PickupLon`, `DeliveryLat`, `DeliveryLon` FROM `TransportRequest` WHERE `Owner` = '$username'");
 
 		$requests = [];
 		while ($row = $result->fetch_assoc())

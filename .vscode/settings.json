@@ -2,5 +2,6 @@
 	"java.project.referencedLibraries": [
 		"lib/**/*.jar",
 		"jade/lib/jade.jar"
-	]
+	],
+	"java.configuration.updateBuildConfiguration": "automatic"
 }
