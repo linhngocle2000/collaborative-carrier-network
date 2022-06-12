@@ -5,6 +5,7 @@ import org.json.JSONObject;
 
 import Agent.Agent;
 import Agent.CarrierAgent;
+import Auction.Auction;
 
 public class RequestBody {
 
@@ -83,6 +84,18 @@ public class RequestBody {
         JSONObject data = new JSONObject();
         data.put("Agent", agent.getUsername());
         return body("getRequestsOfAgent", token, data);
+    }
+
+    public static String getTransportRequestsOfAuction(Auction auction, String token) {
+        JSONObject data = new JSONObject();
+        data.put("Auction", auction.getID());
+        return body("getRequestsOfAuction", token, data);
+    }
+
+    // Auction
+
+    public static String getAuctions(String token) {
+        return body("getAuctions", token, null);
     }
 
     // Helper

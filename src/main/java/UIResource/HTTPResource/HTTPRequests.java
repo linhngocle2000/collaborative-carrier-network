@@ -6,15 +6,13 @@ import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 import org.json.*;
 
-import Agent.Agent;
-import Agent.AgentFactory;
-import Agent.AuctioneerAgent;
-import Agent.CarrierAgent;
-import Auction.TransportRequest;
+import Agent.*;
+import Auction.*;
 
 /**
  * Contains all requests to the server backend.
@@ -83,7 +81,11 @@ public class HTTPRequests {
     public static Agent getAgent(String username) {
         try {
             var json = send(RequestBody.getAgent(username, token));
-            return AgentFactory.fromJSON(json);
+            boolean success = json.getBoolean("success");
+            if (!success) {
+                return null;
+            }
+            return AgentFactory.fromJSON(json.getJSONObject("data"));
         } catch (IOException | InterruptedException e) {
             e.printStackTrace();
             lastError = e;
@@ -149,19 +151,56 @@ public class HTTPRequests {
     public static List<TransportRequest> getTransportRequestsOfAgent(CarrierAgent agent) {
         try {
             // Load requests
-            var json = send(RequestBody.getAllTransportRequests(token));
+            var json = send(RequestBody.getTransportRequestsOfAgent(agent, token));
             var array = json.getJSONArray("data");
-            List<TransportRequest> result = new ArrayList<>(array.length());
+            List<TransportRequest> result = new ArrayList<TransportRequest>(array.length());
             for(Object obj : array) {
                 JSONObject j = (JSONObject) obj;
-                if (((JSONObject)obj).getString("Owner").equals(agent.getUsername())) {
-                    int id = j.getInt("ID");
-                    float pickupX = j.getFloat("PickupLat");
-                    float pickupY = j.getFloat("PickupLon");
-                    float deliveryX = j.getFloat("DeliveryLat");
-                    float deliveryY = j.getFloat("DeliveryLon");
-                    result.add(new TransportRequest(id, agent, pickupX, pickupY, deliveryX, deliveryY));
+                int id = j.getInt("ID");
+                float pickupX = j.getFloat("PickupLat");
+                float pickupY = j.getFloat("PickupLon");
+                float deliveryX = j.getFloat("DeliveryLat");
+                float deliveryY = j.getFloat("DeliveryLon");
+                result.add(new TransportRequest(id, agent, pickupX, pickupY, deliveryX, deliveryY));
+            }
+            return result;
+        } catch (IOException | InterruptedException e) {
+            e.printStackTrace();
+            lastError = e;
+            return null;
+        }
+    }
+
+    public static List<TransportRequest> getTransportRequestsOfAuction(Auction auction) {
+        try {
+            // Cache agents for multiple ownership
+            HashMap<String, CarrierAgent> map = new HashMap<String, CarrierAgent>();
+
+            // Load requests
+            var json = send(RequestBody.getTransportRequestsOfAuction(auction, token));
+            var array = json.getJSONArray("data");
+            ArrayList<TransportRequest> result = new ArrayList<>(array.length());
+            for (Object obj : array) {
+                JSONObject j = (JSONObject) obj;
+                int id = j.getInt("ID");
+                String username = j.getString("Owner");
+                float pickupX = j.getFloat("PickupLat");
+                float pickupY = j.getFloat("PickupLon");
+                float deliveryX = j.getFloat("DeliveryLat");
+                float deliveryY = j.getFloat("DeliveryLon");
+
+                CarrierAgent owner = null;
+                if (map.containsKey(username)) {
+                    owner = map.get(username);
+                } else {
+                    owner = (CarrierAgent)getAgent(username);
+                    map.put(username, owner);
                 }
+                if (owner == null) {
+                    lastError = new Exception("Could not retrieve owner of transport request");
+                    return null;
+                }
+                result.add(new TransportRequest(id, owner, pickupX, pickupY, deliveryX, deliveryY));
             }
             return result;
         } catch (IOException | InterruptedException e) {
@@ -172,6 +211,56 @@ public class HTTPRequests {
     }
 
     // Auction
+
+    /**
+     * Will return only auctions belonging to the user if the
+     * user is an auctioneer agent. Otherwise, all auctions
+     * will be returned.
+     * @return List of auctions
+     */
+    public static List<Auction> getAuctions() {
+        try {
+            var json = send(RequestBody.getAuctions(token));
+            var array = json.getJSONArray("data");
+            var result = new ArrayList<Auction>();
+            for (Object obj : array) {
+                JSONObject j = (JSONObject)obj;
+                int id = j.getInt("ID");
+                String type = j.getString("Type");
+                boolean isActive = j.getBoolean("IsActive");
+                int iteration = j.getInt("Iteration");
+
+                Auction auction = null;
+                switch (type)
+                {
+                    case Auction.TYPE_VICKREY:
+                        auction = new VickreyAuction(id, iteration);
+                        break;
+
+                    case Auction.TYPE_TRADITIONAL:
+                        auction = new TraditionalAuction(id, iteration);
+                        break;
+
+                    default:
+                        lastError = new Exception("Failed to parse auction");
+                        return null;
+                }
+
+                List<TransportRequest> requests = getTransportRequestsOfAuction(auction);
+                if (requests == null) {
+                    // Last error already set by getTransportRequestsOfAuction
+                    return null;
+                }
+                auction.setTransportRequests(requests);
+                result.add(auction);
+            }
+            return result;
+        } catch (IOException | InterruptedException e) {
+            e.printStackTrace();
+            lastError = e;
+            return null;
+        }
+    }
 
     // Helper methods
 
