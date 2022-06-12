@@ -35,7 +35,6 @@ public class App {
         loginUI = new LoginUI();
         registerUI = new RegisterUI();
         joinAuctionUI = new JoinAuctionUI();
-        auctioneerUI = new StartAuctionUI();
 
         welcomeUI = new WelcomeUI();
         welcomeUI.setVisible(true);
@@ -127,9 +126,18 @@ public class App {
             if (user.isAuctioneer()) {
                 carrier = null;
                 auctioneer = (AuctioneerAgent)user;
+                auctioneerUI = new StartAuctionUI();
                 auctioneerUI.setAgent(auctioneer);
                 auctioneerUI.setNameLabel(auctioneer.getDisplayname());
                 auctioneerUI.setVisible(true);
+                JButton auctioneerLogoutBtn = auctioneerUI.getLogoutBtn();
+                auctioneerLogoutBtn.addActionListener(e2 -> {
+                    auctioneerUI.setVisible(false);
+                    welcomeUI.setVisible(true);
+                    // Reset data
+                    auctioneer = null;
+                    HTTPRequests.logout();
+                });
             } else {
                 auctioneer = null;
                 carrier = (CarrierAgent)user;
@@ -151,15 +159,6 @@ public class App {
             welcomeUI.setVisible(true);
             // Reset data
             carrier = null;
-            HTTPRequests.logout();
-        });
-
-        JButton auctioneerLogoutBtn = auctioneerUI.getLogoutBtn();
-        auctioneerLogoutBtn.addActionListener(e -> {
-            auctioneerUI.setVisible(false);
-            welcomeUI.setVisible(true);
-            // Reset data
-            auctioneer = null;
             HTTPRequests.logout();
         });
 

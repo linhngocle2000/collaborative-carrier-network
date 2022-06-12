@@ -41,7 +41,7 @@ public class TransportRequest {
 	 * Digits after the decimal mark are cut off, e.g. 23.484 becomes 23.
 	 */
 	public String getRouteString() {
-		return String.format("((%.0f, %.0f),(%.0f,%.0f))", pickupX, pickupY, deliveryX, deliveryY);
+		return String.format("((%.0f,%.0f),(%.0f,%.0f))", pickupX, pickupY, deliveryX, deliveryY);
 	}
 
 	public String getId() {

@@ -10,7 +10,7 @@ import Auction.TransportRequest;
 public class AuctionTableModel extends AbstractTableModel {
 	
 	private List<Auction> auctions;
-	private final String[] columnNames = new String[] { "ID", "Transport request", "Owner", "Iteration" };
+	private final String[] columnNames = new String[] { "ID", "Transport request", "Owner", "Type of auction", "Iteration" };
 
 	public AuctionTableModel(List<Auction> auctions) {
 		this.auctions = auctions;
@@ -18,7 +18,7 @@ public class AuctionTableModel extends AbstractTableModel {
 
 	@Override
 	public int getColumnCount() {
-		return 4;
+		return 5;
 	}
 
 	@Override
@@ -34,16 +34,17 @@ public class AuctionTableModel extends AbstractTableModel {
 	@Override
 	public Object getValueAt(int row, int column) {
 		Auction auction = auctions.get(row);
-		TransportRequest request = auction.getTransportRequest();
 
 		switch (column) {
 			case 0:
-				return request.getId();
+				return Integer.toString(auction.getID());
 			case 1:
-				return request.getRouteString();
+				return auction.getDefaultTransportRequest().getRouteString();
 			case 2:
-				return request.getOwner().getDisplayname();
+				return auction.getDefaultTransportRequest().getOwner().getDisplayname();
 			case 3:
+				return auction.getType();
+			case 4:
 				return Integer.toString(auction.getIteration());
 		}
 

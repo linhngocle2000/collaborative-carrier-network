@@ -119,7 +119,7 @@ public class StartAuctionUI extends JFrame {
         constraints.insets = new Insets(10, 0, 0, 0);
         topPanel.add(tableHeader, constraints);
 
-        List<Auction> auctions = HTTPRequests.getAuctions(agent);
+        List<Auction> auctions = HTTPRequests.getAuctions();
         AuctionTableModel model = new AuctionTableModel(auctions);
         JTable table = new JTable(model) {
             public Component prepareRenderer(TableCellRenderer renderer, int row, int column)
@@ -148,7 +148,8 @@ public class StartAuctionUI extends JFrame {
         columnModel.getColumn(1).setPreferredWidth(200);
         columnModel.getColumn(2).setPreferredWidth(180);
         columnModel.getColumn(3).setPreferredWidth(80);
-        for (int i = 0; i<4; i++) {
+        columnModel.getColumn(4).setPreferredWidth(80);
+        for (int i = 0; i<5; i++) {
             columnModel.getColumn(i).setCellRenderer(centerRenderer);
         }
 
