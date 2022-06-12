@@ -90,7 +90,7 @@ public class App {
                         throw new Exception("Username " + username + " is already used.");
                     }
                     ArrayList<Float> tr = Converter.convertStringToTR(transReq);
-                    carrier = AgentFactory.carrierFromJSON(Objects.requireNonNull(HTTPRequests.login(username, password)));
+                    carrier = (CarrierAgent)HTTPRequests.login(username, password);
                     for (int i = 0; i<(tr.size()); i+=4) {
                         HTTPRequests.addTransportRequest(carrier, tr.get(i), tr.get(i+1), tr.get(i+2), tr.get(i+3));
                     }
@@ -119,17 +119,19 @@ public class App {
             loginUI.setErrorLabel("");
             String username = loginUI.getNameText();
             String password = loginUI.getPasswordText();
-            JSONObject data = HTTPRequests.login(username, password);
-            if (data == null) {
+            Agent user = HTTPRequests.login(username, password);
+            if (user == null) {
                 loginUI.setErrorLabel("Incorrect username/password.");
                 return;
             }
-            if (data.getBoolean("IsAuctioneer")) {
-                auctioneer = AgentFactory.auctioneerFromJSON(data);
+            if (user.isAuctioneer()) {
+                carrier = null;
+                auctioneer = (AuctioneerAgent)user;
                 auctioneerUI.setNameLabel(auctioneer.getDisplayname());
                 auctioneerUI.setVisible(true);
             } else {
-                carrier = AgentFactory.carrierFromJSON(data);
+                auctioneer = null;
+                carrier = (CarrierAgent)user;
                 adminUI = new AdministrationUI(carrier);
                 joinAuctionUI.setNameLabel(carrier.getDisplayname());
                 joinAuctionUI.setVisible(true);

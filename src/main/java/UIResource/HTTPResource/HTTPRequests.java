@@ -57,15 +57,17 @@ public class HTTPRequests {
         }
     }
 
-    public static JSONObject login(String username, String password) {
+    public static Agent login(String username, String password) {
         try {
             var json = send(RequestBody.login(username, password));
             boolean success = json.getBoolean("success");
             if (!success) {
                 return null;
             }
-            token = json.getJSONObject("data").getString("Token");
-            return json.getJSONObject("data").getJSONObject("Agent");
+
+            var data = json.getJSONObject("data");
+            token = data.getString("Token");
+            return AgentFactory.fromJSON(data.getJSONObject("Agent"));
         } catch (IOException | InterruptedException e) {
             lastError = e;
             return null;
@@ -103,18 +105,14 @@ public class HTTPRequests {
         }
     }
 
-    public static CarrierAgent getCarrierAgent(String username) {
+    public static List<CarrierAgent> getCarrierAgents() {
         try {
             var json = send(RequestBody.getCarrierAgents(token));
             var array = json.getJSONArray("data");
-            for (Object obj : array) {
-                if (((JSONObject) obj).getString("Username").equals(username)) {
-                    return AgentFactory.carrierFromJSON((JSONObject) obj);
-                }
-            }
-            return null;
+            List<CarrierAgent> result = new ArrayList<CarrierAgent>(array.length());
+            array.forEach(obj -> result.add(AgentFactory.carrierFromJSON((JSONObject) obj)));
+            return result;
         } catch (IOException | InterruptedException e) {
-            e.printStackTrace();
             lastError = e;
             return null;
         }
@@ -136,39 +134,17 @@ public class HTTPRequests {
 
     // Transport request
 
-    public static void addTransportRequest(CarrierAgent agent, float pickupX, float pickupY, float deliveryX, float deliveryY) {
+    public static TransportRequest addTransportRequest(CarrierAgent agent, float pickupX, float pickupY, float deliveryX, float deliveryY) {
         try {
-            send(RequestBody.addTransportRequest(agent, pickupX, pickupY, deliveryX, deliveryY, token));
-        } catch (IOException | InterruptedException e) {
-            e.printStackTrace();
-            lastError = e;
-        }
-    }
-
-    /*public static List<TransportRequest> getTransportRequestsOfAgent(Agent agent) {
-        try {
-            // Load requests
-            var json = send(RequestBody.getTransportRequestsOfAgent(agent, token));
-            var array = json.getJSONArray("data");
-            List<TransportRequest> result = new ArrayList<>(array.length());
-            array.forEach(obj -> {
-                JSONObject j = (JSONObject)obj;
-                if (j.getString("Owner").equals(agent.getUsername())) {
-                    int id = j.getInt("ID");
-                    float pickupX = j.getFloat("PickupLat");
-                    float pickupY = j.getFloat("PickupLon");
-                    float deliveryX = j.getFloat("DeliveryLat");
-                    float deliveryY = j.getFloat("DeliveryLon");
-                    result.add(new TransportRequest(id, agent, pickupX, pickupY, deliveryX, deliveryY));
-                }
-            });
-            return result;
+            var json = send(RequestBody.addTransportRequest(agent, pickupX, pickupY, deliveryX, deliveryY, token));
+            int id = json.getInt("data");
+            return new TransportRequest(id, agent, pickupX, pickupY, deliveryX, deliveryY);
         } catch (IOException | InterruptedException e) {
             e.printStackTrace();
             lastError = e;
             return null;
         }
-    }*/
+    }
 
     public static List<TransportRequest> getTransportRequestsOfAgent(CarrierAgent agent) {
         try {
