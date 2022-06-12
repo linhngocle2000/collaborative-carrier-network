@@ -4,6 +4,7 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 import Agent.Agent;
+import Agent.CarrierAgent;
 
 public class RequestBody {
 
@@ -62,7 +63,7 @@ public class RequestBody {
 
     // Transport request
 
-    public static String addTransportRequest(Agent agent, float pickX, float pickY, float delX, float delY, String token) {
+    public static String addTransportRequest(CarrierAgent agent, float pickX, float pickY, float delX, float delY, String token) {
         JSONArray data = new JSONArray();
         JSONObject objInArray = new JSONObject();
         objInArray.put("Agent", agent.getUsername());

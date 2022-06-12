@@ -18,10 +18,17 @@ public class VisualizationUI extends JFrame {
 
         super();
 
+///////////
+// Frame
+///////////
+
         setTitle("CCN");
         setLocationRelativeTo(null);
-
         setDefaultCloseOperation(HIDE_ON_CLOSE);
+
+///////////
+// Panels
+///////////
 
         JPanel rightPanel = new JPanel();
 
@@ -46,6 +53,9 @@ public class VisualizationUI extends JFrame {
         rightPanel.add(leftVisualPanel);
         rightPanel.add(rightVisualPanel);
 
+///////////
+// Combine
+///////////
 
         getContentPane().add(rightPanel, BorderLayout.CENTER);
 

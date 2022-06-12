@@ -30,7 +30,7 @@ public class AdministrationUI extends JFrame {
     private JPanel leftVisualPanel, rightVisualPanel;
     private CalculatorUI costCalcUI;
     private TourPlanning tour;
-    private String[] requestColumnNames = {"ID", "Transport request", "Profit (\u20AC)"};
+    private String[] requestColumnNames = {"ID", "Transport request", "Profit (\u20AC)", "Notes"};
 
     private Object[][] data;
 
@@ -43,34 +43,42 @@ public class AdministrationUI extends JFrame {
         visUI = new VisualizationUI();
         leftVisualPanel = visUI.getLeftVisualPanel();
         rightVisualPanel = visUI.getRightVisualPanel();
+        costCalcUI = new CalculatorUI(tour);
 
-        costCalcUI = new CalculatorUI();
+///////////
+// Frame
+///////////
 
-        setMinimumSize(new Dimension(550, 700));
-        setPreferredSize(new Dimension(550, 700));
-
-
+        setMinimumSize(new Dimension(650, 720));
+        setPreferredSize(new Dimension(650, 720));
         setTitle("CCN");
         setLocationRelativeTo(null);
-
         setDefaultCloseOperation(HIDE_ON_CLOSE);
 
-        JPanel leftPanel = new JPanel();
-        leftPanel.setBackground(background);
-        leftPanel.setLayout(new GridBagLayout());
+///////////
+// Panels
+///////////
 
-        JPanel leftBottomPanel = new JPanel();
-        leftBottomPanel.setBackground(background);
+        JPanel rootPanel = new JPanel();
+        rootPanel.setBackground(background);
+        rootPanel.setLayout(new GridBagLayout());
+
+        JPanel bottomPanel = new JPanel();
+        bottomPanel.setBackground(background);
 
         JPanel totalPanel = new JPanel();
         TitledBorder totalTitle = new TitledBorder("Revenue report");
         totalTitle.setTitleJustification(TitledBorder.CENTER);
         totalTitle.setTitlePosition(TitledBorder.TOP);
+        totalTitle.setTitleFont(font.deriveFont(Font.BOLD, 14));
         totalPanel.setBorder(totalTitle);
         totalPanel.setLayout(new GridBagLayout());
-        totalPanel.setMinimumSize(new Dimension(500, 100));
-        totalPanel.setPreferredSize(new Dimension(500, 100));
+        totalPanel.setMinimumSize(new Dimension(500, 110));
+        totalPanel.setPreferredSize(new Dimension(500, 110));
 
+///////////
+// Table
+///////////
 
         JLabel tableHeader = new JLabel("Transport requests");
         tableHeader.setFont(font.deriveFont(Font.BOLD, 16));
@@ -82,47 +90,43 @@ public class AdministrationUI extends JFrame {
         constraints.gridwidth = GridBagConstraints.REMAINDER;
         constraints.anchor = GridBagConstraints.CENTER;
         constraints.insets = new Insets(0, 0, 30, 0);
-        leftPanel.add(tableHeader, constraints);
+        rootPanel.add(tableHeader, constraints);
 
         JTable table = new JTable(data, requestColumnNames) {
-
             public Component prepareRenderer(TableCellRenderer renderer, int row, int column)
             {
                 Component c = super.prepareRenderer(renderer, row, column);
                 JComponent jc = (JComponent)c;
-
                 // Add a border to the selected row
-
                 if (isRowSelected(row)) {
                     jc.setBorder(emptyBorder);
                 }
-
                 return c;
             }
         };
         table.setShowHorizontalLines(false);
-
+        table.setSelectionBackground(new Color(222, 222, 222, 255));
         table.setRowHeight(25);
         table.setIntercellSpacing(new Dimension(0, 0));
+        table.setDefaultEditor(Object.class, null);
+        table.getTableHeader().setReorderingAllowed(false);
+        table.clearSelection();
         DefaultTableCellRenderer centerRenderer = new DefaultTableCellRenderer();
         centerRenderer.setHorizontalAlignment(JLabel.CENTER);
-
         TableColumnModel columnModel = table.getColumnModel();
         columnModel.getColumn(0).setPreferredWidth(70);
         columnModel.getColumn(1).setPreferredWidth(230);
         columnModel.getColumn(2).setPreferredWidth(150);
-        for (int i = 0; i<3; i++) {
+        columnModel.getColumn(3).setPreferredWidth(100);
+        for (int i = 0; i<4; i++) {
             columnModel.getColumn(i).setCellRenderer(centerRenderer);
         }
-        JScrollPane scrollPane = new JScrollPane(table);
-        table.setDefaultEditor(Object.class, null);
-        table.getTableHeader().setReorderingAllowed(false);
-        table.clearSelection();
 
+        JScrollPane scrollPane = new JScrollPane(table);
         if (data.length <= 12) {
-            scrollPane.setPreferredSize(new Dimension(450, data.length*25+23));
+            scrollPane.setPreferredSize(new Dimension(550, data.length*25+23));
         } else {
-            scrollPane.setPreferredSize(new Dimension(450, 323));
+            scrollPane.setPreferredSize(new Dimension(550, 323));
             scrollPane.setVerticalScrollBar(new ScrollBarCustom(12, data.length));
         }
 
@@ -132,7 +136,11 @@ public class AdministrationUI extends JFrame {
         constraints.gridwidth = GridBagConstraints.REMAINDER;
         constraints.anchor = GridBagConstraints.CENTER;
         constraints.insets = new Insets(0, 0, 0, 0);
-        leftPanel.add(scrollPane, constraints);
+        rootPanel.add(scrollPane, constraints);
+
+///////////
+// Report
+///////////
 
         JLabel totalCostLabel = new JLabel("Total cost (\u20AC):");
         totalCostLabel.setHorizontalAlignment(SwingConstants.CENTER);
@@ -141,7 +149,7 @@ public class AdministrationUI extends JFrame {
         constraints.gridx = 0;
         constraints.gridy = 0;
         constraints.anchor = GridBagConstraints.NORTHWEST;
-        constraints.insets = new Insets(20, 0, 0, 5);
+        constraints.insets = new Insets(20, 0, 10, 5);
         totalPanel.add(totalCostLabel, constraints);
 
         JLabel totalCost = new JLabel();
@@ -152,7 +160,7 @@ public class AdministrationUI extends JFrame {
         constraints.gridx = 1;
         constraints.gridy = 0;
         constraints.anchor = GridBagConstraints.NORTHWEST;
-        constraints.insets = new Insets(20, 0, 0, 70);
+        constraints.insets = new Insets(20, 0, 10, 70);
         totalPanel.add(totalCost, constraints);
 
         JLabel totalEarningLabel = new JLabel("Total earning (\u20AC):");
@@ -162,7 +170,7 @@ public class AdministrationUI extends JFrame {
         constraints.gridx = 2;
         constraints.gridy = 0;
         constraints.anchor = GridBagConstraints.NORTHWEST;
-        constraints.insets = new Insets(20, 0, 0, 5);
+        constraints.insets = new Insets(20, 0, 10, 5);
         totalPanel.add(totalEarningLabel, constraints);
 
         JLabel totalEarning = new JLabel();
@@ -173,7 +181,7 @@ public class AdministrationUI extends JFrame {
         constraints.gridx = 3;
         constraints.gridy = 0;
         constraints.anchor = GridBagConstraints.NORTHWEST;
-        constraints.insets = new Insets(20, 0, 0, 0);
+        constraints.insets = new Insets(20, 0, 10, 0);
         totalPanel.add(totalEarning, constraints);
 
         JLabel totalRevenueLabel = new JLabel("Total revenue (\u20AC):");
@@ -224,10 +232,24 @@ public class AdministrationUI extends JFrame {
         constraints.gridwidth = GridBagConstraints.REMAINDER;
         constraints.anchor = GridBagConstraints.CENTER;
         constraints.insets = new Insets(30, 0, 0, 0);
-        leftPanel.add(totalPanel, constraints);
+        rootPanel.add(totalPanel, constraints);
+
+///////////
+// Buttons
+///////////
 
         JButton auctionOff = new JButton("Auction off");
         auctionOff.setFocusPainted(false);
+        auctionOff.setEnabled(false);
+        table.getSelectionModel().addListSelectionListener(event -> {
+            if (table.getSelectedRowCount()==1) {
+                String note = table.getValueAt(table.getSelectedRow(),3).toString();
+                auctionOff.setEnabled(note.equals("ADDED") || note.equals(""));
+            } else {
+                auctionOff.setEnabled(false);
+            }
+        });
+
         JButton costCalc = new JButton("Cost calculator");
         costCalc.setFocusPainted(false);
         costCalc.addActionListener(e -> {
@@ -243,7 +265,7 @@ public class AdministrationUI extends JFrame {
             if(!visUI.isVisible()) {
                 visUI.setVisible(true);
             }
-            Location depot = Location.newInstance(23.76, 7.82);
+            Location depot = tour.getDepot();
             TourVisual currentTour = new TourVisual(depot, carrier.getUsername());
             int[] selectedRow = table.getSelectedRows();
             float[] tr;
@@ -255,20 +277,18 @@ public class AdministrationUI extends JFrame {
                 Location deliver = Location.newInstance(tr[2], tr[3]);
                 currentTour.addRequest(requestID, pickup, deliver);
             }
-
             leftVisualPanel.removeAll();
             leftVisualPanel.add(currentTour.visualize());
             leftVisualPanel.revalidate();
-
-
         });
+
         JMenuItem visualizeInP2 = new JMenuItem("Panel 2");
         popupMenu.add(visualizeInP2);
         visualizeInP2.addActionListener(e -> {
             if(!visUI.isVisible()) {
                 visUI.setVisible(true);
             }
-            Location depot = Location.newInstance(23.76, 7.82);
+            Location depot = tour.getDepot();
             TourVisual currentTour = new TourVisual(depot, carrier.getUsername());
             int[] selectedRow = table.getSelectedRows();
             float[] tr;
@@ -280,15 +300,12 @@ public class AdministrationUI extends JFrame {
                 Location deliver = Location.newInstance(tr[2], tr[3]);
                 currentTour.addRequest(requestID, pickup, deliver);
             }
-
             rightVisualPanel.removeAll();
             rightVisualPanel.add(currentTour.visualize());
             rightVisualPanel.revalidate();
-
-
         });
 
-        TextIcon icon = new TextIcon(leftBottomPanel, "Show in", TextIcon.Layout.HORIZONTAL);
+        TextIcon icon = new TextIcon(bottomPanel, "Show in", TextIcon.Layout.HORIZONTAL);
         icon.setFont(font.deriveFont(Font.BOLD, 12));
         JButton showIn = DropDownButtonFactory.createDropDownButton(icon, popupMenu);
         showIn.setFocusPainted(false);
@@ -297,20 +314,23 @@ public class AdministrationUI extends JFrame {
 
         auctionOff.setPreferredSize(costCalc.getPreferredSize());
 
-        leftBottomPanel.add(auctionOff);
-        leftBottomPanel.add(showIn);
-        leftBottomPanel.add(costCalc);
+        bottomPanel.add(auctionOff);
+        bottomPanel.add(showIn);
+        bottomPanel.add(costCalc);
 
         constraints = new GridBagConstraints();
         constraints.gridx = 0;
         constraints.gridy = 3;
         constraints.gridwidth = GridBagConstraints.REMAINDER;
         constraints.anchor = GridBagConstraints.CENTER;
-        constraints.insets = new Insets(35, 0, 0, 0);
-        leftPanel.add(leftBottomPanel, constraints);
+        constraints.insets = new Insets(30, 0, 0, 0);
+        rootPanel.add(bottomPanel, constraints);
 
+///////////
+// Combine
+///////////
 
-        getContentPane().add(leftPanel, BorderLayout.CENTER);
+        getContentPane().add(rootPanel, BorderLayout.CENTER);
 
         pack();
 
@@ -320,7 +340,7 @@ public class AdministrationUI extends JFrame {
 
     public static Object[][] createRequestObject(TourPlanning tour) {
         List<TransportRequest> trList = tour.getRequests();
-        Object[][] res = new Object[trList.size()][3];
+        Object[][] res = new Object[trList.size()][4];
         for (int i = 0; i < trList.size(); i++) {
             res[i][0] = trList.get(i).getId();
             res[i][1] = "((" + trList.get(i).getPickupX() + "," +
@@ -328,6 +348,15 @@ public class AdministrationUI extends JFrame {
                     trList.get(i).getDeliveryX() + "," +
                     trList.get(i).getDeliveryY() + "))";
             res[i][2] = String.format("%.2f", tour.getProfit(trList.get(i))).replace(",",".");
+            if (i==4) {
+                res[i][3] = "REMOVED";
+            } else if (i==5) {
+                res[i][3] = "ADDED";
+            } else if (i==6) {
+                res[i][3] = "IN AUCTION";
+            } else {
+                res[i][3] = "";
+            }
         }
         return res;
     }

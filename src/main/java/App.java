@@ -1,5 +1,7 @@
 import Agent.Agent;
 import Agent.CarrierAgent;
+import Agent.AuctioneerAgent;
+import Agent.AgentFactory;
 import AuctioneerUI.StartAuctionUI;
 import CarrierUI.AdministrationUI;
 import StartUI.LoginUI;
@@ -8,8 +10,11 @@ import StartUI.WelcomeUI;
 import CarrierUI.JoinAuctionUI;
 import UIResource.HTTPResource.HTTPRequests;
 import Utils.Converter;
+import org.json.JSONObject;
+
 import javax.swing.*;
 import java.util.ArrayList;
+import java.util.Objects;
 
 public class App {
 
@@ -20,7 +25,8 @@ public class App {
     private static StartAuctionUI auctioneerUI;
     private static AdministrationUI adminUI;
 
-    private static Agent user;
+    private static AuctioneerAgent auctioneer;
+    private static CarrierAgent carrier;
 
 
     static public void main(String[] args) {
@@ -84,9 +90,9 @@ public class App {
                         throw new Exception("Username " + username + " is already used.");
                     }
                     ArrayList<Float> tr = Converter.convertStringToTR(transReq);
-                    Agent agent = HTTPRequests.login(username, password);
+                    carrier = AgentFactory.carrierFromJSON(Objects.requireNonNull(HTTPRequests.login(username, password)));
                     for (int i = 0; i<(tr.size()); i+=4) {
-                        HTTPRequests.addTransportRequest(agent, tr.get(i), tr.get(i+1), tr.get(i+2), tr.get(i+3));
+                        HTTPRequests.addTransportRequest(carrier, tr.get(i), tr.get(i+1), tr.get(i+2), tr.get(i+3));
                     }
                 } else {
                     if (!HTTPRequests.registerAuctioneer(name, username, password)) {
@@ -110,20 +116,22 @@ public class App {
         JButton loginLoginBtn = loginUI.getLoginBtn();
         loginUI.getRootPane().setDefaultButton(loginLoginBtn);
         loginLoginBtn.addActionListener(e -> {
+            loginUI.setErrorLabel("");
             String username = loginUI.getNameText();
             String password = loginUI.getPasswordText();
-            user = HTTPRequests.login(username, password);
-            if (user == null) {
+            JSONObject data = HTTPRequests.login(username, password);
+            if (data == null) {
                 loginUI.setErrorLabel("Incorrect username/password.");
                 return;
             }
-            if (user.isAuctioneer()) {
-                auctioneerUI.setNameLabel(user.getDisplayname());
+            if (data.getBoolean("IsAuctioneer")) {
+                auctioneer = AgentFactory.auctioneerFromJSON(data);
+                auctioneerUI.setNameLabel(auctioneer.getDisplayname());
                 auctioneerUI.setVisible(true);
             } else {
-                CarrierAgent carrier = HTTPRequests.getCarrierAgent(username);
+                carrier = AgentFactory.carrierFromJSON(data);
                 adminUI = new AdministrationUI(carrier);
-                joinAuctionUI.setNameLabel(user.getDisplayname());
+                joinAuctionUI.setNameLabel(carrier.getDisplayname());
                 joinAuctionUI.setVisible(true);
             }
             loginUI.setVisible(false);
@@ -139,7 +147,7 @@ public class App {
             joinAuctionUI.setVisible(false);
             welcomeUI.setVisible(true);
             // Reset data
-            user = null;
+            carrier = null;
             HTTPRequests.logout();
         });
 
@@ -148,7 +156,7 @@ public class App {
             auctioneerUI.setVisible(false);
             welcomeUI.setVisible(true);
             // Reset data
-            user = null;
+            auctioneer = null;
             HTTPRequests.logout();
         });
 

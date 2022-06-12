@@ -1,13 +1,14 @@
 package Auction;
 
+import Agent.Agent;
 import com.graphhopper.jsprit.core.problem.Location;
 import com.graphhopper.jsprit.core.problem.job.Shipment;
 
-import Agent.Agent;
+import Agent.CarrierAgent;
 
 public class TransportRequest {
 
-	public TransportRequest(int id, Agent owner, float pickupX, float pickupY, float deliveryX, float deliveryY) {
+	public TransportRequest(int id, CarrierAgent owner, float pickupX, float pickupY, float deliveryX, float deliveryY) {
 		this.id = id;
 		this.owner = owner;
 		this.pickupX = pickupX;
@@ -19,7 +20,7 @@ public class TransportRequest {
 	// Variables
 
 	private int id;
-	private Agent owner;
+	private CarrierAgent owner;
 	private float pickupX, pickupY, deliveryX, deliveryY;
 
 	// Getters
@@ -39,7 +40,7 @@ public class TransportRequest {
 	public String getId() {
 		return Integer.toString(id);
 	}
-	public Agent getOwner() {
+	public CarrierAgent getOwner() {
 		return owner;
 	}
 	public float getPickupX() {

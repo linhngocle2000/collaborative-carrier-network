@@ -219,6 +219,10 @@ public class TourPlanning {
       return this.depot;
    }
 
+   public CarrierAgent getAgent() {
+      return this.agent;
+   }
+
    public void setDepot(double depotX, double depotY) {
       this.depot = Location.newInstance(depotX, depotY);
    }

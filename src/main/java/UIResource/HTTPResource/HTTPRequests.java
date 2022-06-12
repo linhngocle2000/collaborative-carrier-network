@@ -7,7 +7,6 @@ import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.atomic.AtomicInteger;
 
 import org.json.*;
 
@@ -58,17 +57,15 @@ public class HTTPRequests {
         }
     }
 
-    public static Agent login(String username, String password) {
+    public static JSONObject login(String username, String password) {
         try {
             var json = send(RequestBody.login(username, password));
             boolean success = json.getBoolean("success");
             if (!success) {
                 return null;
             }
-
-            var data = json.getJSONObject("data");
-            token = data.getString("Token");
-            return AgentFactory.fromJSON(data.getJSONObject("Agent"));
+            token = json.getJSONObject("data").getString("Token");
+            return json.getJSONObject("data").getJSONObject("Agent");
         } catch (IOException | InterruptedException e) {
             lastError = e;
             return null;
@@ -139,7 +136,7 @@ public class HTTPRequests {
 
     // Transport request
 
-    public static void addTransportRequest(Agent agent, float pickupX, float pickupY, float deliveryX, float deliveryY) {
+    public static void addTransportRequest(CarrierAgent agent, float pickupX, float pickupY, float deliveryX, float deliveryY) {
         try {
             send(RequestBody.addTransportRequest(agent, pickupX, pickupY, deliveryX, deliveryY, token));
         } catch (IOException | InterruptedException e) {

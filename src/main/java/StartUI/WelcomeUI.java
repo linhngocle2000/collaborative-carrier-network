@@ -20,16 +20,27 @@ public class WelcomeUI extends JFrame {
 
         super();
 
+///////////
+// Frame
+///////////
+
         setTitle("CCN");
         setSize(width, height);
         setMinimumSize(new Dimension(width, height));
         setLocationRelativeTo(null);
-
         setDefaultCloseOperation(EXIT_ON_CLOSE);
+
+///////////
+// Panels
+///////////
 
         JPanel rootPanel = new JPanel();
         rootPanel.setLayout(new GridBagLayout());
         rootPanel.setBackground(background);
+
+///////////
+// Middle
+///////////
 
         JLabel titleLabel = new JLabel("<HTML>Collaborative Carrier<br><center>Network</center></HTML>");
         titleLabel.setFont(font.deriveFont(Font.BOLD, 16));
@@ -79,8 +90,11 @@ public class WelcomeUI extends JFrame {
         constraints.insets = new java.awt.Insets(10, 0, 15, 0);
         rootPanel.add(loginBtn, constraints);
 
+///////////
+// Combine
+///////////
+
         getContentPane().add(rootPanel);
-        getContentPane().setBackground(background);
 
         pack();
 

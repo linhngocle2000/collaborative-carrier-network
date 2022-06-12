@@ -12,10 +12,13 @@ import java.awt.*;
 
 
 public class StartAuctionUI extends JFrame {
+
     private JButton logoutBtn;
     private JLabel errorLabel, nameLabel;
-    private boolean auctionStarted;
     private String[] auctionColumnNames = {"Transport request", "Owner", "Iteration"};
+    private Color background = UIData.getBackground();
+    private Border emptyBorder = UIData.getEmptyBorder();
+    AuctionUI auctionUI;
 
     Object[][] data = {
             {"((0,1),(2,3))", "Smith", "0"},
@@ -37,6 +40,10 @@ public class StartAuctionUI extends JFrame {
 
         super();
 
+///////////
+// Frame
+///////////
+
         setTitle("CCN");
         setSize(520, 580);
         setMinimumSize(new Dimension(520, 580));
@@ -44,11 +51,12 @@ public class StartAuctionUI extends JFrame {
 
         setDefaultCloseOperation(EXIT_ON_CLOSE);
 
-        auctionStarted = false;
+///////////
+// Panels
+///////////
 
         JPanel topPanel = new JPanel();
         topPanel.setLayout(new GridBagLayout());
-        Color background = UIData.getBackground();
         topPanel.setBackground(background);
 
         JPanel rootPanel = new JPanel();
@@ -59,6 +67,9 @@ public class StartAuctionUI extends JFrame {
         bottomPanel.setLayout(new GridBagLayout());
         bottomPanel.setBackground(background);
 
+///////////
+// Top
+///////////
 
         JLabel loginLabel = new JLabel("Login as:");
         Font font = UIData.getFont();
@@ -87,40 +98,9 @@ public class StartAuctionUI extends JFrame {
         constraints.insets = new Insets(20, 92, 0, 0);
         topPanel.add(nameLabel, constraints);
 
-
-        logoutBtn = new JButton();
-        logoutBtn.setText("<HTML><U>Logout</U></HTML>");
-        logoutBtn.setFocusPainted(false);
-        Border emptyBorder = UIData.getEmptyBorder();
-        logoutBtn.setBorder(emptyBorder);
-        logoutBtn.setBackground(background);
-        logoutBtn.setFont(font.deriveFont(Font.PLAIN, 13));
-        logoutBtn.setForeground(Color.BLUE);
-
-        constraints = new GridBagConstraints();
-        constraints.gridx = 0;
-        constraints.gridy = 0;
-        constraints.weightx = 1.0;
-        constraints.weighty = 1.0;
-        constraints.anchor = GridBagConstraints.NORTHWEST;
-        constraints.insets = new Insets(20, 30, 10, 0);
-        bottomPanel.add(logoutBtn, constraints);
-
-        JButton reloadBtn = new JButton("\u27f3");
-        reloadBtn.setFont(font.deriveFont(Font.BOLD, 28));
-        reloadBtn.setBorder(emptyBorder);
-        reloadBtn.setBackground(background);
-        reloadBtn.setHorizontalAlignment(SwingConstants.CENTER);
-
-        constraints = new GridBagConstraints();
-        constraints.gridx = 0;
-        constraints.gridy = 0;
-        constraints.weightx = 1.0;
-        constraints.weighty = 1.0;
-        constraints.anchor = GridBagConstraints.NORTHEAST;
-        constraints.insets = new Insets(8, 0, 27, 30);
-        bottomPanel.add(reloadBtn, constraints);
-
+///////////
+// Table
+///////////
 
         JLabel tableHeader = new JLabel("Auction requests");
         tableHeader.setFont(font.deriveFont(Font.BOLD, 16));
@@ -139,25 +119,23 @@ public class StartAuctionUI extends JFrame {
             {
                 Component c = super.prepareRenderer(renderer, row, column);
                 JComponent jc = (JComponent)c;
-
                 // Add a border to the selected row
-
                 if (isRowSelected(row)) {
                     jc.setBorder(emptyBorder);
                 }
-
                 return c;
             }
         };
-
         table.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         table.setShowHorizontalLines(false);
-
+        table.setSelectionBackground(new Color(222, 222, 222, 255));
         table.setRowHeight(25);
         table.setIntercellSpacing(new Dimension(0, 0));
+        table.setDefaultEditor(Object.class, null);
+        table.getTableHeader().setReorderingAllowed(false);
+        table.clearSelection();
         DefaultTableCellRenderer centerRenderer = new DefaultTableCellRenderer();
         centerRenderer.setHorizontalAlignment(JLabel.CENTER);
-
         TableColumnModel columnModel = table.getColumnModel();
         columnModel.getColumn(0).setPreferredWidth(200);
         columnModel.getColumn(1).setPreferredWidth(180);
@@ -165,17 +143,42 @@ public class StartAuctionUI extends JFrame {
         for (int i = 0; i<3; i++) {
             columnModel.getColumn(i).setCellRenderer(centerRenderer);
         }
-        JScrollPane scrollPane = new JScrollPane(table);
-        table.setDefaultEditor(Object.class, null);
-        table.getTableHeader().setReorderingAllowed(false);
-        table.clearSelection();
 
+        JScrollPane scrollPane = new JScrollPane(table);
         if (data.length <= 12) {
             scrollPane.setPreferredSize(new Dimension(460, data.length*25+23));
         } else {
             scrollPane.setPreferredSize(new Dimension(460, 323));
             scrollPane.setVerticalScrollBar(new ScrollBarCustom(12, data.length));
         }
+
+        constraints = new GridBagConstraints();
+        constraints.gridx = 0;
+        constraints.gridy = 0;
+        constraints.anchor = GridBagConstraints.NORTHWEST;
+        constraints.insets = new Insets(0, 0, 0, 0);
+        rootPanel.add(scrollPane, constraints);
+
+///////////
+// Bottom
+///////////
+
+        logoutBtn = new JButton();
+        logoutBtn.setText("<HTML><U>Logout</U></HTML>");
+        logoutBtn.setFocusPainted(false);
+        logoutBtn.setBorder(emptyBorder);
+        logoutBtn.setBackground(background);
+        logoutBtn.setFont(font.deriveFont(Font.PLAIN, 13));
+        logoutBtn.setForeground(Color.BLUE);
+
+        constraints = new GridBagConstraints();
+        constraints.gridx = 0;
+        constraints.gridy = 0;
+        constraints.weightx = 1.0;
+        constraints.weighty = 1.0;
+        constraints.anchor = GridBagConstraints.NORTHWEST;
+        constraints.insets = new Insets(20, 30, 10, 0);
+        bottomPanel.add(logoutBtn, constraints);
 
         JButton startBtn = new JButton();
         startBtn.setText("Start");
@@ -190,31 +193,42 @@ public class StartAuctionUI extends JFrame {
         constraints.insets = new Insets(10, 0, 20, 0);
         bottomPanel.add(startBtn, constraints);
 
-        table.getSelectionModel().addListSelectionListener(event -> startBtn.setEnabled(table.getSelectedRowCount() == 1 && !auctionStarted));
+        table.getSelectionModel().addListSelectionListener(event -> {
+            if (auctionUI == null) {
+                startBtn.setEnabled(true);
+            } else if (!auctionUI.isVisible()) {
+                startBtn.setEnabled(true);
+            }
+        });
+
+        JButton reloadBtn = new JButton("\u27f3");
+        reloadBtn.setFont(font.deriveFont(Font.BOLD, 28));
+        reloadBtn.setBorder(emptyBorder);
+        reloadBtn.setBackground(background);
+        reloadBtn.setHorizontalAlignment(SwingConstants.CENTER);
+
+        constraints = new GridBagConstraints();
+        constraints.gridx = 0;
+        constraints.gridy = 0;
+        constraints.weightx = 1.0;
+        constraints.weighty = 1.0;
+        constraints.anchor = GridBagConstraints.NORTHEAST;
+        constraints.insets = new Insets(8, 0, 27, 30);
+        bottomPanel.add(reloadBtn, constraints);
 
         startBtn.addActionListener(e -> {
-            AuctionUI auctionUI = new AuctionUI();
+            auctionUI = new AuctionUI();
             int iter = Integer.parseInt(table.getModel().getValueAt(table.getSelectedRow(), 2).toString());
             auctionUI.setTrReq(table.getModel().getValueAt(table.getSelectedRow(), 0).toString());
             auctionUI.setOwner(table.getModel().getValueAt(table.getSelectedRow(), 1).toString());
             auctionUI.setIteration(Integer.toString(iter+1));
             auctionUI.setVisible(true);
             startBtn.setEnabled(false);
-            auctionStarted = true;
-            new Timer(180_000, (eBtn) -> {
-                auctionStarted = false;
-                if (table.getSelectedRowCount()==1) {
-                    startBtn.setEnabled(true);
-                }
-            }).start();
         });
 
-        constraints = new GridBagConstraints();
-        constraints.gridx = 0;
-        constraints.gridy = 0;
-        constraints.anchor = GridBagConstraints.NORTHWEST;
-        constraints.insets = new Insets(0, 0, 0, 0);
-        rootPanel.add(scrollPane, constraints);
+///////////
+// Log
+///////////
 
         errorLabel = new JLabel();
         Color errorColor = UIData.getErrorColor();
@@ -239,6 +253,9 @@ public class StartAuctionUI extends JFrame {
 //        };
 //        new Timer(delay, taskPerformer).start();
 
+///////////
+// Combine
+///////////
 
         getContentPane().add(rootPanel, BorderLayout.CENTER);
         getContentPane().add(topPanel, BorderLayout.NORTH);
@@ -253,6 +270,7 @@ public class StartAuctionUI extends JFrame {
     public JButton getLogoutBtn() {
         return logoutBtn;
     }
+
 
     public void setNameLabel(String s) {
         nameLabel.setText(s);
