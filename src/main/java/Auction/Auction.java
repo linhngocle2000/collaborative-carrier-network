@@ -3,6 +3,8 @@ package Auction;
 import java.util.ArrayList;
 import java.util.List;
 
+import UIResource.HTTPResource.HTTPRequests;
+
 public class Auction {
 
 	private ArrayList<TransportRequest> requests;
@@ -17,8 +19,9 @@ public class Auction {
 	}
 
 	public void start() {
-		// TODO: Set isActive in database
+		// TODO: Start periodically checking for new bids
 		strategy.start();
+		HTTPRequests.startAuction(this);
 	}
 
 	public void addBid(Bid bid) {
@@ -27,8 +30,8 @@ public class Auction {
 	}
 
 	public void end() {
-		// TODO: Unset isActive in database
 		strategy.end();
+		HTTPRequests.endAuction(this);
 	}
 
 	/**

@@ -25,8 +25,10 @@ public class StartAuctionUI extends JFrame {
     private JScrollPane scrollPane;
     private Color background = UIData.getBackground();
     private Border emptyBorder = UIData.getEmptyBorder();
+
     private AuctioneerAgent agent;
     AuctionUI auctionUI;
+    private Auction selectedAuction;
 
     public StartAuctionUI() {
 
@@ -170,11 +172,10 @@ public class StartAuctionUI extends JFrame {
         bottomPanel.add(startBtn, constraints);
 
         table.getSelectionModel().addListSelectionListener(event -> {
-            if (auctionUI == null) {
-                startBtn.setEnabled(true);
-            } else if (!auctionUI.isVisible()) {
-                startBtn.setEnabled(true);
-            }
+            int row = table.getSelectedRow();
+            var model = (AuctionTableModel)table.getModel();
+            selectedAuction = model.getAuction(row);
+            startBtn.setEnabled(selectedAuction != null);
         });
 
         JButton reloadBtn = new JButton("\u27f3");
@@ -194,15 +195,14 @@ public class StartAuctionUI extends JFrame {
 
         startBtn.addActionListener(e -> {
             auctionUI = new AuctionUI();
-            int iter = Integer.parseInt(table.getModel().getValueAt(table.getSelectedRow(), 2).toString());
-            auctionUI.setTrReq(table.getModel().getValueAt(table.getSelectedRow(), 0).toString());
-            auctionUI.setOwner(table.getModel().getValueAt(table.getSelectedRow(), 1).toString());
-            auctionUI.setIteration(Integer.toString(iter+1));
+            auctionUI.setAuction(selectedAuction);
             auctionUI.setVisible(true);
             startBtn.setEnabled(false);
         });
 
         reloadBtn.addActionListener(e -> loadAuctions());
+
+        // TODO: React to auctionUI close and remove auction from list or refresh table model
 
 ///////////
 // Log
@@ -278,10 +278,6 @@ public class StartAuctionUI extends JFrame {
     public void setAgent(AuctioneerAgent agent) {
         this.agent = agent;
         nameLabel.setText(agent.getDisplayname());
-    }
-
-    public void setNameLabel(String s) {
-        nameLabel.setText(s);
     }
 
 }

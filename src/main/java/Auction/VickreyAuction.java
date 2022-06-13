@@ -33,7 +33,10 @@ public class VickreyAuction extends AuctionStrategy {
 
 	@Override
 	public Bid getWinningBid() {
-		return new Bid(topBid.getBidder(), topBid.getRequest(), secondBid.getPrice());
+		if (topBid == null) {
+			return null;
+		}
+		return new Bid(topBid.getID(), topBid.getAuction(), topBid.getBidder(), secondBid.getPrice());
 	}
 
 }

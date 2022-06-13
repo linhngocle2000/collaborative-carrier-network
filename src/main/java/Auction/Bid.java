@@ -4,29 +4,35 @@ import Agent.CarrierAgent;
 
 public class Bid {
 
-	public Bid(CarrierAgent bidder, TransportRequest request, float price) {
+	
+	public Bid(int id, Auction auction, CarrierAgent bidder, int price) {
+		this.id = id;
+		this.auction = auction;
 		this.bidder = bidder;
-		this.request = request;
 		this.price = price;
 	}
-
+	
 	// Variables 
-
+	
+	private int id, price;
+	private Auction auction;
 	private CarrierAgent bidder;
-	private TransportRequest request;
-	private float price;
 
 	// Getters
+
+	public int getID() {
+		return id;
+	}
 
 	public CarrierAgent getBidder() {
 		return bidder;
 	}
 
-	public TransportRequest getRequest() {
-		return request;
+	public Auction getAuction() {
+		return auction;
 	}
 
-	public float getPrice() {
+	public int getPrice() {
 		return price;
 	}
 

@@ -266,6 +266,28 @@ public class HTTPRequests {
         }
     }
 
+    public static boolean startAuction(Auction auction) {
+        try {
+            var json = send(RequestBody.startAuction(auction, token));
+            return json.getBoolean("success");
+        } catch (IOException | InterruptedException e) {
+            e.printStackTrace();
+            lastError = e;
+            return false;
+        }
+    }
+
+    public static boolean endAuction(Auction auction) {
+        try {
+            var json = send(RequestBody.endAuction(auction, token));
+            return json.getBoolean("success");
+        } catch (IOException | InterruptedException e) {
+            e.printStackTrace();
+            lastError = e;
+            return false;
+        }
+    }
+
     /**
      * @return Only auctions that are active (open for bidding).
      */
@@ -317,6 +339,62 @@ public class HTTPRequests {
         }
     }
 
+    public static Bid addBid(Auction auction, CarrierAgent agent, int price) {
+        try {
+            var json = send(RequestBody.addBid(auction, price, token));
+            boolean result = json.getBoolean("success");
+            if (!result) {
+                return null;
+            }
+            int id = json.getJSONObject("data").getInt("ID");
+            return new Bid(id, auction, agent, price);
+        } catch (IOException | InterruptedException e) {
+            e.printStackTrace();
+            lastError = e;
+            return null;
+        }
+    }
+
+    public static List<Bid> getBids(Auction auction) {
+        try {
+            // Cache agents for multiple bids by same agent
+            HashMap<String, CarrierAgent> map = new HashMap<String, CarrierAgent>();
+
+            var json = send(RequestBody.getBids(auction, token));
+            boolean success = json.getBoolean("success");
+            if (!success) {
+                return null;
+            }
+            var array = json.getJSONArray("data");
+            var result = new ArrayList<Bid>();
+            for (Object obj : array) {
+                JSONObject j = (JSONObject) obj;
+                int id = j.getInt("ID");
+                String username = j.getString("Agent");
+                int price = j.getInt("Price");
+                CarrierAgent bidder = null;
+                if (map.containsKey(username)) {
+                    bidder = map.get(username);
+                } else {
+                    bidder = (CarrierAgent) getAgent(username);
+                    map.put(username, bidder);
+                }
+                if (bidder == null) {
+                    String message = "Could not retrieve bidder";
+                    lastError = new Exception(message);
+                    System.err.println(message);
+                    return null;
+                }
+                result.add(new Bid(id, auction, bidder, price));
+            }
+            return result;
+        } catch (IOException | InterruptedException e) {
+            e.printStackTrace();
+            lastError = e;
+            return null;
+        }
+    }
+
     // Helper methods
 
     private static String dbURL = "https://cgi.tu-harburg.de/~ckh1694/index.php";
@@ -334,6 +412,18 @@ public class HTTPRequests {
                 .POST(HttpRequest.BodyPublishers.ofString(body))
                 .build();
         HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
-        return new JSONObject(response.body());
+        var json = new JSONObject(response.body());
+        if (!json.getBoolean("success")) {
+            var error = json.getJSONObject("error");
+            if (error.has("message")) {
+                String message = error.getString("message");
+                System.err.println(message);
+                lastError = new Exception(message);
+            }
+            if (error.has("stacktrace")) {
+                System.err.println(error.getString("stacktrace"));
+            }
+        }
+        return json;
     }
 }

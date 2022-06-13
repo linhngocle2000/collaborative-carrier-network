@@ -6,6 +6,7 @@ import org.json.JSONObject;
 import Agent.Agent;
 import Agent.CarrierAgent;
 import Auction.Auction;
+import Auction.Bid;
 import Auction.TransportRequest;
 
 public class RequestBody {
@@ -103,11 +104,36 @@ public class RequestBody {
         return body("getAuctions", token, null);
     }
 
+    public static String startAuction(Auction auction, String token) {
+        JSONObject data = new JSONObject();
+        data.put("Auction", auction.getID());        
+        return body("startAuction", token, data);
+    }
+
+    public static String endAuction(Auction auction, String token) {
+        JSONObject data = new JSONObject();
+        data.put("Auction", auction.getID());
+        return body("endAuction", token, data);
+    }
+
     public static String addRequestToAuction(Auction auction, TransportRequest request, String token) {
         JSONObject data = new JSONObject();
         data.put("Auction", auction.getID());
         data.put("TransportRequest", request.getID());
         return body("addRequestToAuction", token, data);
+    }
+
+    public static String addBid(Auction auction, int price, String token) {
+        JSONObject data = new JSONObject();
+        data.put("Auction", auction.getID());
+        data.put("Price", price);
+        return body("addBid", token, data);
+    }
+
+    public static String getBids(Auction auction, String token) {
+        JSONObject data = new JSONObject();
+        data.put("Auction", auction.getID());
+        return body("getBids", token, data);
     }
 
     // Helper
