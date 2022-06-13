@@ -57,4 +57,106 @@ class Auction
 			throw new Exception('Failed to add transport request to auction');
 		}
 	}
+
+	public static function addBid($data)
+	{
+		TokenHelper::assertToken();
+	}
+
+	public static function getBids($data)
+	{
+		TokenHelper::assertToken();
+	}
+
+	public static function startAuction($data)
+	{
+		TokenHelper::assertToken();
+		$agent = Agent::getAgentFromToken(TokenHelper::getToken());
+		if (!$agent->isAuctioneer())
+		{
+			throw new Exception('You can not administrate auctions');
+		}
+
+		$db = Database::getConnection();
+		$auction = intval($data['Auction']);
+		$result = $db->query("UPDATE `Auction` SET `IsActive` = 1, `Iteration` = `Iteration` + 1 WHERE `ID` = $auction");
+		if (empty($result))
+		{
+			throw new Exception('Failed to start auction');
+		}
+	}
+
+	public static function endAuction($data)
+	{
+		TokenHelper::assertToken();
+		$agent = Agent::getAgentFromToken(TokenHelper::getToken());
+		if (!$agent->isAuctioneer())
+		{
+			throw new Exception('You can not administrate auctions');
+		}
+
+		$db = Database::getConnection();
+		$auction = intval($data['Auction']);
+		$result = $db->query("UPDATE `Auction` SET `IsActive` = 0 WHERE `ID` = $auction");
+		if (empty($result))
+		{
+			throw new Exception('Failed to end auction');
+		}
+	}
+
+	public static function setWinner($data)
+	{
+		TokenHelper::assertToken();
+		$agent = Agent::getAgentFromToken(TokenHelper::getToken());
+		if (!$agent->isAuctioneer())
+		{
+			throw new Exception('You can not administrate auctions');
+		}
+
+		$db = Database::getConnection();
+		$auction = intval($data['Auction']);
+		$winner = $db->escape_string($data['Username']);
+
+		try
+		{
+			$db->begin_transaction();
+
+			if (empty($winner))
+			{
+				// Delete auction if iteration >= 3
+				$result = $db->query("DELETE FROM `Auction` WHERE `Auction` = $auction AND `Iteration` >= 3");
+				if (empty($result))
+				{
+					throw new Exception('Failed to remove auction');
+				}
+			}
+			else
+			{
+				// Transfer requests
+				$result = $db->query("UPDATE `TransportRequest`
+				SET `Owner` = '$winner'
+				WHERE `ID` IN (SELECT `TransportRequest`
+					FROM `AuctionRequests`
+					WHERE `Auction` = $auction)");
+				if (empty($result))
+				{
+					throw new Exception('Failed to update transport requests');
+				}
+
+				// Delete auction
+				$result = $db->query("DELETE FROM `Auction` WHERE `Auction` = $auction");
+				if (empty($result))
+				{
+					throw new Exception('Failed to remove auction');
+				}
+			}
+
+			$db->commit();
+		}
+		catch (\Throwable $ex)
+		{
+			$db->rollback();
+			throw $ex;
+		}
+	}
 }

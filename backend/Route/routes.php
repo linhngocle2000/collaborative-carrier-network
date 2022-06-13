@@ -27,3 +27,9 @@ $handler->register('getRequestsOfAuction', [TransportRequest::class, 'getRequest
 $handler->register('addAuction', [Auction::class, 'addAuction']);
 $handler->register('getAuctions', [Auction::class, 'getAuctions']);
 $handler->register('addRequestToAuction', [Auction::class, 'addTransportRequest']);
+$handler->register('addBid', [Auction::class, 'addBid']);
+$handler->register('getBids', [Auction::class, 'getBids']);
+$handler->register('startAuction', [Auction::class, 'startAuction']);
+$handler->register('endAuction', [Auction::class, 'endAuction']);
+$handler->register('setWinner', [Auction::class, 'setWinner']);
+$handler->register('endAuction', [Auction::class, 'endAuction']);
