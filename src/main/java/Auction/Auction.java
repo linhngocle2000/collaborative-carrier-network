@@ -20,7 +20,6 @@ public class Auction {
 	}
 
 	public void start() {
-		// TODO: Start periodically checking for new bids
 		strategy.start();
 		HTTPRequests.startAuction(this);
 		isActive = true;
