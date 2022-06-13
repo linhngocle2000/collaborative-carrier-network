@@ -11,15 +11,10 @@ class Auction
 	{
 		TokenHelper::assertToken();
 		$agent = Agent::getAgentFromToken(TokenHelper::getToken());
-		if (!$agent->isAuctioneer())
-		{
-			throw new Exception('You can not add an auction if you are not an auctioneer');
-		}
 
 		$db = Database::getConnection();
-		$auctioneer = $agent->getUsername();
 		$type = $db->escape_string($data['Type']);
-		$result = $db->query("INSERT INTO `Auction` (`Auctioneer`, `Type`, `IsActive`, `Iteration`) VALUES ('$auctioneer', '$type', 0, 0)");
+		$result = $db->query("INSERT INTO `Auction` (`IsActive`, `Iteration`) VALUES (0, 0)");
 		if (empty($result))
 		{
 			throw new Exception('Could not add auction');
@@ -32,13 +27,7 @@ class Auction
 	{
 		TokenHelper::assertToken();
 		
-		$query = "SELECT `ID`, `Auctioneer`, `Type`, `IsActive`, `Iteration` FROM `Auction`";
-		$agent = Agent::getAgentFromToken(TokenHelper::getToken());
-		if ($agent->isAuctioneer())
-		{
-			$username = $agent->getUsername();
-			$query .= " WHERE `Auctioneer` = '$username'";
-		}
+		$query = "SELECT `ID`, `Auctioneer`, `IsActive`, `Iteration` FROM `Auction`";
 
 		$db = Database::getConnection();
 		$result = $db->query($query);
@@ -59,17 +48,12 @@ class Auction
 	public static function addTransportRequest($data)
 	{
 		TokenHelper::assertToken();
-		$agent = Agent::getAgentFromToken(TokenHelper::getToken());
-		if (!$agent->isAuctioneer())
-		{
-			throw new Exception('You can not modify an auction if you are not an auctioneer');
-		}
 
 		$request = intval($data['TransportRequest']);
 		$auction = intval($data['Auction']);
 
 		$db = Database::getConnection();
-		$result = $db->query("UPDATE `TransportRequest` SET `Auction` = $auction WHERE `ID` = $request AND `Auction` IS NULL");
+		$result = $db->query("INSERT INTO `AuctionRequests` (`Auction`, `TransportRequest`) VALUES ($auction, $request)");
 		if (empty($result) || $db->affected_rows != 1)
 		{
 			throw new Exception('Failed to add transport request to auction');
