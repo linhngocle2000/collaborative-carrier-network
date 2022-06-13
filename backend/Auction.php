@@ -56,16 +56,44 @@ class Auction
 		{
 			throw new Exception('Failed to add transport request to auction');
 		}
+		return $db->insert_id;
 	}
 
 	public static function addBid($data)
 	{
 		TokenHelper::assertToken();
+
+		$agent = Agent::getAgentFromToken(TokenHelper::getToken())->getUsername();
+		$auction = intval($data['Auction']);
+		$price = intval($data['Price']);
+
+		$db = Database::getConnection();
+		$result = $db->query("INSERT INTO `Bid` (`Agent`, `Auction`, `Price`) VALUES ('$agent', $auction, $price)");
+		if (empty($result) || $db->affected_rows != 1)
+		{
+			throw new Exception('Failed to add bid');
+		}
+		return $db->insert_id;
 	}
 
 	public static function getBids($data)
 	{
 		TokenHelper::assertToken();
+
+		$auction = intval($data['Auction']);
+
+		$db = Database::getConnection();
+		$result = $db->query("SELECT `ID`, `Agent`, `Auction`, `Price` FROM `Bid` WHERE `Auction` = $auction");
+		if (empty($result))
+		{
+			throw new Exception('Failed to retrieve bids');
+		}
+		$arr = [];
+		while ($row = $result->fetch_assoc())
+		{
+			$arr[] = $row;
+		}
+		return $arr;
 	}
 
 	public static function startAuction($data)
@@ -124,7 +152,7 @@ class Auction
 			if (empty($winner))
 			{
 				// Delete auction if iteration >= 3
-				$result = $db->query("DELETE FROM `Auction` WHERE `Auction` = $auction AND `Iteration` >= 3");
+				$result = $db->query("DELETE FROM `Auction` WHERE `ID` = $auction AND `Iteration` >= 3");
 				if (empty($result))
 				{
 					throw new Exception('Failed to remove auction');
@@ -144,7 +172,7 @@ class Auction
 				}
 
 				// Delete auction
-				$result = $db->query("DELETE FROM `Auction` WHERE `Auction` = $auction");
+				$result = $db->query("DELETE FROM `Auction` WHERE `ID` = $auction");
 				if (empty($result))
 				{
 					throw new Exception('Failed to remove auction');
