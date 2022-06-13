@@ -10,10 +10,8 @@ class Auction
 	public static function addAuction($data)
 	{
 		TokenHelper::assertToken();
-		$agent = Agent::getAgentFromToken(TokenHelper::getToken());
-
+		
 		$db = Database::getConnection();
-		$type = $db->escape_string($data['Type']);
 		$result = $db->query("INSERT INTO `Auction` (`IsActive`, `Iteration`) VALUES (0, 0)");
 		if (empty($result))
 		{
