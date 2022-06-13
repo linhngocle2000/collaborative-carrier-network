@@ -65,7 +65,6 @@ public class TourPlanning {
       requests = new ArrayList<>();
    }
 
-
    /**
     * Update list of request from carrier DB
     */
@@ -73,14 +72,12 @@ public class TourPlanning {
       this.requests = HTTPRequests.getTransportRequestsOfAgent(agent);
    }
 
-
    /**
     * Refresh list of request
     */
    public void addRequest(TransportRequest request) {
        requests.add(request);
    }
-
 
    /**
     * Tour optimize
@@ -90,7 +87,6 @@ public class TourPlanning {
        return new VisualView(problem, bestSolution).display();
    }
    
-
    /**
     * Tour optimize
     */

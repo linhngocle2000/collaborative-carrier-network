@@ -17,8 +17,9 @@ import java.text.SimpleDateFormat;
 
 public class AuctionUI extends JFrame {
 
-    private static JLabel trReq, owner, price,
-            winner, iteration;
+    private static JLabel trReq, owner, price, winner, iteration;
+    private JPanel rootPanel;
+    private JLabel runningLabel;
 
     private Color background = UIData.getBackground();
     private int width = UIData.getWidth();
@@ -52,7 +53,7 @@ public class AuctionUI extends JFrame {
 // Panels
 ///////////
 
-        JPanel rootPanel = new JPanel();
+        rootPanel = new JPanel();
         rootPanel.setLayout(new GridBagLayout());
         rootPanel.setBackground(background);
 
@@ -145,7 +146,7 @@ public class AuctionUI extends JFrame {
 // Running
 ///////////
 
-        JLabel runningLabel = new JLabel("Auction is running... ");
+        runningLabel = new JLabel("Auction is running... ");
         runningLabel.setFont(font.deriveFont(Font.ITALIC, 14));
         runningLabel.setHorizontalAlignment(SwingConstants.CENTER);
 
@@ -172,8 +173,38 @@ public class AuctionUI extends JFrame {
 // Timer
 ///////////
 
+        auctionTimer = new AuctionTimer();
+        constraints = new GridBagConstraints();
+        constraints.gridx = 0;
+        constraints.gridy = 0;
+        constraints.gridwidth = GridBagConstraints.REMAINDER;
+        constraints.anchor = GridBagConstraints.CENTER;
+        constraints.insets = new Insets(20, 0, 20, 0);
+        bottomPanel.add(auctionTimer, constraints);
+
+///////////
+// Combine
+///////////
+
+        getContentPane().add(topPanel, "North");
+        getContentPane().add(rootPanel, "Center");
+        getContentPane().add(bottomPanel, "South");
+        getContentPane().setBackground(background);
+
+        pack();
+        setResizable(false);
+    }
+
+    public void setAuction(Auction auction) {
+        this.auction = auction;
+        trReq.setText(auction.getDefaultTransportRequest().getRouteString());
+        owner.setText(auction.getDefaultTransportRequest().getOwner().getDisplayname());
+        iteration.setText(Integer.toString(auction.getIteration() + 1));
+
         // TODO: Set real duration or let the user decide
-        auctionTimer = new AuctionTimer(auction, 3000, () -> {
+        auction.setAuctionStrategy(new VickreyAuction());
+        auction.start();
+        auctionTimer.start(auction, 3000, () -> {
             runningLabel.setVisible(false);
             auction.end();
             Bid winningBid = auction.getWinningBid();
@@ -231,36 +262,6 @@ public class AuctionUI extends JFrame {
             }
             auction.notifyWinner();
         });
-
-        constraints = new GridBagConstraints();
-        constraints.gridx = 0;
-        constraints.gridy = 0;
-        constraints.gridwidth = GridBagConstraints.REMAINDER;
-        constraints.anchor = GridBagConstraints.CENTER;
-        constraints.insets = new Insets(20, 0, 20, 0);
-        bottomPanel.add(auctionTimer, constraints);
-
-///////////
-// Combine
-///////////
-
-        getContentPane().add(topPanel, "North");
-        getContentPane().add(rootPanel, "Center");
-        getContentPane().add(bottomPanel, "South");
-        getContentPane().setBackground(background);
-
-        pack();
-        setResizable(false);
-    }
-
-    public void setAuction(Auction auction) {
-        this.auction = auction;
-        trReq.setText(auction.getDefaultTransportRequest().getRouteString());
-        owner.setText(auction.getDefaultTransportRequest().getOwner().getDisplayname());
-        iteration.setText(Integer.toString(auction.getIteration() + 1));
-
-        auction.setAuctionStrategy(new VickreyAuction());
-        auction.start();
     }
 }
 
@@ -274,7 +275,7 @@ class AuctionTimer extends JLabel {
     private long startTime = -1;
     private Font font = UIData.getFont();
 
-    public AuctionTimer(Auction auction, long duration, TimerStopCallback callback) {
+    public void start(Auction auction, long duration, TimerStopCallback callback) {
         startTime = System.currentTimeMillis();
         setLayout(new GridBagLayout());
         setFont(font.deriveFont(Font.BOLD, 14));

@@ -7,7 +7,6 @@ public class VickreyAuction extends AuctionStrategy {
 
 	@Override
 	public void start() {
-		// TODO Auto-generated method stub
 	}
 
 	@Override
@@ -28,7 +27,6 @@ public class VickreyAuction extends AuctionStrategy {
 
 	@Override
 	public void end() {
-		// TODO Auto-generated method stub
 	}
 
 	@Override

@@ -6,7 +6,6 @@ public class TraditionalAuction extends AuctionStrategy {
 
 	@Override
 	public void start() {
-		// TODO Auto-generated method stub		
 	}
 
 	@Override
@@ -18,7 +17,6 @@ public class TraditionalAuction extends AuctionStrategy {
 
 	@Override
 	public void end() {
-		// TODO Auto-generated method stub		
 	}
 
 	@Override
