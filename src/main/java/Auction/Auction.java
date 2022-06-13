@@ -9,7 +9,8 @@ public class Auction {
 
 	private ArrayList<TransportRequest> requests;
 	private int iteration;
-	private int id;
+	private int id, lastBidID = -1;
+	private boolean isActive = false;
 	private AuctionStrategy strategy;
 
 	public Auction(int id, int iteration) {
@@ -22,14 +23,18 @@ public class Auction {
 		// TODO: Start periodically checking for new bids
 		strategy.start();
 		HTTPRequests.startAuction(this);
+		isActive = true;
 	}
 
 	public void addBid(Bid bid) {
-		// TODO: Add bid to database
-		strategy.addBid(bid);
+		// Guard against bid insertion after auction has ended
+		if (isActive && bid.getID() > lastBidID) {
+			strategy.addBid(bid);
+		}
 	}
 
 	public void end() {
+		isActive = false;
 		strategy.end();
 		HTTPRequests.endAuction(this);
 	}
@@ -40,6 +45,14 @@ public class Auction {
 	 */
 	public Bid getWinningBid() {
 		return strategy.getWinningBid();
+	}
+
+	/**
+	 * Sends a message to the winner of the auction and transfers ownership
+	 * of transport requests
+	 */
+	public void notifyWinner() {
+		HTTPRequests.setWinner(this, getWinningBid());
 	}
 
 	// Setter

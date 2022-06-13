@@ -131,7 +131,7 @@ public class App {
                 auctioneer = null;
                 carrier = (CarrierAgent)user;
                 adminUI = new AdministrationUI(carrier);
-                joinAuctionUI.setNameLabel(carrier.getDisplayname());
+                joinAuctionUI.setAgent(carrier);
                 joinAuctionUI.startUpdate();
                 joinAuctionUI.setVisible(true);
             }

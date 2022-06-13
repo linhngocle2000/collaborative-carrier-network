@@ -104,18 +104,6 @@ public class RequestBody {
         return body("getAuctions", token, null);
     }
 
-    public static String startAuction(Auction auction, String token) {
-        JSONObject data = new JSONObject();
-        data.put("Auction", auction.getID());        
-        return body("startAuction", token, data);
-    }
-
-    public static String endAuction(Auction auction, String token) {
-        JSONObject data = new JSONObject();
-        data.put("Auction", auction.getID());
-        return body("endAuction", token, data);
-    }
-
     public static String addRequestToAuction(Auction auction, TransportRequest request, String token) {
         JSONObject data = new JSONObject();
         data.put("Auction", auction.getID());
@@ -134,6 +122,25 @@ public class RequestBody {
         JSONObject data = new JSONObject();
         data.put("Auction", auction.getID());
         return body("getBids", token, data);
+    }
+
+    public static String startAuction(Auction auction, String token) {
+        JSONObject data = new JSONObject();
+        data.put("Auction", auction.getID());
+        return body("startAuction", token, data);
+    }
+
+    public static String endAuction(Auction auction, String token) {
+        JSONObject data = new JSONObject();
+        data.put("Auction", auction.getID());
+        return body("endAuction", token, data);
+    }
+
+    public static String setWinner(Auction auction, Bid bid, String token) {
+        JSONObject data = new JSONObject();
+        data.put("Auction", auction.getID());
+        data.put("Username", bid.getBidder() == null ? null : bid.getBidder().getUsername());
+        return body("setWinner", token, data);
     }
 
     // Helper

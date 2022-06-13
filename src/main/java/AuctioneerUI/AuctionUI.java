@@ -1,6 +1,7 @@
 package AuctioneerUI;
 
 import UIResource.UIData;
+import UIResource.HTTPResource.HTTPRequests;
 
 import javax.swing.*;
 import javax.swing.border.Border;
@@ -172,7 +173,7 @@ public class AuctionUI extends JFrame {
 ///////////
 
         // TODO: Set real duration or let the user decide
-        auctionTimer = new AuctionTimer(3000, () -> {
+        auctionTimer = new AuctionTimer(auction, 3000, () -> {
             runningLabel.setVisible(false);
             auction.end();
             Bid winningBid = auction.getWinningBid();
@@ -228,6 +229,7 @@ public class AuctionUI extends JFrame {
                 winner.setText(winningBid.getBidder().getDisplayname());
                 price.setText(Integer.toString(winningBid.getPrice()));
             }
+            auction.notifyWinner();
         });
 
         constraints = new GridBagConstraints();
@@ -272,11 +274,11 @@ class AuctionTimer extends JLabel {
     private long startTime = -1;
     private Font font = UIData.getFont();
 
-    public AuctionTimer(long duration, TimerStopCallback callback) {
+    public AuctionTimer(Auction auction, long duration, TimerStopCallback callback) {
         startTime = System.currentTimeMillis();
         setLayout(new GridBagLayout());
         setFont(font.deriveFont(Font.BOLD, 14));
-        timer = new Timer(10, e -> {
+        timer = new Timer(500, e -> {
             long now = System.currentTimeMillis();
             long clockTime = now - startTime;
             if (clockTime >= duration) {
@@ -286,6 +288,12 @@ class AuctionTimer extends JLabel {
             }
             SimpleDateFormat df = new SimpleDateFormat("mm:ss");
             setText(df.format(duration - clockTime));
+
+            // Load new bids
+            java.util.List<Bid> bids = HTTPRequests.getBids(auction);
+            for (Bid bid : bids) {
+                auction.addBid(bid);
+            }
         });
         timer.setInitialDelay(0);
         timer.start();

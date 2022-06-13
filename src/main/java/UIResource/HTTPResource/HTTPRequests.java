@@ -266,28 +266,6 @@ public class HTTPRequests {
         }
     }
 
-    public static boolean startAuction(Auction auction) {
-        try {
-            var json = send(RequestBody.startAuction(auction, token));
-            return json.getBoolean("success");
-        } catch (IOException | InterruptedException e) {
-            e.printStackTrace();
-            lastError = e;
-            return false;
-        }
-    }
-
-    public static boolean endAuction(Auction auction) {
-        try {
-            var json = send(RequestBody.endAuction(auction, token));
-            return json.getBoolean("success");
-        } catch (IOException | InterruptedException e) {
-            e.printStackTrace();
-            lastError = e;
-            return false;
-        }
-    }
-
     /**
      * @return Only auctions that are active (open for bidding).
      */
@@ -392,6 +370,39 @@ public class HTTPRequests {
             e.printStackTrace();
             lastError = e;
             return null;
+        }
+    }
+
+    public static boolean startAuction(Auction auction) {
+        try {
+            var json = send(RequestBody.startAuction(auction, token));
+            return json.getBoolean("success");
+        } catch (IOException | InterruptedException e) {
+            e.printStackTrace();
+            lastError = e;
+            return false;
+        }
+    }
+
+    public static boolean endAuction(Auction auction) {
+        try {
+            var json = send(RequestBody.endAuction(auction, token));
+            return json.getBoolean("success");
+        } catch (IOException | InterruptedException e) {
+            e.printStackTrace();
+            lastError = e;
+            return false;
+        }
+    }
+
+    public static boolean setWinner(Auction auction, Bid bid) {
+        try {
+            var json = send(RequestBody.setWinner(auction, bid, token));
+            return json.getBoolean("success");
+        } catch (IOException | InterruptedException e) {
+            e.printStackTrace();
+            lastError = e;
+            return false;
         }
     }
 

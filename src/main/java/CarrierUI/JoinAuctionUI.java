@@ -10,10 +10,14 @@ import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableColumnModel;
 
+import Agent.CarrierAgent;
 import Auction.Auction;
+import Auction.Bid;
 import AuctioneerUI.AuctionTableModel;
 
 import java.awt.*;
+import java.util.List;
+import java.util.Optional;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -33,6 +37,7 @@ public class JoinAuctionUI extends JFrame {
     private Color errorColor = UIData.getErrorColor();
     private Border emptyBorder = UIData.getEmptyBorder();
 
+    private CarrierAgent agent;
     private Auction selectedAuction;
     private final ScheduledExecutorService scheduler;
 
@@ -145,6 +150,21 @@ public class JoinAuctionUI extends JFrame {
         bidBtn.setText("Bid");
         bidBtn.setFocusPainted(false);
         bidBtn.setEnabled(false);
+        bidBtn.addActionListener(e -> {
+            try {
+                errorLabel.setText("");
+                int price = Integer.parseInt(priceText.getText());
+                Bid bid = HTTPRequests.addBid(selectedAuction, agent, price);
+                if (bid == null) {
+                    errorLabel.setText(HTTPRequests.getLastError().getMessage());
+                } else {
+                    bidBtn.setEnabled(false);
+                }
+            } catch (NumberFormatException ex) {
+                ex.printStackTrace();
+                errorLabel.setText(ex.getMessage());
+            }
+        });
 
         constraints = new GridBagConstraints();
         constraints.gridx = 0;
@@ -240,7 +260,24 @@ public class JoinAuctionUI extends JFrame {
             int row = table.getSelectedRow();
             AuctionTableModel model = (AuctionTableModel)table.getModel();
             selectedAuction = model.getAuction(row);
-            bidBtn.setEnabled(selectedAuction != null);
+
+            if (selectedAuction == null) {
+                bidBtn.setEnabled(false);
+                errorLabel.setText("");
+            } else {
+                // Check if a bid has already been placed on the selected auction
+                List<Bid> bids = HTTPRequests.getBids(selectedAuction);
+                Optional<Bid> bid = bids.stream().filter(x -> x.getBidder().getUsername().equals(agent.getUsername())).findFirst();
+                if (bid.isPresent()) {
+                    bidBtn.setEnabled(false);
+                    errorLabel.setText("You can only bid once");
+                    priceText.setText(Integer.toString(bid.get().getPrice()));
+                } else {
+                    bidBtn.setEnabled(true);
+                    errorLabel.setText("");
+                    priceText.setText("");
+                }
+            }
         });
 
         scrollPane = new JScrollPane(table);
@@ -266,7 +303,11 @@ public class JoinAuctionUI extends JFrame {
         setResizable(false);
     }
 
-    /** starts periodically updating list of auctions */
+    /**
+     * Starts periodically updating list of auctions.
+     * Maybe implement this as reload button like in StartAuctionUI instead of
+     * periodic updates 😐
+     */
     public void startUpdate() {
         scheduler.scheduleAtFixedRate(() -> {
             try {
@@ -316,8 +357,9 @@ public class JoinAuctionUI extends JFrame {
         return myTRBtn;
     }
 
-    public void setNameLabel(String s) {
-        nameLabel.setText(s);
+    public void setAgent(CarrierAgent agent) {
+        this.agent = agent;
+        nameLabel.setText(agent.getDisplayname());
     }
 
     public void reset() {
