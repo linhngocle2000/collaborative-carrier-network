@@ -25,7 +25,7 @@ class Auction
 	{
 		TokenHelper::assertToken();
 		
-		$query = "SELECT `ID`, `Auctioneer`, `IsActive`, `Iteration` FROM `Auction`";
+		$query = "SELECT `ID`, `IsActive`, `Iteration` FROM `Auction`";
 
 		$db = Database::getConnection();
 		$result = $db->query($query);
