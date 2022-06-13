@@ -56,4 +56,11 @@ public class AuctionTableModel extends AbstractTableModel {
 		return null;
 	}
 
+	public Auction getAuction(int row) {
+		if (row < auctions.size() && row >= 0) {
+			return auctions.get(row);
+		}
+		return null;
+	}
+
 }

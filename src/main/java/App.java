@@ -1,7 +1,6 @@
 import Agent.Agent;
 import Agent.CarrierAgent;
 import Agent.AuctioneerAgent;
-import Agent.AgentFactory;
 import AuctioneerUI.StartAuctionUI;
 import CarrierUI.AdministrationUI;
 import StartUI.LoginUI;
@@ -10,11 +9,9 @@ import StartUI.WelcomeUI;
 import CarrierUI.JoinAuctionUI;
 import UIResource.HTTPResource.HTTPRequests;
 import Utils.Converter;
-import org.json.JSONObject;
 
 import javax.swing.*;
 import java.util.ArrayList;
-import java.util.Objects;
 
 public class App {
 
@@ -143,6 +140,7 @@ public class App {
                 carrier = (CarrierAgent)user;
                 adminUI = new AdministrationUI(carrier);
                 joinAuctionUI.setNameLabel(carrier.getDisplayname());
+                joinAuctionUI.startUpdate();
                 joinAuctionUI.setVisible(true);
             }
             loginUI.setVisible(false);
@@ -156,6 +154,7 @@ public class App {
         carrierJoinAuctionLogoutBtn.addActionListener(e -> {
             adminUI.setVisible(false);
             joinAuctionUI.setVisible(false);
+            joinAuctionUI.stopUpdate();
             welcomeUI.setVisible(true);
             // Reset data
             carrier = null;

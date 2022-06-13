@@ -1,6 +1,7 @@
 package CarrierUI;
 
 import UIResource.UIData;
+import UIResource.HTTPResource.HTTPRequests;
 import UIResource.scrollbar.ScrollBarCustom;
 
 import javax.swing.*;
@@ -8,13 +9,22 @@ import javax.swing.border.Border;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableColumnModel;
+
+import Auction.Auction;
+import AuctioneerUI.AuctionTableModel;
+
 import java.awt.*;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 public class JoinAuctionUI extends JFrame {
 
     private JButton bidBtn, logoutBtn, myTRBtn;
-    private JTextField auctionText, priceText;
+    private JTextField priceText;
     private JLabel errorLabel, nameLabel;
+    private JTable table;
+    private JScrollPane scrollPane;
 
     private Color background = UIData.getBackground();
     private int width = UIData.getWidth();
@@ -23,30 +33,16 @@ public class JoinAuctionUI extends JFrame {
     private Color errorColor = UIData.getErrorColor();
     private Border emptyBorder = UIData.getEmptyBorder();
 
-    Object[][] data = {
-            {"01", "((0,1),(2,3))"},
-            {"02", "((4,5),(8,9))"},
-            {"03", "((32,5),(13,53))"},
-            {"04", "((76,32),(-87,34))"},
-            {"05", "((76,22),(4,93))"},
-            {"06", "((62,13),(76,23))"},
-            {"07", "((20,46),(78,23))"},
-            {"08", "((10,3),(82,6))"},
-            {"09", "((9,34),(29,98))"},
-            {"10", "((14,97),(2,41))"},
-            {"11", "((83,37),(25,6))"},
-            {"12", "((94,87),(85,45))"},
-            {"13", "((43,1),(36,64))"}
-    };
-
+    private Auction selectedAuction;
+    private final ScheduledExecutorService scheduler;
 
     public JoinAuctionUI() {
 
-        super();
+        scheduler = Executors.newScheduledThreadPool(1);
 
-///////////
-// Frame
-///////////
+        ///////////
+        // Frame
+        ///////////
 
         setTitle("CCN");
         setSize(width, height);
@@ -54,14 +50,14 @@ public class JoinAuctionUI extends JFrame {
         setLocationRelativeTo(null);
         setDefaultCloseOperation(EXIT_ON_CLOSE);
 
-///////////
-// Panels
-///////////
+        ///////////
+        // Panels
+        ///////////
 
         JPanel leftPanel = new JPanel();
         leftPanel.setLayout(new BorderLayout());
         leftPanel.setBackground(background);
-        leftPanel.setPreferredSize(new Dimension(width-100, height));
+        leftPanel.setPreferredSize(new Dimension(width - 100, height));
 
         JPanel rootPanel = new JPanel();
         rootPanel.setLayout(new GridBagLayout());
@@ -78,11 +74,11 @@ public class JoinAuctionUI extends JFrame {
         JPanel rightPanel = new JPanel();
         rightPanel.setLayout(new GridBagLayout());
         rightPanel.setBackground(background);
-        rightPanel.setPreferredSize(new Dimension(width+100, height));
+        rightPanel.setPreferredSize(new Dimension(width + 100, height));
 
-///////////
-// Left-Top
-///////////
+        ///////////
+        // Left-Top
+        ///////////
 
         JLabel loginLabel = new JLabel("Login as: ");
         loginLabel.setFont(font.deriveFont(Font.BOLD, 14));
@@ -96,7 +92,7 @@ public class JoinAuctionUI extends JFrame {
         topPanel.add(loginLabel, constraints);
 
         nameLabel = new JLabel();
-        nameLabel.setFont(font.deriveFont(Font.BOLD,14));
+        nameLabel.setFont(font.deriveFont(Font.BOLD, 14));
         nameLabel.setHorizontalAlignment(SwingConstants.CENTER);
 
         constraints = new GridBagConstraints();
@@ -106,9 +102,9 @@ public class JoinAuctionUI extends JFrame {
         constraints.insets = new java.awt.Insets(20, 0, 0, 0);
         topPanel.add(nameLabel, constraints);
 
-///////////
-// Left-middle
-///////////
+        ///////////
+        // Left-middle
+        ///////////
 
         myTRBtn = new JButton();
         myTRBtn.setText("<HTML><U>My transport requests</U></HTML>");
@@ -124,27 +120,6 @@ public class JoinAuctionUI extends JFrame {
         constraints.anchor = GridBagConstraints.CENTER;
         constraints.insets = new java.awt.Insets(0, 0, 25, 0);
         rootPanel.add(myTRBtn, constraints);
-
-        JLabel auctionLabel = new JLabel("Request ID");
-        auctionLabel.setHorizontalAlignment(SwingConstants.LEFT);
-
-        constraints = new GridBagConstraints();
-        constraints.gridx = 0;
-        constraints.gridy = 1;
-        constraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
-        constraints.insets = new java.awt.Insets(12, 3, 0, 5);
-        rootPanel.add(auctionLabel, constraints);
-
-        auctionText = new JTextField();
-        auctionText.setPreferredSize(new Dimension(80, 22));
-
-        constraints = new GridBagConstraints();
-        constraints.gridx = 1;
-        constraints.gridy = 1;
-        constraints.gridwidth = 2;
-        constraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
-        constraints.insets = new java.awt.Insets(10, 5, 0, 3);
-        rootPanel.add(auctionText, constraints);
 
         JLabel bidLabel = new JLabel("Bid (\u20AC)");
         bidLabel.setHorizontalAlignment(SwingConstants.LEFT);
@@ -169,6 +144,7 @@ public class JoinAuctionUI extends JFrame {
         bidBtn = new JButton();
         bidBtn.setText("Bid");
         bidBtn.setFocusPainted(false);
+        bidBtn.setEnabled(false);
 
         constraints = new GridBagConstraints();
         constraints.gridx = 0;
@@ -178,9 +154,9 @@ public class JoinAuctionUI extends JFrame {
         constraints.insets = new java.awt.Insets(30, 3, 10, 3);
         rootPanel.add(bidBtn, constraints);
 
-///////////
-// Left-bottom
-///////////
+        ///////////
+        // Left-bottom
+        ///////////
 
         logoutBtn = new JButton();
         logoutBtn.setText("<HTML><U>Logout</U></HTML>");
@@ -198,9 +174,9 @@ public class JoinAuctionUI extends JFrame {
         constraints.insets = new java.awt.Insets(0, 0, 20, 0);
         bottomPanel.add(logoutBtn, constraints);
 
-///////////
-// Log
-///////////
+        ///////////
+        // Log
+        ///////////
 
         errorLabel = new JLabel();
         errorLabel.setForeground(errorColor);
@@ -217,17 +193,17 @@ public class JoinAuctionUI extends JFrame {
         constraints.insets = new java.awt.Insets(10, 3, 10, 3);
         rootPanel.add(errorLabel, constraints);
 
-///////////
-// Combine left
-///////////
+        ///////////
+        // Combine left
+        ///////////
 
         leftPanel.add(topPanel, BorderLayout.NORTH);
         leftPanel.add(bottomPanel, BorderLayout.SOUTH);
         leftPanel.add(rootPanel, BorderLayout.CENTER);
 
-///////////
-// Table
-///////////
+        ///////////
+        // Table
+        ///////////
 
         JLabel tableHeader = new JLabel("Active auctions");
         tableHeader.setFont(font.deriveFont(Font.BOLD, 15));
@@ -241,29 +217,34 @@ public class JoinAuctionUI extends JFrame {
         constraints.insets = new java.awt.Insets(0, 0, 15, 0);
         rightPanel.add(tableHeader, constraints);
 
-        JTable table = new JTable(data, new String[]{"Request ID","Transport request"});
+        table = new JTable() {
+            public Component prepareRenderer(TableCellRenderer renderer, int row, int column) {
+                Component c = super.prepareRenderer(renderer, row, column);
+                JComponent jc = (JComponent) c;
+                // Add a border to the selected row
+                if (isRowSelected(row)) {
+                    jc.setBorder(emptyBorder);
+                }
+                return c;
+            }
+        };
+        table.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+        table.setShowHorizontalLines(false);
+        table.setSelectionBackground(new Color(222, 222, 222, 255));
         table.setRowHeight(25);
         table.setIntercellSpacing(new Dimension(0, 0));
         table.setDefaultEditor(Object.class, null);
         table.getTableHeader().setReorderingAllowed(false);
-        table.setRowSelectionAllowed(false);
-        table.setShowHorizontalLines(false);
-        DefaultTableCellRenderer centerRenderer = new DefaultTableCellRenderer();
-        centerRenderer.setHorizontalAlignment(JLabel.CENTER);
-        TableColumnModel columnModel = table.getColumnModel();
-        columnModel.getColumn(0).setPreferredWidth(100);
-        columnModel.getColumn(1).setPreferredWidth(250);
-        for (int i = 0; i<2; i++) {
-            columnModel.getColumn(i).setCellRenderer(centerRenderer);
-        }
+        table.clearSelection();
+        table.getSelectionModel().addListSelectionListener(event -> {
+            int row = table.getSelectedRow();
+            AuctionTableModel model = (AuctionTableModel)table.getModel();
+            selectedAuction = model.getAuction(row);
+            bidBtn.setEnabled(selectedAuction != null);
+        });
 
-        JScrollPane scrollPane = new JScrollPane(table);
-        if (data.length <= 10) {
-            scrollPane.setPreferredSize(new Dimension(350, data.length*25+23));
-        } else {
-            scrollPane.setPreferredSize(new Dimension(350, 273));
-            scrollPane.setVerticalScrollBar(new ScrollBarCustom(10, data.length));
-        }
+        scrollPane = new JScrollPane(table);
+        scrollPane.setPreferredSize(new Dimension(350, 273));
 
         constraints = new GridBagConstraints();
         constraints.gridx = 0;
@@ -273,9 +254,9 @@ public class JoinAuctionUI extends JFrame {
         constraints.insets = new Insets(0, 0, 0, 0);
         rightPanel.add(scrollPane, constraints);
 
-///////////
-// Combine all
-///////////
+        ///////////
+        // Combine all
+        ///////////
 
         getContentPane().add(leftPanel, BorderLayout.LINE_START);
         getContentPane().add(rightPanel, BorderLayout.CENTER);
@@ -283,6 +264,46 @@ public class JoinAuctionUI extends JFrame {
         pack();
 
         setResizable(false);
+    }
+
+    /** starts periodically updating list of auctions */
+    public void startUpdate() {
+        scheduler.scheduleAtFixedRate(() -> {
+            try {
+                // Cache selection before updating table model
+                int selectedRow = table.getSelectedRow();
+                int selectedColumn = table.getSelectedColumn();
+
+                // Update table model
+                var auctions = HTTPRequests.getAuctions();
+                var model = new AuctionTableModel(auctions);
+                table.setModel(model);
+
+                // Set selection
+                if (table.getRowCount() > selectedRow && selectedRow != -1) {
+                    table.setRowSelectionInterval(selectedRow, selectedRow);
+                    table.setColumnSelectionInterval(selectedColumn, selectedColumn);
+                }
+
+                // Set column width and scrollbar length
+                DefaultTableCellRenderer centerRenderer = new DefaultTableCellRenderer();
+                centerRenderer.setHorizontalAlignment(JLabel.CENTER);
+                TableColumnModel columnModel = table.getColumnModel();
+                columnModel.getColumn(0).setPreferredWidth(100);
+                columnModel.getColumn(1).setPreferredWidth(250);
+                for (int i = 0; i < 4; i++) {
+                    columnModel.getColumn(i).setCellRenderer(centerRenderer);
+                }
+                scrollPane.setVerticalScrollBar(new ScrollBarCustom(10, auctions.size()));
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }, 0, 10, TimeUnit.SECONDS);
+    }
+
+    /** stops periodically updating list of auctions */
+    public void stopUpdate() {
+        scheduler.shutdownNow();
     }
 
     public JButton getLogoutBtn() {
@@ -298,10 +319,9 @@ public class JoinAuctionUI extends JFrame {
     }
 
     public void reset() {
-        auctionText.setText("");
+        table.clearSelection();
         priceText.setText("");
         errorLabel.setText("");
     }
-
 
 }
