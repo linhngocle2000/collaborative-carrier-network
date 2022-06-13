@@ -119,7 +119,7 @@ public class StartAuctionUI extends JFrame {
         constraints.insets = new Insets(10, 0, 0, 0);
         topPanel.add(tableHeader, constraints);
 
-        List<Auction> auctions = HTTPRequests.getAuctions();
+        List<Auction> auctions = HTTPRequests.getAllAuctions();
         AuctionTableModel model = new AuctionTableModel(auctions);
         JTable table = new JTable(model) {
             public Component prepareRenderer(TableCellRenderer renderer, int row, int column)

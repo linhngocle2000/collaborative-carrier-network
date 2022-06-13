@@ -275,7 +275,7 @@ public class JoinAuctionUI extends JFrame {
                 int selectedColumn = table.getSelectedColumn();
 
                 // Update table model
-                var auctions = HTTPRequests.getAuctions();
+                var auctions = HTTPRequests.getActiveAuctions();
                 var model = new AuctionTableModel(auctions);
                 table.setModel(model);
 
@@ -289,8 +289,10 @@ public class JoinAuctionUI extends JFrame {
                 DefaultTableCellRenderer centerRenderer = new DefaultTableCellRenderer();
                 centerRenderer.setHorizontalAlignment(JLabel.CENTER);
                 TableColumnModel columnModel = table.getColumnModel();
-                columnModel.getColumn(0).setPreferredWidth(100);
-                columnModel.getColumn(1).setPreferredWidth(250);
+                columnModel.getColumn(0).setPreferredWidth(40);
+                columnModel.getColumn(1).setPreferredWidth(200);
+                columnModel.getColumn(2).setPreferredWidth(180);
+                columnModel.getColumn(3).setPreferredWidth(80);
                 for (int i = 0; i < 4; i++) {
                     columnModel.getColumn(i).setCellRenderer(centerRenderer);
                 }
