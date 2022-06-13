@@ -2,7 +2,6 @@ package CarrierUI;
 
 import Auction.TransportRequest;
 import Utils.TourPlanning;
-import Utils.TourVisual;
 import UIResource.UIData;
 import UIResource.scrollbar.ScrollBarCustom;
 import UIResource.TextIcon;
@@ -16,7 +15,6 @@ import javax.swing.table.TableColumnModel;
 import java.awt.*;
 import java.util.List;
 
-import Utils.Converter;
 import com.graphhopper.jsprit.core.problem.Location;
 import org.openide.awt.*;
 
@@ -28,18 +26,15 @@ public class AdministrationUI extends JFrame {
     private Border emptyBorder = UIData.getEmptyBorder();
     private VisualizationUI visUI;
     private JPanel leftVisualPanel, rightVisualPanel;
-    private CalculatorUI costCalcUI;
+    
     private TourPlanning tour;
-    private String[] requestColumnNames = {"ID", "Transport request", "Profit (\u20AC)", "Notes"};
-
-    private Object[][] data;
+    private TransportRequestTableModel model;
+    private CalculatorUI costCalcUI;
 
     public AdministrationUI(CarrierAgent carrier) {
 
-        super();
-
         tour = new TourPlanning(carrier);
-        data = createRequestObject(tour);
+        model = new TransportRequestTableModel(tour);
         visUI = new VisualizationUI();
         leftVisualPanel = visUI.getLeftVisualPanel();
         rightVisualPanel = visUI.getRightVisualPanel();
@@ -92,7 +87,7 @@ public class AdministrationUI extends JFrame {
         constraints.insets = new Insets(0, 0, 30, 0);
         rootPanel.add(tableHeader, constraints);
 
-        JTable table = new JTable(data, requestColumnNames) {
+        JTable table = new JTable(model) {
             public Component prepareRenderer(TableCellRenderer renderer, int row, int column)
             {
                 Component c = super.prepareRenderer(renderer, row, column);
@@ -123,11 +118,11 @@ public class AdministrationUI extends JFrame {
         }
 
         JScrollPane scrollPane = new JScrollPane(table);
-        if (data.length <= 12) {
-            scrollPane.setPreferredSize(new Dimension(550, data.length*25+23));
+        if (tour.getRequests().size() <= 12) {
+            scrollPane.setPreferredSize(new Dimension(550, tour.getRequests().size()*25+23));
         } else {
             scrollPane.setPreferredSize(new Dimension(550, 323));
-            scrollPane.setVerticalScrollBar(new ScrollBarCustom(12, data.length));
+            scrollPane.setVerticalScrollBar(new ScrollBarCustom(12, tour.getRequests().size()));
         }
 
         constraints = new GridBagConstraints();
@@ -243,8 +238,10 @@ public class AdministrationUI extends JFrame {
         auctionOff.setEnabled(false);
         table.getSelectionModel().addListSelectionListener(event -> {
             if (table.getSelectedRowCount()==1) {
-                String note = table.getValueAt(table.getSelectedRow(),3).toString();
-                auctionOff.setEnabled(note.equals("ADDED") || note.equals(""));
+                TransportRequest request = model.getRequest(table.getSelectedRow());
+                auctionOff.setEnabled(request != null);
+                // String note = table.getValueAt(table.getSelectedRow(),3).toString();
+                // auctionOff.setEnabled(note.equals("ADDED") || note.equals(""));
             } else {
                 auctionOff.setEnabled(false);
             }
@@ -265,14 +262,13 @@ public class AdministrationUI extends JFrame {
             if(!visUI.isVisible()) {
                 visUI.setVisible(true);
             }
-            Location depot = tour.getDepot();
-            TourVisual currentTour = new TourVisual(depot, carrier.getUsername());
+            TourPlanning currentTour = new TourPlanning(carrier.getUsername());
             int[] selectedRow = table.getSelectedRows();
             // float[] tr;
             // String requestID;
             for (int row : selectedRow) {
-                TransportRequest request = tour.getRequests().get(row);
-                currentTour.addRequest(request.getID(), request.getPickup(), request.getDelivery());
+                TransportRequest request = model.getRequest(row);
+                currentTour.addRequest(request);
             }
             // for (int i = 0; i < table.getSelectedRowCount(); i++) {
             //     requestID = table.getValueAt(selectedRow[i],0).toString();
@@ -292,14 +288,13 @@ public class AdministrationUI extends JFrame {
             if(!visUI.isVisible()) {
                 visUI.setVisible(true);
             }
-            Location depot = tour.getDepot();
-            TourVisual currentTour = new TourVisual(depot, carrier.getUsername());
+            TourPlanning currentTour = new TourPlanning(carrier.getUsername());
             int[] selectedRow = table.getSelectedRows();
             // float[] tr;
             // String requestID;
             for (int row : selectedRow) {
-                TransportRequest request = tour.getRequests().get(row);
-                currentTour.addRequest(request.getID(), request.getPickup(), request.getDelivery());
+                TransportRequest request = model.getRequest(row);
+                currentTour.addRequest(request);
             }
             // for (int i = 0; i < table.getSelectedRowCount(); i++) {
             //     requestID = table.getValueAt(selectedRow[i],0).toString();
@@ -344,28 +339,5 @@ public class AdministrationUI extends JFrame {
 
         setResizable(false);
 
-    }
-
-    public static Object[][] createRequestObject(TourPlanning tour) {
-        List<TransportRequest> trList = tour.getRequests();
-        Object[][] res = new Object[trList.size()][4];
-        for (int i = 0; i < trList.size(); i++) {
-            res[i][0] = trList.get(i).getID();
-            res[i][1] = "((" + trList.get(i).getPickupX() + "," +
-                    trList.get(i).getPickupY() + "),(" +
-                    trList.get(i).getDeliveryX() + "," +
-                    trList.get(i).getDeliveryY() + "))";
-            res[i][2] = String.format("%.2f", tour.getProfit(trList.get(i))).replace(",",".");
-            if (i==4) {
-                res[i][3] = "REMOVED";
-            } else if (i==5) {
-                res[i][3] = "ADDED";
-            } else if (i==6) {
-                res[i][3] = "IN AUCTION";
-            } else {
-                res[i][3] = "";
-            }
-        }
-        return res;
     }
 }

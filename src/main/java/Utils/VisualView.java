@@ -36,81 +36,81 @@ import java.util.Collection;
 import java.util.List;
 
 
-public class TourVisual {
+public class VisualView {
 
-    private Location depot;
-    private String vehicleID;
+//     private Location depot;
+//     private String vehicleID;
 
-    private VehicleImpl vehicle;
+//     private VehicleImpl vehicle;
 
-    private VehicleRoutingProblem problem;
+//     private VehicleRoutingProblem problem;
 
-    private VehicleRoutingProblemSolution bestSolution;
+//     private VehicleRoutingProblemSolution bestSolution;
 
-    private List<Shipment> requests = new ArrayList<>();
+//     private List<Shipment> requests = new ArrayList<>();
 
-    public TourVisual(Location depot, String vehicleID) {
-        this.depot = depot;
-        this.vehicleID = vehicleID;
-    }
+//     public TourVisual(Location depot, String vehicleID) {
+//         this.depot = depot;
+//         this.vehicleID = vehicleID;
+//     }
 
-    public void addRequest(String requestID, Location pickup, Location deliver) {
-        requests.add(Shipment.Builder.newInstance(requestID).setPickupLocation(pickup).setDeliveryLocation(deliver).build());
-    }
+//     public void addRequest(String requestID, Location pickup, Location deliver) {
+//         requests.add(Shipment.Builder.newInstance(requestID).setPickupLocation(pickup).setDeliveryLocation(deliver).build());
+//     }
 
-    private void vehicleRegister() {
+//     private void vehicleRegister() {
 
-        /*
-         * get a vehicle type-builder and build a type with the typeId "vehicleType"
-         */
-        final int WEIGHT_INDEX = 0;
-        VehicleTypeImpl.Builder vehicleTypeBuilder = VehicleTypeImpl.Builder.newInstance("MiniCooper").addCapacityDimension(WEIGHT_INDEX, 2);
-        VehicleType vehicleType = vehicleTypeBuilder.build();
+//         /*
+//          * get a vehicle type-builder and build a type with the typeId "vehicleType"
+//          */
+//         final int WEIGHT_INDEX = 0;
+//         VehicleTypeImpl.Builder vehicleTypeBuilder = VehicleTypeImpl.Builder.newInstance("MiniCooper").addCapacityDimension(WEIGHT_INDEX, 2);
+//         VehicleType vehicleType = vehicleTypeBuilder.build();
 
-        /*
-         * get a vehicle-builder and build a vehicle located at depot location with type "vehicleType"
-         */
-        Builder vehicleBuilder = VehicleImpl.Builder.newInstance(vehicleID);
-        vehicleBuilder.setStartLocation(depot);
-        vehicleBuilder.setType(vehicleType);
-        vehicle = vehicleBuilder.build();
+//         /*
+//          * get a vehicle-builder and build a vehicle located at depot location with type "vehicleType"
+//          */
+//         Builder vehicleBuilder = VehicleImpl.Builder.newInstance(vehicleID);
+//         vehicleBuilder.setStartLocation(depot);
+//         vehicleBuilder.setType(vehicleType);
+//         vehicle = vehicleBuilder.build();
 
-    }
+//     }
 
-    private void setProblem() {
+//     private void setProblem() {
 
-        VehicleRoutingProblem.Builder vrpBuilder = VehicleRoutingProblem.Builder.newInstance();
-        vrpBuilder.addVehicle(vehicle);
-        for (Shipment request : requests) {
-            vrpBuilder.addJob(request);
-        }
+//         VehicleRoutingProblem.Builder vrpBuilder = VehicleRoutingProblem.Builder.newInstance();
+//         vrpBuilder.addVehicle(vehicle);
+//         for (Shipment request : requests) {
+//             vrpBuilder.addJob(request);
+//         }
 
-        problem = vrpBuilder.build();
-    }
+//         problem = vrpBuilder.build();
+//     }
 
 
 
-    private void tourOptimize() {
-        VehicleRoutingAlgorithm algorithm = new SchrimpfFactory().createAlgorithm(problem);
-        Collection<VehicleRoutingProblemSolution> solutions = algorithm.searchSolutions();
-        bestSolution = Solutions.bestOf(solutions);
+//     private void tourOptimize() {
+//         VehicleRoutingAlgorithm algorithm = new SchrimpfFactory().createAlgorithm(problem);
+//         Collection<VehicleRoutingProblemSolution> solutions = algorithm.searchSolutions();
+//         bestSolution = Solutions.bestOf(solutions);
 
-    }
+//     }
 
-    public JPanel visualize() {
-        vehicleRegister();
-        setProblem();
-        tourOptimize();
-        return new VisualView(problem, bestSolution).display();
-    }
+//     public JPanel visualize() {
+//         vehicleRegister();
+//         setProblem();
+//         tourOptimize();
+//         return new TourVisual(problem, bestSolution).display();
+//     }
 
-    public VehicleRoutingProblemSolution getBestSolution() {
-        return this.bestSolution;
-    }
+//     public VehicleRoutingProblemSolution getBestSolution() {
+//         return this.bestSolution;
+//     }
 
-}
+// }
 
-class VisualView {
+// class TourVisual {
 
     private String STYLESHEET =   "node {" +
             "	size: 10px, 10px;" +
