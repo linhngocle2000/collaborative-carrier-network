@@ -77,7 +77,10 @@ class TransportRequest
 
 		$db = Database::getConnection();
 		$auction = intval($data['Auction']);
-		$result = $db->query("SELECT `ID`, `Owner`, `Auction`, `Cost`, `PickupLat`, `PickupLon`, `DeliveryLat`, `DeliveryLon` FROM `TransportRequest` WHERE `Auction` = $auction");
+		$result = $db->query("SELECT t.`ID`, t.`Owner`, t.`Cost`, t.`PickupLat`, t.`PickupLon`, t.`DeliveryLat`, t.`DeliveryLon` 
+			FROM `TransportRequest` t 
+			JOIN `AuctionRequests` a ON t.ID = a.TransportRequest 
+			WHERE a.`Auction` = $auction");
 
 		$requests = [];
 		while ($row = $result->fetch_assoc())
