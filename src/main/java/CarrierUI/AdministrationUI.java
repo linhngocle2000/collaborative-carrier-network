@@ -268,15 +268,19 @@ public class AdministrationUI extends JFrame {
             Location depot = tour.getDepot();
             TourVisual currentTour = new TourVisual(depot, carrier.getUsername());
             int[] selectedRow = table.getSelectedRows();
-            float[] tr;
-            String requestID;
-            for (int i = 0; i < table.getSelectedRowCount(); i++) {
-                requestID = table.getValueAt(selectedRow[i],0).toString();
-                tr = Converter.convertTransportRequests(table.getValueAt(selectedRow[i],1).toString());
-                Location pickup = Location.newInstance(tr[0], tr[1]);
-                Location deliver = Location.newInstance(tr[2], tr[3]);
-                currentTour.addRequest(requestID, pickup, deliver);
+            // float[] tr;
+            // String requestID;
+            for (int row : selectedRow) {
+                TransportRequest request = tour.getRequests().get(row);
+                currentTour.addRequest(request.getID(), request.getPickup(), request.getDelivery());
             }
+            // for (int i = 0; i < table.getSelectedRowCount(); i++) {
+            //     requestID = table.getValueAt(selectedRow[i],0).toString();
+            //     tr = Converter.convertTransportRequests(table.getValueAt(selectedRow[i],1).toString());
+            //     Location pickup = Location.newInstance(tr[0], tr[1]);
+            //     Location deliver = Location.newInstance(tr[2], tr[3]);
+            //     currentTour.addRequest(requestID, pickup, deliver);
+            // }
             leftVisualPanel.removeAll();
             leftVisualPanel.add(currentTour.visualize());
             leftVisualPanel.revalidate();
@@ -291,15 +295,19 @@ public class AdministrationUI extends JFrame {
             Location depot = tour.getDepot();
             TourVisual currentTour = new TourVisual(depot, carrier.getUsername());
             int[] selectedRow = table.getSelectedRows();
-            float[] tr;
-            String requestID;
-            for (int i = 0; i < table.getSelectedRowCount(); i++) {
-                requestID = table.getValueAt(selectedRow[i],0).toString();
-                tr = Converter.convertTransportRequests(table.getValueAt(selectedRow[i],1).toString());
-                Location pickup = Location.newInstance(tr[0], tr[1]);
-                Location deliver = Location.newInstance(tr[2], tr[3]);
-                currentTour.addRequest(requestID, pickup, deliver);
+            // float[] tr;
+            // String requestID;
+            for (int row : selectedRow) {
+                TransportRequest request = tour.getRequests().get(row);
+                currentTour.addRequest(request.getID(), request.getPickup(), request.getDelivery());
             }
+            // for (int i = 0; i < table.getSelectedRowCount(); i++) {
+            //     requestID = table.getValueAt(selectedRow[i],0).toString();
+            //     tr = Converter.convertTransportRequests(table.getValueAt(selectedRow[i],1).toString());
+            //     Location pickup = Location.newInstance(tr[0], tr[1]);
+            //     Location deliver = Location.newInstance(tr[2], tr[3]);
+            //     currentTour.addRequest(requestID, pickup, deliver);
+            // }
             rightVisualPanel.removeAll();
             rightVisualPanel.add(currentTour.visualize());
             rightVisualPanel.revalidate();
@@ -344,7 +352,7 @@ public class AdministrationUI extends JFrame {
         for (int i = 0; i < trList.size(); i++) {
             res[i][0] = trList.get(i).getID();
             res[i][1] = "((" + trList.get(i).getPickupX() + "," +
-                    trList.get(i).getPickupX() + "),(" +
+                    trList.get(i).getPickupY() + "),(" +
                     trList.get(i).getDeliveryX() + "," +
                     trList.get(i).getDeliveryY() + "))";
             res[i][2] = String.format("%.2f", tour.getProfit(trList.get(i))).replace(",",".");

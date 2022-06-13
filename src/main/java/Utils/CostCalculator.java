@@ -91,23 +91,7 @@ public class CostCalculator {
     * The cost that carrier has to pay for delivering a certain request while on tour
     */
    public double transportCostOut(String requestID) {
-		String jobID;
-		double distance = 0;
-		for (VehicleRoute route : currentTour.getBestSolution().getRoutes()) {
-   		Location pickup = route.getStart().getLocation();
-   		Location deliver;
-			for (TourActivity act : route.getActivities()) {
-            if (act instanceof JobActivity) {
-   				jobID = ((JobActivity) act).getJob().getId();
-   				deliver = act.getLocation();
-   				distance += EuclideanDistanceCalculator.calculateDistance(pickup.getCoordinate(), deliver.getCoordinate());
-   				if (Objects.equals(jobID, requestID) && Objects.equals(act.getName(), "deliverShipment")) {
-   					break;
-   				}
-   				pickup = deliver;
-            }
-			}
-		}
+		double distance = tourLengthToRequest(requestID, "deliverShipment") - tourLengthToRequest(requestID, "pickupShipment");
 		return distance * currentTour.getInternalCost() + currentTour.getLoadingCost();
 	}
 
@@ -128,5 +112,30 @@ public class CostCalculator {
 		}
 		return distance;
 	}
+
+
+   /**
+    * Length from depot to a certain location in tour
+    */
+   private double tourLengthToRequest(String requestID, String actName) {
+		String jobID;
+		double distance = 0;
+		for (VehicleRoute route : currentTour.getBestSolution().getRoutes()) {
+   		Location pickup = route.getStart().getLocation();
+   		Location deliver;
+			for (TourActivity act : route.getActivities()) {
+            if (act instanceof JobActivity) {
+   				jobID = ((JobActivity) act).getJob().getId();
+   				deliver = act.getLocation();
+   				distance += EuclideanDistanceCalculator.calculateDistance(pickup.getCoordinate(), deliver.getCoordinate());
+   				if (jobID == requestID && act.getName() == actName) {
+   					break;
+   				}
+   				pickup = deliver;
+            }
+			}
+		}
+      return distance;
+   }  
    
 }
