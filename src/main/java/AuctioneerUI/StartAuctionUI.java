@@ -21,27 +21,12 @@ public class StartAuctionUI extends JFrame {
 
     private JButton logoutBtn;
     private JLabel errorLabel, nameLabel;
-    private String[] auctionColumnNames = {"Transport request", "Owner", "Iteration"};
+    private JTable table;
+    private JScrollPane scrollPane;
     private Color background = UIData.getBackground();
     private Border emptyBorder = UIData.getEmptyBorder();
     private AuctioneerAgent agent;
     AuctionUI auctionUI;
-
-    Object[][] data = {
-            {"((0,1),(2,3))", "Smith", "0"},
-            {"((0,1),(2,3))", "Amy", "0"},
-            {"((0,1),(2,3))", "Linh", "0"},
-            {"((0,1),(2,3))", "Peter", "0"},
-            {"((0,1),(2,3))", "Paul", "0"},
-            {"((0,1),(2,3))", "Jack", "0"},
-            {"((0,1),(2,3))", "Daniel", "0"},
-            {"((0,1),(2,3))", "Julia", "0"},
-            {"((0,1),(2,3))", "Emily", "0"},
-            {"((0,1),(2,3))", "Rachel", "0"},
-            {"((4,5),(5,6))", "John", "0"},
-            {"((4,5),(5,6))", "Josh", "0"},
-            {"((4,5),(5,6))", "May", "0"}
-    };
 
     public StartAuctionUI() {
 
@@ -119,9 +104,7 @@ public class StartAuctionUI extends JFrame {
         constraints.insets = new Insets(10, 0, 0, 0);
         topPanel.add(tableHeader, constraints);
 
-        List<Auction> auctions = HTTPRequests.getAllAuctions();
-        AuctionTableModel model = new AuctionTableModel(auctions);
-        JTable table = new JTable(model) {
+        table = new JTable() {
             public Component prepareRenderer(TableCellRenderer renderer, int row, int column)
             {
                 Component c = super.prepareRenderer(renderer, row, column);
@@ -141,24 +124,9 @@ public class StartAuctionUI extends JFrame {
         table.setDefaultEditor(Object.class, null);
         table.getTableHeader().setReorderingAllowed(false);
         table.clearSelection();
-        DefaultTableCellRenderer centerRenderer = new DefaultTableCellRenderer();
-        centerRenderer.setHorizontalAlignment(JLabel.CENTER);
-        TableColumnModel columnModel = table.getColumnModel();
-        columnModel.getColumn(0).setPreferredWidth(40);
-        columnModel.getColumn(1).setPreferredWidth(200);
-        columnModel.getColumn(2).setPreferredWidth(180);
-        columnModel.getColumn(3).setPreferredWidth(80);
-        for (int i = 0; i<4; i++) {
-            columnModel.getColumn(i).setCellRenderer(centerRenderer);
-        }
 
-        JScrollPane scrollPane = new JScrollPane(table);
-        if (data.length <= 12) {
-            scrollPane.setPreferredSize(new Dimension(460, data.length*25+23));
-        } else {
-            scrollPane.setPreferredSize(new Dimension(460, 323));
-            scrollPane.setVerticalScrollBar(new ScrollBarCustom(12, data.length));
-        }
+        scrollPane = new JScrollPane(table);
+        scrollPane.setPreferredSize(new Dimension(460, 323));
 
         constraints = new GridBagConstraints();
         constraints.gridx = 0;
@@ -234,6 +202,8 @@ public class StartAuctionUI extends JFrame {
             startBtn.setEnabled(false);
         });
 
+        reloadBtn.addActionListener(e -> loadAuctions());
+
 ///////////
 // Log
 ///////////
@@ -272,6 +242,33 @@ public class StartAuctionUI extends JFrame {
         pack();
 
         setResizable(false);
+    }
+
+    public void loadAuctions() {
+        // Load auctions
+        List<Auction> auctions = HTTPRequests.getAllAuctions();
+        AuctionTableModel model = new AuctionTableModel(auctions);
+        table.setModel(model);
+        
+        // Set scrollbar
+        if (auctions.size() <= 12) {
+            scrollPane.setPreferredSize(new Dimension(460, auctions.size() * 25 + 23));
+        } else {
+            scrollPane.setPreferredSize(new Dimension(460, 323));
+            scrollPane.setVerticalScrollBar(new ScrollBarCustom(12, auctions.size()));
+        }
+        
+        // Set columns
+        DefaultTableCellRenderer centerRenderer = new DefaultTableCellRenderer();
+        centerRenderer.setHorizontalAlignment(JLabel.CENTER);
+        TableColumnModel columnModel = table.getColumnModel();
+        columnModel.getColumn(0).setPreferredWidth(40);
+        columnModel.getColumn(1).setPreferredWidth(200);
+        columnModel.getColumn(2).setPreferredWidth(180);
+        columnModel.getColumn(3).setPreferredWidth(80);
+        for (int i = 0; i < 4; i++) {
+            columnModel.getColumn(i).setCellRenderer(centerRenderer);
+        }
     }
 
     public JButton getLogoutBtn() {
