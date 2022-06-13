@@ -23,6 +23,7 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
 public class JoinAuctionUI extends JFrame {
+    private AdministrationUI adminUI;
 
     private JButton bidBtn, logoutBtn, myTRBtn;
     private JTextField priceText;
@@ -117,6 +118,10 @@ public class JoinAuctionUI extends JFrame {
         myTRBtn.setBorder(emptyBorder);
         myTRBtn.setBackground(background);
         myTRBtn.setFont(font.deriveFont(Font.PLAIN, 12));
+        myTRBtn.addActionListener(e -> {
+            adminUI = new AdministrationUI(agent);
+            adminUI.setVisible(true);
+        });
 
         constraints = new GridBagConstraints();
         constraints.gridx = 0;
@@ -185,6 +190,9 @@ public class JoinAuctionUI extends JFrame {
         logoutBtn.setBackground(background);
         logoutBtn.setFont(font.deriveFont(Font.PLAIN, 13));
         logoutBtn.setForeground(Color.BLUE);
+        logoutBtn.addActionListener(e -> {
+            adminUI.dispose();
+        });
 
         constraints = new GridBagConstraints();
         constraints.gridx = 0;

@@ -128,7 +128,7 @@ public class CostCalculator {
    				jobID = ((JobActivity) act).getJob().getId();
    				deliver = act.getLocation();
    				distance += EuclideanDistanceCalculator.calculateDistance(pickup.getCoordinate(), deliver.getCoordinate());
-   				if (jobID == requestID && act.getName() == actName) {
+   				if (Objects.equals(jobID, requestID) && Objects.equals(act.getName(), actName)) {
    					break;
    				}
    				pickup = deliver;
