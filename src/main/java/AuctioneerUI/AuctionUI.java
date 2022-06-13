@@ -14,6 +14,7 @@ import java.awt.*;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.text.SimpleDateFormat;
+import java.util.List;
 
 public class AuctionUI extends JFrame {
 
@@ -29,6 +30,11 @@ public class AuctionUI extends JFrame {
     private AuctionTimer auctionTimer;
 
     public AuctionUI() {
+
+        super();
+        long duration = 10000;
+        auctionTimer = new AuctionTimer(auction, duration);
+
 
 ///////////
 // Frame
@@ -171,9 +177,31 @@ public class AuctionUI extends JFrame {
 ///////////
 // Timer
 ///////////
+        Timer addBidTimer = new Timer(10, e -> {
+            // Load new bids
+            List<Bid> bids = HTTPRequests.getBids(auction);
+            for (Bid bid : bids) {
+                auction.addBid(bid);
+            }
+        });
+        addBidTimer.start();
+        new Timer((int) (duration+10), e -> {
+            // Load new bids
+            List<Bid> bids = HTTPRequests.getBids(auction);
+            for (Bid bid : bids) {
+                auction.addBid(bid);
+            }
+        });
 
-        // TODO: Set real duration or let the user decide
-        auctionTimer = new AuctionTimer(auction, 3000, () -> {
+        constraints = new GridBagConstraints();
+        constraints.gridx = 0;
+        constraints.gridy = 0;
+        constraints.gridwidth = GridBagConstraints.REMAINDER;
+        constraints.anchor = GridBagConstraints.CENTER;
+        constraints.insets = new Insets(20, 0, 20, 0);
+        bottomPanel.add(auctionTimer, constraints);
+
+        new Timer((int) duration+1000, (e) -> {
             runningLabel.setVisible(false);
             auction.end();
             Bid winningBid = auction.getWinningBid();
@@ -230,7 +258,68 @@ public class AuctionUI extends JFrame {
                 price.setText(Integer.toString(winningBid.getPrice()));
             }
             auction.notifyWinner();
-        });
+        }).start();
+
+
+        // TODO: Set real duration or let the user decide
+         new Timer(11000, (e) -> {
+            runningLabel.setVisible(false);
+            auction.end();
+            Bid winningBid = auction.getWinningBid();
+
+            JLabel winnerLabel = new JLabel("Winner: ");
+            winnerLabel.setFont(font.deriveFont(Font.BOLD, 12));
+            winnerLabel.setHorizontalAlignment(SwingConstants.CENTER);
+
+            GridBagConstraints constraints1 = new GridBagConstraints();
+            constraints1.gridx = 0;
+            constraints1.gridy = 0;
+            constraints1.anchor = GridBagConstraints.NORTHWEST;
+            constraints1.insets = new Insets(15, 0, 0, 15);
+            rootPanel.add(winnerLabel, constraints1);
+
+            winner = new JLabel();
+            winner.setFont(font.deriveFont(Font.PLAIN, 12));
+            winner.setHorizontalAlignment(SwingConstants.CENTER);
+
+            GridBagConstraints constraints2 = new GridBagConstraints();
+            constraints2.gridx = 1;
+            constraints2.gridy = 0;
+            constraints2.anchor = GridBagConstraints.NORTHWEST;
+            constraints2.insets = new Insets(15, 0, 0, 0);
+            rootPanel.add(winner, constraints2);
+
+            JLabel priceLabel = new JLabel("Price (\u20AC): ");
+            priceLabel.setFont(font.deriveFont(Font.BOLD, 12));
+            priceLabel.setHorizontalAlignment(SwingConstants.CENTER);
+
+            GridBagConstraints constraints3 = new GridBagConstraints();
+            constraints3.gridx = 0;
+            constraints3.gridy = 2;
+            constraints3.anchor = GridBagConstraints.NORTHWEST;
+            constraints3.insets = new Insets(15, 0, 15, 15);
+            rootPanel.add(priceLabel, constraints3);
+
+            price = new JLabel();
+            price.setFont(font.deriveFont(Font.PLAIN, 12));
+            price.setHorizontalAlignment(SwingConstants.CENTER);
+
+            GridBagConstraints constraints4 = new GridBagConstraints();
+            constraints4.gridx = 1;
+            constraints4.gridy = 2;
+            constraints4.anchor = GridBagConstraints.NORTHWEST;
+            constraints4.insets = new Insets(15, 0, 15, 0);
+            rootPanel.add(price, constraints4);
+
+            if (winningBid == null) {
+                winner.setText("Nobody won the auction");
+                price.setText("-");
+            } else {
+                winner.setText(winningBid.getBidder().getDisplayname());
+                price.setText(Integer.toString(winningBid.getPrice()));
+            }
+            auction.notifyWinner();
+        }).start();
 
         constraints = new GridBagConstraints();
         constraints.gridx = 0;
@@ -264,36 +353,33 @@ public class AuctionUI extends JFrame {
     }
 }
 
-interface TimerStopCallback {
-    void run();
-}
-
 class AuctionTimer extends JLabel {
 
     private Timer timer;
     private long startTime = -1;
     private Font font = UIData.getFont();
 
-    public AuctionTimer(Auction auction, long duration, TimerStopCallback callback) {
-        startTime = System.currentTimeMillis();
+    public AuctionTimer(Auction auction, long duration) {
         setLayout(new GridBagLayout());
         setFont(font.deriveFont(Font.BOLD, 14));
-        timer = new Timer(500, e -> {
+        timer = new Timer(10, e -> {
+            if (startTime < 0) {
+                startTime = System.currentTimeMillis();
+            }
             long now = System.currentTimeMillis();
             long clockTime = now - startTime;
             if (clockTime >= duration) {
                 clockTime = duration;
                 timer.stop();
-                callback.run();
             }
             SimpleDateFormat df = new SimpleDateFormat("mm:ss");
             setText(df.format(duration - clockTime));
 
             // Load new bids
-            java.util.List<Bid> bids = HTTPRequests.getBids(auction);
+           /* java.util.List<Bid> bids = HTTPRequests.getBids(auction);
             for (Bid bid : bids) {
                 auction.addBid(bid);
-            }
+            }*/
         });
         timer.setInitialDelay(0);
         timer.start();
