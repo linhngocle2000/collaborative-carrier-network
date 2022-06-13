@@ -6,23 +6,16 @@
 	"configurations": [
 		{
 			"type": "java",
-			"name": "Launch App",
+			"name": "Launch CCN",
 			"request": "launch",
-			"mainClass": "App",
-			"projectName": "collaborative-carrier-network-1_eb0c6deb"
+			"mainClass": "App", 
+			"projectName": "collaborative-carrier-network"
 		},
 		{
 			"type": "java",
 			"name": "Launch Current File",
 			"request": "launch",
 			"mainClass": "${file}"
-		},
-		{
-			"type": "java",
-			"name": "Launch App",
-			"request": "launch",
-			"mainClass": "App",
-			"projectName": "collaborative-carrier-network_e98f8c86"
 		}
 	]
 }

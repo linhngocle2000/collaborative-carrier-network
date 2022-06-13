@@ -212,6 +212,24 @@ public class HTTPRequests {
 
     // Auction
 
+    public static Auction addAuction() {
+        try {
+            var json = send(RequestBody.addAuction(token));
+            boolean success = json.getBoolean("success");
+            if (!success) {
+                JSONObject error = json.getJSONObject("error");
+                lastError = new Exception(error.getString("message"));
+                return null;
+            }
+            int id = json.getJSONObject("data").getInt("Auction");
+            return new Auction(id, 0);
+        } catch (IOException | InterruptedException e) {
+            e.printStackTrace();
+            lastError = e;
+            return null;
+        }
+    }
+
     /**
      * Will return only auctions belonging to the user if the
      * user is an auctioneer agent. Otherwise, all auctions
@@ -221,36 +239,25 @@ public class HTTPRequests {
     public static List<Auction> getAuctions() {
         try {
             var json = send(RequestBody.getAuctions(token));
+            boolean success = json.getBoolean("success");
+            if (!success) {
+                JSONObject error = json.getJSONObject("error");
+                lastError = new Exception(error.getString("message"));
+                return null;
+            }
             var array = json.getJSONArray("data");
             var result = new ArrayList<Auction>();
             for (Object obj : array) {
                 JSONObject j = (JSONObject)obj;
                 int id = j.getInt("ID");
-                String type = j.getString("Type");
                 boolean isActive = j.getBoolean("IsActive");
                 int iteration = j.getInt("Iteration");
-
-                Auction auction = null;
-                switch (type)
-                {
-                    case Auction.TYPE_VICKREY:
-                        auction = new VickreyAuction(id, iteration);
-                        break;
-
-                    case Auction.TYPE_TRADITIONAL:
-                        auction = new TraditionalAuction(id, iteration);
-                        break;
-
-                    default:
-                        lastError = new Exception("Failed to parse auction");
-                        return null;
-                }
-
+                Auction auction = new Auction(id, iteration);
                 List<TransportRequest> requests = getTransportRequestsOfAuction(auction);
                 if (requests == null) {
                     // Last error already set by getTransportRequestsOfAuction
                     return null;
-                }
+                }                
                 auction.setTransportRequests(requests);
                 result.add(auction);
             }
@@ -259,6 +266,18 @@ public class HTTPRequests {
             e.printStackTrace();
             lastError = e;
             return null;
+        }
+    }
+
+    public static boolean addTransportRequestToAuction(Auction auction, TransportRequest request) {
+        try {
+            var json = send(RequestBody.addRequestToAuction(auction, request, token));
+            boolean result = json.getBoolean("success");
+            return result;
+        } catch (IOException | InterruptedException e) {
+            e.printStackTrace();
+            lastError = e;
+            return false;
         }
     }
 

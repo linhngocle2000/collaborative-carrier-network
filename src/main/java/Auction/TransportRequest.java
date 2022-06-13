@@ -44,7 +44,7 @@ public class TransportRequest {
 		return String.format("((%.0f,%.0f),(%.0f,%.0f))", pickupX, pickupY, deliveryX, deliveryY);
 	}
 
-	public String getId() {
+	public String getID() {
 		return Integer.toString(id);
 	}
 	public CarrierAgent getOwner() {

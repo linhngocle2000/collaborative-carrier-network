@@ -148,8 +148,7 @@ public class StartAuctionUI extends JFrame {
         columnModel.getColumn(1).setPreferredWidth(200);
         columnModel.getColumn(2).setPreferredWidth(180);
         columnModel.getColumn(3).setPreferredWidth(80);
-        columnModel.getColumn(4).setPreferredWidth(80);
-        for (int i = 0; i<5; i++) {
+        for (int i = 0; i<4; i++) {
             columnModel.getColumn(i).setCellRenderer(centerRenderer);
         }
 

@@ -6,6 +6,7 @@ import org.json.JSONObject;
 import Agent.Agent;
 import Agent.CarrierAgent;
 import Auction.Auction;
+import Auction.TransportRequest;
 
 public class RequestBody {
 
@@ -94,8 +95,19 @@ public class RequestBody {
 
     // Auction
 
+    public static String addAuction(String token) {
+        return body("addAuction", token, null);
+    }
+
     public static String getAuctions(String token) {
         return body("getAuctions", token, null);
+    }
+
+    public static String addRequestToAuction(Auction auction, TransportRequest request, String token) {
+        JSONObject data = new JSONObject();
+        data.put("Auction", auction.getID());
+        data.put("TransportRequest", request.getID());
+        return body("addRequestToAuction", token, data);
     }
 
     // Helper

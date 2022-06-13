@@ -1,13 +1,9 @@
 package Auction;
 
-public class VickreyAuction extends Auction {
+public class VickreyAuction extends AuctionStrategy {
 
 	private Bid topBid;
 	private Bid secondBid;
-
-	public VickreyAuction(int id, int iteration) {
-		super(id, iteration);
-	}
 
 	@Override
 	public void start() {
@@ -38,11 +34,6 @@ public class VickreyAuction extends Auction {
 	@Override
 	public Bid getWinningBid() {
 		return new Bid(topBid.getBidder(), topBid.getRequest(), secondBid.getPrice());
-	}
-
-	@Override
-	public String getType() {
-		return Auction.TYPE_VICKREY;
 	}
 
 }

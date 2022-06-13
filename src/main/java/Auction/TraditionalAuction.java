@@ -1,12 +1,8 @@
 package Auction;
 
-public class TraditionalAuction extends Auction {
+public class TraditionalAuction extends AuctionStrategy {
 
 	private Bid highestBid;
-
-	public TraditionalAuction(int id, int iteration) {
-		super(id, iteration);
-	}
 
 	@Override
 	public void start() {
@@ -28,11 +24,6 @@ public class TraditionalAuction extends Auction {
 	@Override
 	public Bid getWinningBid() {
 		return highestBid;
-	}
-
-	@Override
-	public String getType() {
-		return Auction.TYPE_TRADITIONAL;
 	}
 	
 }

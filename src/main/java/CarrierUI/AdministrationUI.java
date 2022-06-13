@@ -342,7 +342,7 @@ public class AdministrationUI extends JFrame {
         List<TransportRequest> trList = tour.getRequests();
         Object[][] res = new Object[trList.size()][4];
         for (int i = 0; i < trList.size(); i++) {
-            res[i][0] = trList.get(i).getId();
+            res[i][0] = trList.get(i).getID();
             res[i][1] = "((" + trList.get(i).getPickupX() + "," +
                     trList.get(i).getPickupX() + "),(" +
                     trList.get(i).getDeliveryX() + "," +

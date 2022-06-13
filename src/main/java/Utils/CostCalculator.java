@@ -41,7 +41,7 @@ public class CostCalculator {
     * The actual profit for delivering a certain request while on tour
     */
    public double profit(TransportRequest request) {
-      return transportCostIn(request.getPickup(), request.getDelivery()) - transportCostOut(request.getId());
+      return transportCostIn(request.getPickup(), request.getDelivery()) - transportCostOut(request.getID());
    }
 
 

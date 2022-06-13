@@ -3,14 +3,12 @@ package Auction;
 import java.util.ArrayList;
 import java.util.List;
 
-public abstract class Auction {
-
-	public static final String TYPE_VICKREY = "Vickrey";
-	public static final String TYPE_TRADITIONAL = "Traditional";
+public class Auction {
 
 	private ArrayList<TransportRequest> requests;
 	private int iteration;
 	private int id;
+	private AuctionStrategy strategy;
 
 	public Auction(int id, int iteration) {
 		this.id = id;
@@ -18,26 +16,40 @@ public abstract class Auction {
 		requests = new ArrayList<TransportRequest>();
 	}
 
-	/**
-	 * @return Type of auction. Must be one of 
-	 * @see Auction.Auction#TYPE_VICKREY
-	 * @see Auction.Auction#TYPE_TRADITIONAL
-	 */
-	public abstract String getType();
+	public void start() {
+		// TODO: Set isActive in database
+		strategy.start();
+	}
 
-	public abstract void start();
-	public abstract void addBid(Bid bid);
-	public abstract void end();
+	public void addBid(Bid bid) {
+		// TODO: Add bid to database
+		strategy.addBid(bid);
+	}
+
+	public void end() {
+		// TODO: Unset isActive in database
+		strategy.end();
+	}
 
 	/**
 	 * @return The winning bid including the price to be paid by the winner to the
 	 *         seller.
 	 */
-	public abstract Bid getWinningBid();
+	public Bid getWinningBid() {
+		return strategy.getWinningBid();
+	}
+
+	// Setter
 
 	public void setTransportRequests(List<TransportRequest> requests) {
 		this.requests = new ArrayList<TransportRequest>(requests);
 	}
+
+	public void setAuctionStrategy(AuctionStrategy strategy) {
+		this.strategy = strategy;
+	}
+
+	// Getter
 
 	public int getID() {
 		return id;

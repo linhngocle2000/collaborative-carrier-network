@@ -177,7 +177,7 @@ public class TourPlanning {
     */
    public double getTransportCostOut(TransportRequest request) {
       setCost();
-      return cost.transportCostOut(request.getId());
+      return cost.transportCostOut(request.getID());
    }
 
    
