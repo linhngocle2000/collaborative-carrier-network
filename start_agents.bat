@@ -1,1 +1,1 @@
-java -cp  -jar ./ccn.jar
+java -jar ./ccn.jar
