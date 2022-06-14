@@ -14,12 +14,12 @@ import java.awt.*;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.text.SimpleDateFormat;
+import java.util.List;
 
 public class AuctionUI extends JFrame {
 
-    private static JLabel trReq, owner, price, winner, iteration;
-    private JPanel rootPanel;
-    private JLabel runningLabel;
+    private static JLabel trReq, owner, price,
+            winner, iteration;
 
     private Color background = UIData.getBackground();
     private int width = UIData.getWidth();
@@ -30,6 +30,11 @@ public class AuctionUI extends JFrame {
     private AuctionTimer auctionTimer;
 
     public AuctionUI() {
+
+        super();
+        long duration = 10000;
+        auctionTimer = new AuctionTimer(duration);
+
 
 ///////////
 // Frame
@@ -53,7 +58,7 @@ public class AuctionUI extends JFrame {
 // Panels
 ///////////
 
-        rootPanel = new JPanel();
+        JPanel rootPanel = new JPanel();
         rootPanel.setLayout(new GridBagLayout());
         rootPanel.setBackground(background);
 
@@ -146,7 +151,7 @@ public class AuctionUI extends JFrame {
 // Running
 ///////////
 
-        runningLabel = new JLabel("Auction is running... ");
+        JLabel runningLabel = new JLabel("Auction is running... ");
         runningLabel.setFont(font.deriveFont(Font.ITALIC, 14));
         runningLabel.setHorizontalAlignment(SwingConstants.CENTER);
 
@@ -172,8 +177,19 @@ public class AuctionUI extends JFrame {
 ///////////
 // Timer
 ///////////
+        Timer addBidTimer = new Timer(10, e -> {
+            // Load new bids
+            List<Bid> bids = HTTPRequests.getBids(auction);
+            for (Bid bid : bids) {
+                auction.addBid(bid);
+            }
+        });
+        addBidTimer.start();
+        new Timer((int) (duration+10), e -> {
+            // Load new bids
+            addBidTimer.stop();
+        });
 
-        auctionTimer = new AuctionTimer();
         constraints = new GridBagConstraints();
         constraints.gridx = 0;
         constraints.gridy = 0;
@@ -182,29 +198,7 @@ public class AuctionUI extends JFrame {
         constraints.insets = new Insets(20, 0, 20, 0);
         bottomPanel.add(auctionTimer, constraints);
 
-///////////
-// Combine
-///////////
-
-        getContentPane().add(topPanel, "North");
-        getContentPane().add(rootPanel, "Center");
-        getContentPane().add(bottomPanel, "South");
-        getContentPane().setBackground(background);
-
-        pack();
-        setResizable(false);
-    }
-
-    public void setAuction(Auction auction) {
-        this.auction = auction;
-        trReq.setText(auction.getDefaultTransportRequest().getRouteString());
-        owner.setText(auction.getDefaultTransportRequest().getOwner().getDisplayname());
-        iteration.setText(Integer.toString(auction.getIteration() + 1));
-
-        // TODO: Set real duration or let the user decide
-        auction.setAuctionStrategy(new VickreyAuction());
-        auction.start();
-        auctionTimer.start(auction, 3000, () -> {
+        new Timer((int) duration+1000, (e) -> {
             runningLabel.setVisible(false);
             auction.end();
             Bid winningBid = auction.getWinningBid();
@@ -261,12 +255,39 @@ public class AuctionUI extends JFrame {
                 price.setText(Integer.toString(winningBid.getPrice()));
             }
             auction.notifyWinner();
-        });
-    }
-}
+        }).start();
 
-interface TimerStopCallback {
-    void run();
+
+        constraints = new GridBagConstraints();
+        constraints.gridx = 0;
+        constraints.gridy = 0;
+        constraints.gridwidth = GridBagConstraints.REMAINDER;
+        constraints.anchor = GridBagConstraints.CENTER;
+        constraints.insets = new Insets(20, 0, 20, 0);
+        bottomPanel.add(auctionTimer, constraints);
+
+///////////
+// Combine
+///////////
+
+        getContentPane().add(topPanel, "North");
+        getContentPane().add(rootPanel, "Center");
+        getContentPane().add(bottomPanel, "South");
+        getContentPane().setBackground(background);
+
+        pack();
+        setResizable(false);
+    }
+
+    public void setAuction(Auction auction) {
+        this.auction = auction;
+        trReq.setText(auction.getDefaultTransportRequest().getRouteString());
+        owner.setText(auction.getDefaultTransportRequest().getOwner().getDisplayname());
+        iteration.setText(Integer.toString(auction.getIteration() + 1));
+
+        auction.setAuctionStrategy(new VickreyAuction());
+        auction.start();
+    }
 }
 
 class AuctionTimer extends JLabel {
@@ -275,26 +296,22 @@ class AuctionTimer extends JLabel {
     private long startTime = -1;
     private Font font = UIData.getFont();
 
-    public void start(Auction auction, long duration, TimerStopCallback callback) {
-        startTime = System.currentTimeMillis();
+    public AuctionTimer(long duration) {
         setLayout(new GridBagLayout());
         setFont(font.deriveFont(Font.BOLD, 14));
-        timer = new Timer(500, e -> {
+        timer = new Timer(10, e -> {
+            if (startTime < 0) {
+                startTime = System.currentTimeMillis();
+            }
             long now = System.currentTimeMillis();
             long clockTime = now - startTime;
             if (clockTime >= duration) {
                 clockTime = duration;
                 timer.stop();
-                callback.run();
             }
             SimpleDateFormat df = new SimpleDateFormat("mm:ss");
             setText(df.format(duration - clockTime));
 
-            // Load new bids
-            java.util.List<Bid> bids = HTTPRequests.getBids(auction);
-            for (Bid bid : bids) {
-                auction.addBid(bid);
-            }
         });
         timer.setInitialDelay(0);
         timer.start();

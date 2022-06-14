@@ -130,7 +130,7 @@ public class App {
                 carrier = (CarrierAgent)user;
                 adminUI = new AdministrationUI(carrier);
                 joinAuctionUI.setAgent(carrier);
-                joinAuctionUI.startUpdate();
+                joinAuctionUI.loadTable();
                 joinAuctionUI.setVisible(true);
             }
             loginUI.setVisible(false);
@@ -153,7 +153,6 @@ public class App {
         JButton carrierJoinAuctionLogoutBtn = joinAuctionUI.getLogoutBtn();
         carrierJoinAuctionLogoutBtn.addActionListener(e -> {
             adminUI.setVisible(false);
-            joinAuctionUI.stopUpdate();
             joinAuctionUI.dispose();
             // welcomeUI.setVisible(true);
             // Reset data

@@ -151,18 +151,25 @@ public class JoinAuctionUI extends JFrame {
         bidBtn.setFocusPainted(false);
         bidBtn.setEnabled(false);
         bidBtn.addActionListener(e -> {
-            try {
-                errorLabel.setText("");
-                int price = Integer.parseInt(priceText.getText());
-                Bid bid = HTTPRequests.addBid(selectedAuction, agent, price);
-                if (bid == null) {
-                    errorLabel.setText(HTTPRequests.getLastError().getMessage());
-                } else {
-                    bidBtn.setEnabled(false);
+            errorLabel.setText("");
+            List<Bid> bids = HTTPRequests.getBids(selectedAuction);
+            assert bids != null;
+            Optional<Bid> bid = bids.stream().filter(x -> x.getBidder().getUsername().equals(agent.getUsername())).findFirst();
+            if (bid.isPresent()) {
+                errorLabel.setText("You can only bid once");
+            } else {
+                try {
+                    int price = Integer.parseInt(priceText.getText());
+                    Bid bidValid = HTTPRequests.addBid(selectedAuction, agent, price);
+                    if (bidValid == null) {
+                        errorLabel.setText(HTTPRequests.getLastError().getMessage());
+                    } else {
+                        bidBtn.setEnabled(false);
+                    }
+                } catch (NumberFormatException ex) {
+                    ex.printStackTrace();
+                    errorLabel.setText(ex.getMessage());
                 }
-            } catch (NumberFormatException ex) {
-                ex.printStackTrace();
-                errorLabel.setText(ex.getMessage());
             }
         });
 
@@ -258,26 +265,11 @@ public class JoinAuctionUI extends JFrame {
         table.clearSelection();
         table.getSelectionModel().addListSelectionListener(event -> {
             int row = table.getSelectedRow();
-            AuctionTableModel model = (AuctionTableModel)table.getModel();
+            CarrierTableModel model = (CarrierTableModel)table.getModel();
             selectedAuction = model.getAuction(row);
 
-            if (selectedAuction == null) {
-                bidBtn.setEnabled(false);
-                errorLabel.setText("");
-            } else {
-                // Check if a bid has already been placed on the selected auction
-                List<Bid> bids = HTTPRequests.getBids(selectedAuction);
-                Optional<Bid> bid = bids.stream().filter(x -> x.getBidder().getUsername().equals(agent.getUsername())).findFirst();
-                if (bid.isPresent()) {
-                    bidBtn.setEnabled(false);
-                    errorLabel.setText("You can only bid once");
-                    priceText.setText(Integer.toString(bid.get().getPrice()));
-                } else {
-                    bidBtn.setEnabled(true);
-                    errorLabel.setText("");
-                    priceText.setText("");
-                }
-            }
+            // Check if a bid has already been placed on the selected auction
+            bidBtn.setEnabled(selectedAuction != null);
         });
 
         scrollPane = new JScrollPane(table);
@@ -308,45 +300,26 @@ public class JoinAuctionUI extends JFrame {
      * Maybe implement this as reload button like in StartAuctionUI instead of
      * periodic updates 😐
      */
-    public void startUpdate() {
-        scheduler.scheduleAtFixedRate(() -> {
-            try {
-                // Cache selection before updating table model
-                int selectedRow = table.getSelectedRow();
-                int selectedColumn = table.getSelectedColumn();
+    public void loadTable() {
 
-                // Update table model
-                var auctions = HTTPRequests.getActiveAuctions();
-                var model = new AuctionTableModel(auctions);
-                table.setModel(model);
+        // Update table model
+        var auctions = HTTPRequests.getActiveAuctions();
+        var model = new CarrierTableModel(auctions);
+        table.setModel(model);
 
-                // Set selection
-                if (table.getRowCount() > selectedRow && selectedRow != -1) {
-                    table.setRowSelectionInterval(selectedRow, selectedRow);
-                    table.setColumnSelectionInterval(selectedColumn, selectedColumn);
-                }
 
-                // Set column width and scrollbar length
-                DefaultTableCellRenderer centerRenderer = new DefaultTableCellRenderer();
-                centerRenderer.setHorizontalAlignment(JLabel.CENTER);
-                TableColumnModel columnModel = table.getColumnModel();
-                columnModel.getColumn(0).setPreferredWidth(40);
-                columnModel.getColumn(1).setPreferredWidth(200);
-                columnModel.getColumn(2).setPreferredWidth(180);
-                columnModel.getColumn(3).setPreferredWidth(80);
-                for (int i = 0; i < 4; i++) {
-                    columnModel.getColumn(i).setCellRenderer(centerRenderer);
-                }
-                scrollPane.setVerticalScrollBar(new ScrollBarCustom(10, auctions.size()));
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }, 0, 10, TimeUnit.SECONDS);
-    }
+        // Set column width and scrollbar length
+        DefaultTableCellRenderer centerRenderer = new DefaultTableCellRenderer();
+        centerRenderer.setHorizontalAlignment(JLabel.CENTER);
+        TableColumnModel columnModel = table.getColumnModel();
+        columnModel.getColumn(0).setPreferredWidth(80);
+        columnModel.getColumn(1).setPreferredWidth(270);
+        for (int i = 0; i < 2; i++) {
+            columnModel.getColumn(i).setCellRenderer(centerRenderer);
+        }
+        assert auctions != null;
+        scrollPane.setVerticalScrollBar(new ScrollBarCustom(10, auctions.size()));
 
-    /** stops periodically updating list of auctions */
-    public void stopUpdate() {
-        scheduler.shutdownNow();
     }
 
     public JButton getLogoutBtn() {

@@ -16,6 +16,8 @@ import Auction.Auction;
 import java.awt.*;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowFocusListener;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.util.List;
 
 
@@ -49,8 +51,8 @@ public class StartAuctionUI extends JFrame {
         });
 
         setTitle("CCN");
-        setSize(520, 580);
-        setMinimumSize(new Dimension(520, 580));
+        setSize(620, 580);
+        setMinimumSize(new Dimension(620, 580));
         setLocationRelativeTo(null);
 
 ///////////
@@ -137,8 +139,10 @@ public class StartAuctionUI extends JFrame {
         table.getTableHeader().setReorderingAllowed(false);
         table.clearSelection();
 
+
         scrollPane = new JScrollPane(table);
-        scrollPane.setPreferredSize(new Dimension(460, 323));
+        scrollPane.setPreferredSize(new Dimension(520, 323));
+
 
         constraints = new GridBagConstraints();
         constraints.gridx = 0;
@@ -235,13 +239,15 @@ public class StartAuctionUI extends JFrame {
         constraints.insets = new java.awt.Insets(20, 0, 0, 0);
         rootPanel.add(errorLabel, constraints);
 
-//        int delay = 1000; //milliseconds
+//        int delay = 10000; //milliseconds
 //        ActionListener taskPerformer = new ActionListener() {
 //            public void actionPerformed(ActionEvent evt) {
-//
+//                loadAuctions();
 //            }
 //        };
-//        new Timer(delay, taskPerformer).start();
+//        Timer reload = new Timer(delay, taskPerformer);
+//        reload.start();
+//        reload.setRepeats(true);
 
 ///////////
 // Combine
@@ -261,26 +267,24 @@ public class StartAuctionUI extends JFrame {
         List<Auction> auctions = HTTPRequests.getAllAuctions();
         AuctionTableModel model = new AuctionTableModel(auctions);
         table.setModel(model);
-        
         // Set scrollbar
-        if (auctions.size() <= 12) {
-            scrollPane.setPreferredSize(new Dimension(460, auctions.size() * 25 + 23));
-        } else {
-            scrollPane.setPreferredSize(new Dimension(460, 323));
-            scrollPane.setVerticalScrollBar(new ScrollBarCustom(12, auctions.size()));
-        }
-        
+
+        scrollPane.setVerticalScrollBar(new ScrollBarCustom(12, auctions.size()));
+        table.invalidate();
+        scrollPane.repaint();
+
         // Set columns
         DefaultTableCellRenderer centerRenderer = new DefaultTableCellRenderer();
         centerRenderer.setHorizontalAlignment(JLabel.CENTER);
         TableColumnModel columnModel = table.getColumnModel();
-        columnModel.getColumn(0).setPreferredWidth(40);
+        columnModel.getColumn(0).setPreferredWidth(80);
         columnModel.getColumn(1).setPreferredWidth(200);
         columnModel.getColumn(2).setPreferredWidth(180);
-        columnModel.getColumn(3).setPreferredWidth(80);
+        columnModel.getColumn(3).setPreferredWidth(60);
         for (int i = 0; i < 4; i++) {
             columnModel.getColumn(i).setCellRenderer(centerRenderer);
         }
+
     }
 
     public JButton getLogoutBtn() {
