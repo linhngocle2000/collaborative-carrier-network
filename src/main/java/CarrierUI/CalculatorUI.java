@@ -239,7 +239,7 @@ public class CalculatorUI extends JFrame {
             } else if(!verifyCoordinateInput()) {
                 errorLabel.setText("Input must be number format.");
             } else {
-                TransportRequest tr = new TransportRequest(0,tour.getAgent(),getPickupX(),getPickupY(),getDeliverX(),getDeliverY());
+                TransportRequest tr = new TransportRequest(0,tour.getAgent(),getPickupX(),getPickupY(),getDeliverX(),getDeliverY(), false);
                 errorLabel.setText("");
                 costText.setText(String.format("%.2f", tour.getTransportCostOut(tr)).replace(",","."));
                 earningText.setText(String.format("%.2f", tour.getTransportCostIn(tr)).replace(",","."));

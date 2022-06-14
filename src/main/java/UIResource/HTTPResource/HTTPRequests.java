@@ -140,7 +140,7 @@ public class HTTPRequests {
         try {
             var json = send(RequestBody.addTransportRequest(agent, pickupX, pickupY, deliveryX, deliveryY, token));
             int id = json.getInt("data");
-            return new TransportRequest(id, agent, pickupX, pickupY, deliveryX, deliveryY);
+            return new TransportRequest(id, agent, pickupX, pickupY, deliveryX, deliveryY, false);
         } catch (IOException | InterruptedException e) {
             e.printStackTrace();
             lastError = e;
@@ -161,7 +161,8 @@ public class HTTPRequests {
                 float pickupY = j.getFloat("PickupLon");
                 float deliveryX = j.getFloat("DeliveryLat");
                 float deliveryY = j.getFloat("DeliveryLon");
-                result.add(new TransportRequest(id, agent, pickupX, pickupY, deliveryX, deliveryY));
+                boolean inAuction = j.getBoolean("IsInAuction");
+                result.add(new TransportRequest(id, agent, pickupX, pickupY, deliveryX, deliveryY, inAuction));
             }
             return result;
         } catch (IOException | InterruptedException e) {
@@ -188,6 +189,7 @@ public class HTTPRequests {
                 float pickupY = j.getFloat("PickupLon");
                 float deliveryX = j.getFloat("DeliveryLat");
                 float deliveryY = j.getFloat("DeliveryLon");
+                boolean inAuction = j.getBoolean("IsInAuction");
 
                 CarrierAgent owner;
                 if (map.containsKey(username)) {
@@ -200,7 +202,7 @@ public class HTTPRequests {
                     lastError = new Exception("Could not retrieve owner of transport request");
                     return null;
                 }
-                result.add(new TransportRequest(id, owner, pickupX, pickupY, deliveryX, deliveryY));
+                result.add(new TransportRequest(id, owner, pickupX, pickupY, deliveryX, deliveryY, inAuction));
             }
             return result;
         } catch (IOException | InterruptedException e) {

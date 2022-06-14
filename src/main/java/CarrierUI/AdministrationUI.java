@@ -262,9 +262,7 @@ public class AdministrationUI extends JFrame {
         table.getSelectionModel().addListSelectionListener(event -> {
             if (table.getSelectedRowCount()==1) {
                 TransportRequest request = model.getRequest(table.getSelectedRow());
-                auctionOff.setEnabled(request != null);
-                // String note = table.getValueAt(table.getSelectedRow(),3).toString();
-                // auctionOff.setEnabled(note.equals("ADDED") || note.equals(""));
+                auctionOff.setEnabled(request != null && !request.isInAuction());
             } else {
                 auctionOff.setEnabled(false);
             }

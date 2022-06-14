@@ -58,7 +58,7 @@ public class TransportRequestTableModel extends AbstractTableModel {
 				}
 				return "-";
 			case 3:
-				return ""; // TODO: Check if request is part of an auction
+				return request.isInAuction() ? "Is in auction" : "";
 		}
 		return null;
 	}

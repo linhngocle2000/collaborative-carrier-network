@@ -14,14 +14,10 @@ import javax.swing.table.TableColumnModel;
 import Agent.CarrierAgent;
 import Auction.Auction;
 import Auction.Bid;
-import AuctioneerUI.AuctionTableModel;
 
 import java.awt.*;
 import java.util.List;
 import java.util.Optional;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.TimeUnit;
 
 public class JoinAuctionUI extends JFrame {
 

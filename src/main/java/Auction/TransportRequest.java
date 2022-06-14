@@ -6,21 +6,23 @@ import com.graphhopper.jsprit.core.problem.job.Shipment;
 import Agent.CarrierAgent;
 
 public class TransportRequest {
-
-	public TransportRequest(int id, CarrierAgent owner, float pickupX, float pickupY, float deliveryX, float deliveryY) {
+	
+	public TransportRequest(int id, CarrierAgent owner, float pickupX, float pickupY, float deliveryX, float deliveryY, boolean inAuction) {
 		this.id = id;
 		this.owner = owner;
 		this.pickupX = pickupX;
 		this.pickupY = pickupY;
 		this.deliveryX = deliveryX;
 		this.deliveryY = deliveryY;
+		this.inAuction = inAuction;
 	}
-
+	
 	// Variables
-
+	
 	private int id;
 	private CarrierAgent owner;
 	private float pickupX, pickupY, deliveryX, deliveryY;
+	private boolean inAuction;
 
 	// Getters
 
@@ -61,5 +63,12 @@ public class TransportRequest {
 	}
 	public float getDeliveryY() {
 		return deliveryY;
+	}
+
+	/**
+	 * @return True if this request will be sold in an auction
+	 */
+	public boolean isInAuction() {
+		return inAuction;
 	}
 }
