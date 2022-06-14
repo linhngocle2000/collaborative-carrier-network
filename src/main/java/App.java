@@ -20,6 +20,7 @@ public class App {
     private static RegisterUI registerUI;
     private static JoinAuctionUI joinAuctionUI;
     private static StartAuctionUI auctioneerUI;
+    private static AdministrationUI adminUI;
 
     private static AuctioneerAgent auctioneer;
     private static CarrierAgent carrier;
@@ -127,6 +128,7 @@ public class App {
             } else {
                 auctioneer = null;
                 carrier = (CarrierAgent)user;
+                adminUI = new AdministrationUI(carrier);
                 joinAuctionUI.setAgent(carrier);
                 joinAuctionUI.startUpdate();
                 joinAuctionUI.setVisible(true);
@@ -140,21 +142,22 @@ public class App {
             auctioneerUI.dispose();
             // welcomeUI.setVisible(true);
             // Reset data
-            auctioneer = null;
+            // auctioneer = null;
             HTTPRequests.logout();
             new App();
         });
 
-        // JButton carrierJoinAuctionMyTRBtn = joinAuctionUI.getMyTRBtn();
-        // carrierJoinAuctionMyTRBtn.addActionListener(e -> adminUI.setVisible(true));
+        JButton carrierJoinAuctionMyTRBtn = joinAuctionUI.getMyTRBtn();
+        carrierJoinAuctionMyTRBtn.addActionListener(e -> adminUI.setVisible(true));
 
         JButton carrierJoinAuctionLogoutBtn = joinAuctionUI.getLogoutBtn();
         carrierJoinAuctionLogoutBtn.addActionListener(e -> {
+            adminUI.setVisible(false);
             joinAuctionUI.stopUpdate();
             joinAuctionUI.dispose();
             // welcomeUI.setVisible(true);
             // Reset data
-            carrier = null;
+            // carrier = null;
             HTTPRequests.logout();
             new App();
         });

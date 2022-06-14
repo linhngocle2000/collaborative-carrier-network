@@ -14,6 +14,8 @@ import Agent.AuctioneerAgent;
 import Auction.Auction;
 
 import java.awt.*;
+import java.awt.event.WindowEvent;
+import java.awt.event.WindowFocusListener;
 import java.util.List;
 
 
@@ -27,7 +29,7 @@ public class StartAuctionUI extends JFrame {
     private Border emptyBorder = UIData.getEmptyBorder();
 
     private AuctioneerAgent agent;
-    AuctionUI auctionUI;
+    private AuctionUI auctionUI;
     private Auction selectedAuction;
 
     public StartAuctionUI() {
@@ -36,12 +38,20 @@ public class StartAuctionUI extends JFrame {
 // Frame
 ///////////
 
+        addWindowFocusListener(new WindowFocusListener() {
+            public void windowLostFocus(WindowEvent e) {}
+            public void windowGainedFocus(WindowEvent e) {
+                if (auctionUI == null || !auctionUI.isVisible()) {
+                    logoutBtn.setEnabled(true);
+                    setDefaultCloseOperation(EXIT_ON_CLOSE);
+                }
+            }
+        });
+
         setTitle("CCN");
         setSize(520, 580);
         setMinimumSize(new Dimension(520, 580));
         setLocationRelativeTo(null);
-
-        setDefaultCloseOperation(EXIT_ON_CLOSE);
 
 ///////////
 // Panels
@@ -198,6 +208,8 @@ public class StartAuctionUI extends JFrame {
             auctionUI.setAuction(selectedAuction);
             auctionUI.setVisible(true);
             startBtn.setEnabled(false);
+            logoutBtn.setEnabled(false);
+            setDefaultCloseOperation(0);
         });
 
         reloadBtn.addActionListener(e -> loadAuctions());
