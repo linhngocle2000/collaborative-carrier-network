@@ -1,8 +1,10 @@
 package CarrierUI;
 
+import Auction.Auction;
 import Auction.TransportRequest;
 import Utils.TourPlanning;
 import UIResource.UIData;
+import UIResource.HTTPResource.HTTPRequests;
 import UIResource.TextIcon;
 import Agent.CarrierAgent;
 
@@ -23,13 +25,15 @@ public class AdministrationUI extends JFrame {
     private Border emptyBorder = UIData.getEmptyBorder();
     private VisualizationUI visUI;
     private JPanel leftVisualPanel, rightVisualPanel;
+    private JTable table;
     
+    private CarrierAgent carrier;
     private TourPlanning tour;
     private TransportRequestTableModel model;
     private CalculatorUI costCalcUI;
 
     public AdministrationUI(CarrierAgent carrier) {
-
+        this.carrier = carrier;
         tour = new TourPlanning(carrier);
         model = new TransportRequestTableModel(tour);
         visUI = new VisualizationUI();
@@ -81,6 +85,9 @@ public class AdministrationUI extends JFrame {
         reloadBtn.setBorder(emptyBorder);
         reloadBtn.setBackground(background);
         reloadBtn.setHorizontalAlignment(SwingConstants.CENTER);
+        reloadBtn.addActionListener(e -> {
+            reloadRequests();
+        });
 
         GridBagConstraints constraints = new GridBagConstraints();
         constraints.gridx = 0;
@@ -107,7 +114,7 @@ public class AdministrationUI extends JFrame {
         constraints.insets = new Insets(0, 0, 30, 0);
         rootPanel.add(tableHeader, constraints);
 
-        JTable table = new JTable(model) {
+        table = new JTable(model) {
             public Component prepareRenderer(TableCellRenderer renderer, int row, int column)
             {
                 Border lastBorder = new MatteBorder(0,0,1,0,Color.BLACK);
@@ -264,6 +271,16 @@ public class AdministrationUI extends JFrame {
                 auctionOff.setEnabled(false);
             }
         });
+        auctionOff.addActionListener(e -> {
+            auctionOff.setEnabled(false);
+            TransportRequest request = model.getRequest(table.getSelectedRow());
+            Auction auction = HTTPRequests.addAuction();
+            if (auction != null && HTTPRequests.addTransportRequestToAuction(auction, request)) {
+                reloadRequests();
+            } else {
+                auctionOff.setEnabled(true);
+            }
+        });
 
         JButton costCalc = new JButton("Cost calculator");
         costCalc.setFocusPainted(false);
@@ -339,6 +356,11 @@ public class AdministrationUI extends JFrame {
 
         setResizable(false);
 
+    }
+
+    private void reloadRequests() {
+        tour.refreshRequests();
+        model.refreshTour();
     }
 
 }

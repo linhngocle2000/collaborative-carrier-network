@@ -223,7 +223,7 @@ public class HTTPRequests {
                 lastError = new Exception(error.getString("message"));
                 return null;
             }
-            int id = json.getJSONObject("data").getInt("Auction");
+            int id = json.getInt("data");
             return new Auction(id, 0);
         } catch (IOException | InterruptedException e) {
             e.printStackTrace();

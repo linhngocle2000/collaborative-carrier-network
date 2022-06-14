@@ -55,6 +55,14 @@ public class TransportRequestTableModel extends AbstractTableModel {
 		return null;
 	}
 
+	public void refreshTour() {
+		profitMap.clear();
+		for (TransportRequest t : tour.getRequests()) {
+			profitMap.put(t, tour.getProfit(t));
+		}
+		fireTableDataChanged();
+	}
+
 	public TransportRequest getRequest(int row) {
 		if (row >= 0 && row < tour.getRequests().size()) {
 			return tour.getRequests().get(row);
