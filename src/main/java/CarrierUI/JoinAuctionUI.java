@@ -22,10 +22,8 @@ import java.util.Optional;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
-import java.util.jar.JarEntry;
 
 public class JoinAuctionUI extends JFrame {
-    private AdministrationUI adminUI;
 
     private JButton bidBtn, logoutBtn, myTRBtn;
     private JTextField priceText;
@@ -42,11 +40,8 @@ public class JoinAuctionUI extends JFrame {
 
     private CarrierAgent agent;
     private Auction selectedAuction;
-    private final ScheduledExecutorService scheduler;
 
     public JoinAuctionUI() {
-
-        scheduler = Executors.newScheduledThreadPool(1);
 
         ///////////
         // Frame
@@ -127,10 +122,6 @@ public class JoinAuctionUI extends JFrame {
         myTRBtn.setBorder(emptyBorder);
         myTRBtn.setBackground(background);
         myTRBtn.setFont(font.deriveFont(Font.PLAIN, 12));
-        myTRBtn.addActionListener(e -> {
-            adminUI = new AdministrationUI(agent);
-            adminUI.setVisible(true);
-        });
 
         constraints = new GridBagConstraints();
         constraints.gridx = 0;
@@ -206,7 +197,6 @@ public class JoinAuctionUI extends JFrame {
         logoutBtn.setBackground(background);
         logoutBtn.setFont(font.deriveFont(Font.PLAIN, 13));
         logoutBtn.setForeground(Color.BLUE);
-        logoutBtn.addActionListener(e -> {if (adminUI!= null) adminUI.dispose();});
 
         constraints = new GridBagConstraints();
         constraints.gridx = 0;
@@ -242,26 +232,6 @@ public class JoinAuctionUI extends JFrame {
         leftPanel.add(topPanel, BorderLayout.NORTH);
         leftPanel.add(bottomPanel, BorderLayout.SOUTH);
         leftPanel.add(rootPanel, BorderLayout.CENTER);
-
-        ///////////
-        // Reload
-        ///////////
-
-        JButton reloadBtn = new JButton("\u27f3");
-        reloadBtn.setFont(font.deriveFont(Font.BOLD, 22));
-        reloadBtn.setBorder(emptyBorder);
-        reloadBtn.setBackground(background);
-        reloadBtn.setHorizontalAlignment(SwingConstants.CENTER);
-        reloadBtn.addActionListener(e -> loadTable());
-
-        constraints = new GridBagConstraints();
-        constraints.gridx = 0;
-        constraints.gridy = 0;
-        constraints.weightx = 1.0;
-        constraints.weighty = 1.0;
-        constraints.anchor = GridBagConstraints.NORTHEAST;
-        constraints.insets = new Insets(10, 0, 0, 30);
-        rightTopPanel.add(reloadBtn, constraints);
 
         ///////////
         // Table

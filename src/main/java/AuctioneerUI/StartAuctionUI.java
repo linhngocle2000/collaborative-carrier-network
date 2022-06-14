@@ -15,6 +15,8 @@ import Agent.AuctioneerAgent;
 import Auction.Auction;
 
 import java.awt.*;
+import java.awt.event.WindowEvent;
+import java.awt.event.WindowFocusListener;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.List;
@@ -31,7 +33,7 @@ public class StartAuctionUI extends JFrame {
     private Border emptyBorder = UIData.getEmptyBorder();
 
     private AuctioneerAgent agent;
-    AuctionUI auctionUI;
+    private AuctionUI auctionUI;
     private Auction selectedAuction;
 
     public StartAuctionUI() {
@@ -40,12 +42,20 @@ public class StartAuctionUI extends JFrame {
 // Frame
 ///////////
 
+        addWindowFocusListener(new WindowFocusListener() {
+            public void windowLostFocus(WindowEvent e) {}
+            public void windowGainedFocus(WindowEvent e) {
+                if (auctionUI == null || !auctionUI.isVisible()) {
+                    logoutBtn.setEnabled(true);
+                    setDefaultCloseOperation(EXIT_ON_CLOSE);
+                }
+            }
+        });
+
         setTitle("CCN");
         setSize(620, 700);
         setMinimumSize(new Dimension(620, 700));
         setLocationRelativeTo(null);
-
-        setDefaultCloseOperation(EXIT_ON_CLOSE);
 
 ///////////
 // Panels
@@ -194,7 +204,6 @@ public class StartAuctionUI extends JFrame {
         reloadBtn.setBackground(background);
         reloadBtn.setHorizontalAlignment(SwingConstants.CENTER);
 
-
         constraints = new GridBagConstraints();
         constraints.gridx = 0;
         constraints.gridy = 0;
@@ -211,6 +220,8 @@ public class StartAuctionUI extends JFrame {
                 auctionUI.setAuction(selectedAuction);
                 auctionUI.setVisible(true);
                 startBtn.setEnabled(false);
+                logoutBtn.setEnabled(false);
+                setDefaultCloseOperation(0);
             } else {
                 errorLabel.setText("Auction "+selectedAuction.getID()+" already started.");
                 loadAuctions();
