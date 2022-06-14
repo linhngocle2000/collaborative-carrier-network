@@ -111,7 +111,7 @@ public class HTTPRequests {
         try {
             var json = send(RequestBody.getCarrierAgents(token));
             var array = json.getJSONArray("data");
-            List<CarrierAgent> result = new ArrayList<CarrierAgent>(array.length());
+            List<CarrierAgent> result = new ArrayList<>(array.length());
             array.forEach(obj -> result.add(AgentFactory.carrierFromJSON((JSONObject) obj)));
             return result;
         } catch (IOException | InterruptedException e) {
@@ -153,7 +153,7 @@ public class HTTPRequests {
             // Load requests
             var json = send(RequestBody.getTransportRequestsOfAgent(agent, token));
             var array = json.getJSONArray("data");
-            List<TransportRequest> result = new ArrayList<TransportRequest>(array.length());
+            List<TransportRequest> result = new ArrayList<>(array.length());
             for(Object obj : array) {
                 JSONObject j = (JSONObject) obj;
                 int id = j.getInt("ID");
@@ -174,7 +174,7 @@ public class HTTPRequests {
     public static List<TransportRequest> getTransportRequestsOfAuction(Auction auction) {
         try {
             // Cache agents for multiple ownership
-            HashMap<String, CarrierAgent> map = new HashMap<String, CarrierAgent>();
+            HashMap<String, CarrierAgent> map = new HashMap<>();
 
             // Load requests
             var json = send(RequestBody.getTransportRequestsOfAuction(auction, token));
@@ -189,7 +189,7 @@ public class HTTPRequests {
                 float deliveryX = j.getFloat("DeliveryLat");
                 float deliveryY = j.getFloat("DeliveryLon");
 
-                CarrierAgent owner = null;
+                CarrierAgent owner;
                 if (map.containsKey(username)) {
                     owner = map.get(username);
                 } else {
@@ -308,8 +308,7 @@ public class HTTPRequests {
     public static boolean addTransportRequestToAuction(Auction auction, TransportRequest request) {
         try {
             var json = send(RequestBody.addRequestToAuction(auction, request, token));
-            boolean result = json.getBoolean("success");
-            return result;
+            return json.getBoolean("success");
         } catch (IOException | InterruptedException e) {
             e.printStackTrace();
             lastError = e;
@@ -324,7 +323,7 @@ public class HTTPRequests {
             if (!result) {
                 return null;
             }
-            int id = json.getJSONObject("data").getInt("ID");
+            int id = json.getInt("data");
             return new Bid(id, auction, agent, price);
         } catch (IOException | InterruptedException e) {
             e.printStackTrace();
@@ -336,7 +335,7 @@ public class HTTPRequests {
     public static List<Bid> getBids(Auction auction) {
         try {
             // Cache agents for multiple bids by same agent
-            HashMap<String, CarrierAgent> map = new HashMap<String, CarrierAgent>();
+            HashMap<String, CarrierAgent> map = new HashMap<>();
 
             var json = send(RequestBody.getBids(auction, token));
             boolean success = json.getBoolean("success");
@@ -350,7 +349,7 @@ public class HTTPRequests {
                 int id = j.getInt("ID");
                 String username = j.getString("Agent");
                 int price = j.getInt("Price");
-                CarrierAgent bidder = null;
+                CarrierAgent bidder;
                 if (map.containsKey(username)) {
                     bidder = map.get(username);
                 } else {

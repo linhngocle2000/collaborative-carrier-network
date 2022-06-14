@@ -128,7 +128,7 @@ public class App {
                 auctioneer = null;
                 carrier = (CarrierAgent)user;
                 joinAuctionUI.setAgent(carrier);
-                joinAuctionUI.startUpdate();
+                joinAuctionUI.loadTable();
                 joinAuctionUI.setVisible(true);
             }
             loginUI.setVisible(false);
@@ -145,12 +145,8 @@ public class App {
             new App();
         });
 
-        // JButton carrierJoinAuctionMyTRBtn = joinAuctionUI.getMyTRBtn();
-        // carrierJoinAuctionMyTRBtn.addActionListener(e -> adminUI.setVisible(true));
-
         JButton carrierJoinAuctionLogoutBtn = joinAuctionUI.getLogoutBtn();
         carrierJoinAuctionLogoutBtn.addActionListener(e -> {
-            joinAuctionUI.stopUpdate();
             joinAuctionUI.dispose();
             // welcomeUI.setVisible(true);
             // Reset data
