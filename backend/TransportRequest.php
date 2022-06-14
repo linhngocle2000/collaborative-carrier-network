@@ -40,7 +40,7 @@ class TransportRequest
 
 		$db = Database::getConnection();
 
-		$result = $db->query("SELECT DISTINCT `ID`, `Owner`, `Cost`, `PickupLat`, `PickupLon`, `DeliveryLat`, `DeliveryLon`, `Auction` IS NULL AS `IsInAuction`
+		$result = $db->query("SELECT DISTINCT `ID`, `Owner`, `Cost`, `PickupLat`, `PickupLon`, `DeliveryLat`, `DeliveryLon`, `Auction` IS NOT NULL AS `IsInAuction`
 			FROM `TransportRequest`
 			LEFT JOIN `AuctionRequests` ON `TransportRequest`.ID = `AuctionRequests`.TransportRequest");
 		if ($result === false)
@@ -51,6 +51,7 @@ class TransportRequest
 		$requests = [];
 		while ($row = $result->fetch_assoc())
 		{
+			$row['IsInAuction'] = boolval($row['IsInAuction']);
 			$requests[] = $row;
 		}
 		return $requests;
@@ -63,7 +64,7 @@ class TransportRequest
 
 		$db = Database::getConnection();
 		$username = $db->escape_string($data['Agent']);
-		$result = $db->query("SELECT DISTINCT `ID`, `Owner`, `Cost`, `PickupLat`, `PickupLon`, `DeliveryLat`, `DeliveryLon`, `Auction` IS NULL AS `IsInAuction`
+		$result = $db->query("SELECT DISTINCT `ID`, `Owner`, `Cost`, `PickupLat`, `PickupLon`, `DeliveryLat`, `DeliveryLon`, `Auction` IS NOT NULL AS `IsInAuction`
 			FROM `TransportRequest`
 			LEFT JOIN `AuctionRequests` ON `TransportRequest`.ID = `AuctionRequests`.TransportRequest
 			WHERE `Owner` = '$username'");
@@ -71,6 +72,7 @@ class TransportRequest
 		$requests = [];
 		while ($row = $result->fetch_assoc())
 		{
+			$row['IsInAuction'] = boolval($row['IsInAuction']);
 			$requests[] = $row;
 		}
 		return $requests;
@@ -82,7 +84,7 @@ class TransportRequest
 
 		$db = Database::getConnection();
 		$auction = intval($data['Auction']);
-		$result = $db->query("SELECT t.`ID`, t.`Owner`, t.`Cost`, t.`PickupLat`, t.`PickupLon`, t.`DeliveryLat`, t.`DeliveryLon`, 'true' AS `IsInAuction` 
+		$result = $db->query("SELECT t.`ID`, t.`Owner`, t.`Cost`, t.`PickupLat`, t.`PickupLon`, t.`DeliveryLat`, t.`DeliveryLon`, true AS `IsInAuction` 
 			FROM `TransportRequest` t 
 			JOIN `AuctionRequests` a ON t.ID = a.TransportRequest 
 			WHERE a.`Auction` = $auction");
@@ -90,6 +92,7 @@ class TransportRequest
 		$requests = [];
 		while ($row = $result->fetch_assoc())
 		{
+			$row['IsInAuction'] = boolval($row['IsInAuction']);
 			$requests[] = $row;
 		}
 		return $requests;
