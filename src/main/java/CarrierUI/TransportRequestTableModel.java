@@ -1,8 +1,6 @@
 package CarrierUI;
 
 import java.util.HashMap;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 
 import javax.swing.table.AbstractTableModel;
 
@@ -18,15 +16,9 @@ public class TransportRequestTableModel extends AbstractTableModel {
 	public TransportRequestTableModel(TourPlanning tour) {
 		this.tour = tour;
 		profitMap = new HashMap<TransportRequest, Double>();
-
-		ExecutorService executor = Executors.newCachedThreadPool();
-		executor.submit(() -> {
-			for (TransportRequest t : tour.getRequests()) {
-				profitMap.put(t, tour.getProfit(t));
-				fireTableDataChanged();
-			}
-		});
-		executor.shutdown();
+		for (TransportRequest t : tour.getRequests()) {
+			profitMap.put(t, tour.getProfit(t));
+		}
 	}
 
 	@Override

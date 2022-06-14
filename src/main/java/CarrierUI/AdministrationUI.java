@@ -1,10 +1,8 @@
 package CarrierUI;
 
 import Auction.TransportRequest;
-import UIResource.HTTPResource.HTTPRequests;
 import Utils.TourPlanning;
 import UIResource.UIData;
-import UIResource.scrollbar.ScrollBarCustom;
 import UIResource.TextIcon;
 import Agent.CarrierAgent;
 
@@ -14,9 +12,7 @@ import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableColumnModel;
 import java.awt.*;
-import java.util.List;
 
-import com.graphhopper.jsprit.core.problem.Location;
 import org.openide.awt.*;
 
 public class AdministrationUI extends JFrame {
@@ -170,8 +166,7 @@ public class AdministrationUI extends JFrame {
         constraints.insets = new Insets(20, 0, 10, 5);
         totalPanel.add(totalCostLabel, constraints);
 
-        JLabel totalCost = new JLabel();
-        totalCost.setText(String.format("%.2f", tour.getTotalOut()).replace(",","."));
+        JLabel totalCost = new JLabel("-");
         totalCost.setHorizontalAlignment(SwingConstants.CENTER);
 
         constraints = new GridBagConstraints();
@@ -191,8 +186,7 @@ public class AdministrationUI extends JFrame {
         constraints.insets = new Insets(20, 0, 10, 5);
         totalPanel.add(totalEarningLabel, constraints);
 
-        JLabel totalEarning = new JLabel();
-        totalEarning.setText(String.format("%.2f", tour.getTotalIn()).replace(",","."));
+        JLabel totalEarning = new JLabel("-");
         totalEarning.setHorizontalAlignment(SwingConstants.CENTER);
 
         constraints = new GridBagConstraints();
@@ -212,8 +206,7 @@ public class AdministrationUI extends JFrame {
         constraints.insets = new Insets(10, 0, 20, 5);
         totalPanel.add(totalRevenueLabel, constraints);
 
-        JLabel totalRevenue = new JLabel();
-        totalRevenue.setText(String.format("%.2f", tour.getRevenueTotal()).replace(",","."));
+        JLabel totalRevenue = new JLabel("-");
         totalRevenue.setHorizontalAlignment(SwingConstants.CENTER);
 
         constraints = new GridBagConstraints();
@@ -233,8 +226,7 @@ public class AdministrationUI extends JFrame {
         constraints.insets = new Insets(10, 0, 20, 5);
         totalPanel.add(totalProfitLabel, constraints);
 
-        JLabel totalProfit = new JLabel();
-        totalProfit.setText(String.format("%.2f", tour.getRevenueSum()).replace(",","."));
+        JLabel totalProfit = new JLabel("-");
         totalProfit.setHorizontalAlignment(SwingConstants.CENTER);
 
         constraints = new GridBagConstraints();
@@ -251,6 +243,11 @@ public class AdministrationUI extends JFrame {
         constraints.anchor = GridBagConstraints.CENTER;
         constraints.insets = new Insets(30, 0, 0, 0);
         rootPanel.add(totalPanel, constraints);
+        
+        totalCost.setText(String.format("%.2f", tour.getTotalOut()).replace(",", "."));
+        totalEarning.setText(String.format("%.2f", tour.getTotalIn()).replace(", ", "."));
+        totalRevenue.setText(String.format("%.2f", tour.getRevenueTotal()).replace(",", "."));
+        totalProfit.setText(String.format("%.2f", tour.getRevenueSum()).replace(",", "."));
 
 ///////////
 // Buttons
