@@ -1,6 +1,7 @@
 package CarrierUI;
 
 import Auction.TransportRequest;
+import UIResource.HTTPResource.HTTPRequests;
 import Utils.TourPlanning;
 import UIResource.UIData;
 import UIResource.scrollbar.ScrollBarCustom;
@@ -58,6 +59,10 @@ public class AdministrationUI extends JFrame {
         rootPanel.setBackground(background);
         rootPanel.setLayout(new GridBagLayout());
 
+        JPanel topPanel = new JPanel();
+        topPanel.setBackground(background);
+        topPanel.setLayout(new GridBagLayout());
+
         JPanel bottomPanel = new JPanel();
         bottomPanel.setBackground(background);
 
@@ -72,6 +77,25 @@ public class AdministrationUI extends JFrame {
         totalPanel.setPreferredSize(new Dimension(500, 110));
 
 ///////////
+// Panels
+///////////
+
+        JButton reloadBtn = new JButton("\u27f3");
+        reloadBtn.setFont(font.deriveFont(Font.BOLD, 28));
+        reloadBtn.setBorder(emptyBorder);
+        reloadBtn.setBackground(background);
+        reloadBtn.setHorizontalAlignment(SwingConstants.CENTER);
+
+        GridBagConstraints constraints = new GridBagConstraints();
+        constraints.gridx = 0;
+        constraints.gridy = 0;
+        constraints.weightx = 1.0;
+        constraints.weighty = 1.0;
+        constraints.anchor = GridBagConstraints.NORTHEAST;
+        constraints.insets = new Insets(10, 0, 0, 35);
+        topPanel.add(reloadBtn, constraints);
+
+///////////
 // Table
 ///////////
 
@@ -79,7 +103,7 @@ public class AdministrationUI extends JFrame {
         tableHeader.setFont(font.deriveFont(Font.BOLD, 16));
         tableHeader.setHorizontalAlignment(SwingConstants.CENTER);
 
-        GridBagConstraints constraints = new GridBagConstraints();
+        constraints = new GridBagConstraints();
         constraints.gridx = 0;
         constraints.gridy = 0;
         constraints.gridwidth = GridBagConstraints.REMAINDER;
@@ -90,11 +114,15 @@ public class AdministrationUI extends JFrame {
         JTable table = new JTable(model) {
             public Component prepareRenderer(TableCellRenderer renderer, int row, int column)
             {
+                Border lastBorder = new MatteBorder(0,0,1,0,Color.BLACK);
                 Component c = super.prepareRenderer(renderer, row, column);
                 JComponent jc = (JComponent)c;
                 // Add a border to the selected row
                 if (isRowSelected(row)) {
                     jc.setBorder(emptyBorder);
+                }
+                if (row == getModel().getRowCount()-1) {
+                    jc.setBorder(lastBorder);
                 }
                 return c;
             }
@@ -118,12 +146,7 @@ public class AdministrationUI extends JFrame {
         }
 
         JScrollPane scrollPane = new JScrollPane(table);
-        if (tour.getRequests().size() <= 12) {
-            scrollPane.setPreferredSize(new Dimension(550, tour.getRequests().size()*25+23));
-        } else {
-            scrollPane.setPreferredSize(new Dimension(550, 323));
-            scrollPane.setVerticalScrollBar(new ScrollBarCustom(12, tour.getRequests().size()));
-        }
+        scrollPane.setPreferredSize(new Dimension(550, 323));
 
         constraints = new GridBagConstraints();
         constraints.gridx = 0;
@@ -264,19 +287,10 @@ public class AdministrationUI extends JFrame {
             }
             TourPlanning currentTour = new TourPlanning(carrier.getUsername());
             int[] selectedRow = table.getSelectedRows();
-            // float[] tr;
-            // String requestID;
             for (int row : selectedRow) {
                 TransportRequest request = model.getRequest(row);
                 currentTour.addRequest(request);
             }
-            // for (int i = 0; i < table.getSelectedRowCount(); i++) {
-            //     requestID = table.getValueAt(selectedRow[i],0).toString();
-            //     tr = Converter.convertTransportRequests(table.getValueAt(selectedRow[i],1).toString());
-            //     Location pickup = Location.newInstance(tr[0], tr[1]);
-            //     Location deliver = Location.newInstance(tr[2], tr[3]);
-            //     currentTour.addRequest(requestID, pickup, deliver);
-            // }
             leftVisualPanel.removeAll();
             leftVisualPanel.add(currentTour.visualize());
             leftVisualPanel.revalidate();
@@ -290,19 +304,10 @@ public class AdministrationUI extends JFrame {
             }
             TourPlanning currentTour = new TourPlanning(carrier.getUsername());
             int[] selectedRow = table.getSelectedRows();
-            // float[] tr;
-            // String requestID;
             for (int row : selectedRow) {
                 TransportRequest request = model.getRequest(row);
                 currentTour.addRequest(request);
             }
-            // for (int i = 0; i < table.getSelectedRowCount(); i++) {
-            //     requestID = table.getValueAt(selectedRow[i],0).toString();
-            //     tr = Converter.convertTransportRequests(table.getValueAt(selectedRow[i],1).toString());
-            //     Location pickup = Location.newInstance(tr[0], tr[1]);
-            //     Location deliver = Location.newInstance(tr[2], tr[3]);
-            //     currentTour.addRequest(requestID, pickup, deliver);
-            // }
             rightVisualPanel.removeAll();
             rightVisualPanel.add(currentTour.visualize());
             rightVisualPanel.revalidate();
@@ -332,7 +337,7 @@ public class AdministrationUI extends JFrame {
 ///////////
 // Combine
 ///////////
-
+        getContentPane().add(topPanel, BorderLayout.NORTH);
         getContentPane().add(rootPanel, BorderLayout.CENTER);
 
         pack();
@@ -340,4 +345,5 @@ public class AdministrationUI extends JFrame {
         setResizable(false);
 
     }
+
 }

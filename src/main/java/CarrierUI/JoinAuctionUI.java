@@ -6,6 +6,7 @@ import UIResource.scrollbar.ScrollBarCustom;
 
 import javax.swing.*;
 import javax.swing.border.Border;
+import javax.swing.border.MatteBorder;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableColumnModel;
@@ -21,6 +22,7 @@ import java.util.Optional;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
+import java.util.jar.JarEntry;
 
 public class JoinAuctionUI extends JFrame {
     private AdministrationUI adminUI;
@@ -78,9 +80,16 @@ public class JoinAuctionUI extends JFrame {
         bottomPanel.setBackground(background);
 
         JPanel rightPanel = new JPanel();
-        rightPanel.setLayout(new GridBagLayout());
-        rightPanel.setBackground(background);
+        rightPanel.setLayout(new BorderLayout());
         rightPanel.setPreferredSize(new Dimension(width + 100, height));
+
+        JPanel rightTablePanel = new JPanel();
+        rightTablePanel.setLayout(new GridBagLayout());
+        rightTablePanel.setBackground(background);
+
+        JPanel rightTopPanel = new JPanel();
+        rightTopPanel.setLayout(new GridBagLayout());
+        rightTopPanel.setBackground(background);
 
         ///////////
         // Left-Top
@@ -197,7 +206,7 @@ public class JoinAuctionUI extends JFrame {
         logoutBtn.setBackground(background);
         logoutBtn.setFont(font.deriveFont(Font.PLAIN, 13));
         logoutBtn.setForeground(Color.BLUE);
-        logoutBtn.addActionListener(e -> adminUI.dispose());
+        logoutBtn.addActionListener(e -> {if (adminUI!= null) adminUI.dispose();});
 
         constraints = new GridBagConstraints();
         constraints.gridx = 0;
@@ -235,6 +244,26 @@ public class JoinAuctionUI extends JFrame {
         leftPanel.add(rootPanel, BorderLayout.CENTER);
 
         ///////////
+        // Reload
+        ///////////
+
+        JButton reloadBtn = new JButton("\u27f3");
+        reloadBtn.setFont(font.deriveFont(Font.BOLD, 22));
+        reloadBtn.setBorder(emptyBorder);
+        reloadBtn.setBackground(background);
+        reloadBtn.setHorizontalAlignment(SwingConstants.CENTER);
+        reloadBtn.addActionListener(e -> loadTable());
+
+        constraints = new GridBagConstraints();
+        constraints.gridx = 0;
+        constraints.gridy = 0;
+        constraints.weightx = 1.0;
+        constraints.weighty = 1.0;
+        constraints.anchor = GridBagConstraints.NORTHEAST;
+        constraints.insets = new Insets(10, 0, 0, 30);
+        rightTopPanel.add(reloadBtn, constraints);
+
+        ///////////
         // Table
         ///////////
 
@@ -248,15 +277,19 @@ public class JoinAuctionUI extends JFrame {
         constraints.gridwidth = GridBagConstraints.REMAINDER;
         constraints.anchor = GridBagConstraints.CENTER;
         constraints.insets = new java.awt.Insets(0, 0, 15, 0);
-        rightPanel.add(tableHeader, constraints);
+        rightTablePanel.add(tableHeader, constraints);
 
         table = new JTable() {
             public Component prepareRenderer(TableCellRenderer renderer, int row, int column) {
                 Component c = super.prepareRenderer(renderer, row, column);
                 JComponent jc = (JComponent) c;
+                Border lastBorder = new MatteBorder(0,0,1,0,Color.BLACK);
                 // Add a border to the selected row
                 if (isRowSelected(row)) {
                     jc.setBorder(emptyBorder);
+                }
+                if(row == getModel().getRowCount()-1 && row<12) {
+                    jc.setBorder(lastBorder);
                 }
                 return c;
             }
@@ -287,11 +320,18 @@ public class JoinAuctionUI extends JFrame {
         constraints.gridwidth = GridBagConstraints.REMAINDER;
         constraints.anchor = GridBagConstraints.CENTER;
         constraints.insets = new Insets(0, 0, 0, 0);
-        rightPanel.add(scrollPane, constraints);
+        rightTablePanel.add(scrollPane, constraints);
 
-        ///////////
-        // Combine all
-        ///////////
+///////////
+// Combine right
+///////////
+
+        rightPanel.add(rightTopPanel, BorderLayout.NORTH);
+        rightPanel.add(rightTablePanel, BorderLayout.CENTER);
+
+///////////
+// Combine all
+///////////
 
         getContentPane().add(leftPanel, BorderLayout.LINE_START);
         getContentPane().add(rightPanel, BorderLayout.CENTER);
@@ -313,6 +353,11 @@ public class JoinAuctionUI extends JFrame {
         var model = new CarrierTableModel(auctions);
         table.setModel(model);
 
+        assert auctions != null;
+        scrollPane.setVerticalScrollBar(new ScrollBarCustom(10, auctions.size()));
+        table.invalidate();
+        scrollPane.repaint();
+
 
         // Set column width and scrollbar length
         DefaultTableCellRenderer centerRenderer = new DefaultTableCellRenderer();
@@ -323,8 +368,6 @@ public class JoinAuctionUI extends JFrame {
         for (int i = 0; i < 2; i++) {
             columnModel.getColumn(i).setCellRenderer(centerRenderer);
         }
-        assert auctions != null;
-        scrollPane.setVerticalScrollBar(new ScrollBarCustom(10, auctions.size()));
 
     }
 

@@ -6,6 +6,7 @@ import UIResource.scrollbar.ScrollBarCustom;
 import javax.swing.*;
 import javax.swing.border.Border;
 
+import javax.swing.border.MatteBorder;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableColumnModel;
@@ -17,6 +18,7 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.List;
+import java.util.Objects;
 
 
 public class StartAuctionUI extends JFrame {
@@ -39,8 +41,8 @@ public class StartAuctionUI extends JFrame {
 ///////////
 
         setTitle("CCN");
-        setSize(620, 580);
-        setMinimumSize(new Dimension(620, 580));
+        setSize(620, 700);
+        setMinimumSize(new Dimension(620, 700));
         setLocationRelativeTo(null);
 
         setDefaultCloseOperation(EXIT_ON_CLOSE);
@@ -105,17 +107,21 @@ public class StartAuctionUI extends JFrame {
         constraints.gridy = 1;
         constraints.gridwidth = GridBagConstraints.REMAINDER;
         constraints.anchor = GridBagConstraints.CENTER;
-        constraints.insets = new Insets(10, 0, 0, 0);
+        constraints.insets = new Insets(10, 0, 10, 0);
         topPanel.add(tableHeader, constraints);
 
         table = new JTable() {
             public Component prepareRenderer(TableCellRenderer renderer, int row, int column)
             {
+                Border lastBorder = new MatteBorder(0,0,1,0,Color.BLACK);
                 Component c = super.prepareRenderer(renderer, row, column);
                 JComponent jc = (JComponent)c;
                 // Add a border to the selected row
                 if (isRowSelected(row)) {
                     jc.setBorder(emptyBorder);
+                }
+                if (row == getModel().getRowCount()-1) {
+                    jc.setBorder(lastBorder);
                 }
                 return c;
             }
@@ -131,7 +137,7 @@ public class StartAuctionUI extends JFrame {
 
 
         scrollPane = new JScrollPane(table);
-        scrollPane.setPreferredSize(new Dimension(520, 323));
+        scrollPane.setPreferredSize(new Dimension(520, 398));
 
 
         constraints = new GridBagConstraints();
@@ -188,6 +194,7 @@ public class StartAuctionUI extends JFrame {
         reloadBtn.setBackground(background);
         reloadBtn.setHorizontalAlignment(SwingConstants.CENTER);
 
+
         constraints = new GridBagConstraints();
         constraints.gridx = 0;
         constraints.gridy = 0;
@@ -198,10 +205,16 @@ public class StartAuctionUI extends JFrame {
         bottomPanel.add(reloadBtn, constraints);
 
         startBtn.addActionListener(e -> {
-            auctionUI = new AuctionUI();
-            auctionUI.setAuction(selectedAuction);
-            auctionUI.setVisible(true);
-            startBtn.setEnabled(false);
+            errorLabel.setText("");
+            if(Objects.requireNonNull(HTTPRequests.getInactiveAuctions()).contains(selectedAuction)) {
+                auctionUI = new AuctionUI();
+                auctionUI.setAuction(selectedAuction);
+                auctionUI.setVisible(true);
+                startBtn.setEnabled(false);
+            } else {
+                errorLabel.setText("Auction "+selectedAuction.getID()+" already started.");
+                loadAuctions();
+            }
         });
 
         reloadBtn.addActionListener(e -> loadAuctions());
@@ -224,7 +237,7 @@ public class StartAuctionUI extends JFrame {
         constraints.gridy = 1;
         constraints.gridwidth = GridBagConstraints.REMAINDER;
         constraints.anchor = java.awt.GridBagConstraints.CENTER;
-        constraints.insets = new java.awt.Insets(20, 0, 0, 0);
+        constraints.insets = new java.awt.Insets(30, 0, 0, 0);
         rootPanel.add(errorLabel, constraints);
 
 //        int delay = 10000; //milliseconds
@@ -252,12 +265,13 @@ public class StartAuctionUI extends JFrame {
 
     public void loadAuctions() {
         // Load auctions
-        List<Auction> auctions = HTTPRequests.getAllAuctions();
+        List<Auction> auctions = HTTPRequests.getInactiveAuctions();
         AuctionTableModel model = new AuctionTableModel(auctions);
         table.setModel(model);
         // Set scrollbar
 
-        scrollPane.setVerticalScrollBar(new ScrollBarCustom(12, auctions.size()));
+        assert auctions != null;
+        scrollPane.setVerticalScrollBar(new ScrollBarCustom(15, auctions.size()));
         table.invalidate();
         scrollPane.repaint();
 

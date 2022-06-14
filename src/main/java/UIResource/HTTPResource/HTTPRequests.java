@@ -305,6 +305,42 @@ public class HTTPRequests {
         }
     }
 
+    public static List<Auction> getInactiveAuctions() {
+        try {
+            var json = send(RequestBody.getAuctions(token));
+            boolean success = json.getBoolean("success");
+            if (!success) {
+                JSONObject error = json.getJSONObject("error");
+                lastError = new Exception(error.getString("message"));
+                return null;
+            }
+            var array = json.getJSONArray("data");
+            var result = new ArrayList<Auction>();
+            for (Object obj : array) {
+                JSONObject j = (JSONObject) obj;
+                boolean isActive = j.getBoolean("IsActive");
+                if (isActive) {
+                    continue;
+                }
+                int id = j.getInt("ID");
+                int iteration = j.getInt("Iteration");
+                Auction auction = new Auction(id, iteration);
+                List<TransportRequest> requests = getTransportRequestsOfAuction(auction);
+                if (requests == null) {
+                    // Last error already set by getTransportRequestsOfAuction
+                    return null;
+                }
+                auction.setTransportRequests(requests);
+                result.add(auction);
+            }
+            return result;
+        } catch (IOException | InterruptedException e) {
+            e.printStackTrace();
+            lastError = e;
+            return null;
+        }
+    }
+
     public static boolean addTransportRequestToAuction(Auction auction, TransportRequest request) {
         try {
             var json = send(RequestBody.addRequestToAuction(auction, request, token));
