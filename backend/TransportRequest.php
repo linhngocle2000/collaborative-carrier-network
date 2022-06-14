@@ -40,7 +40,9 @@ class TransportRequest
 
 		$db = Database::getConnection();
 
-		$result = $db->query("SELECT `ID`, `Owner`, `Cost`, `PickupLat`, `PickupLon`, `DeliveryLat`, `DeliveryLon` FROM `TransportRequest`");
+		$result = $db->query("SELECT DISTINCT `ID`, `Owner`, `Cost`, `PickupLat`, `PickupLon`, `DeliveryLat`, `DeliveryLon`, `Auction` IS NULL AS `IsInAuction`
+			FROM `TransportRequest`
+			LEFT JOIN `AuctionRequests` ON `TransportRequest`.ID = `AuctionRequests`.TransportRequest");
 		if ($result === false)
 		{
 			throw new \Exception($db->error);
@@ -61,7 +63,10 @@ class TransportRequest
 
 		$db = Database::getConnection();
 		$username = $db->escape_string($data['Agent']);
-		$result = $db->query("SELECT `ID`, `Owner`, `Cost`, `PickupLat`, `PickupLon`, `DeliveryLat`, `DeliveryLon` FROM `TransportRequest` WHERE `Owner` = '$username'");
+		$result = $db->query("SELECT DISTINCT `ID`, `Owner`, `Cost`, `PickupLat`, `PickupLon`, `DeliveryLat`, `DeliveryLon`, `Auction` IS NULL AS `IsInAuction`
+			FROM `TransportRequest`
+			LEFT JOIN `AuctionRequests` ON `TransportRequest`.ID = `AuctionRequests`.TransportRequest
+			WHERE `Owner` = '$username'");
 
 		$requests = [];
 		while ($row = $result->fetch_assoc())
@@ -77,7 +82,7 @@ class TransportRequest
 
 		$db = Database::getConnection();
 		$auction = intval($data['Auction']);
-		$result = $db->query("SELECT t.`ID`, t.`Owner`, t.`Cost`, t.`PickupLat`, t.`PickupLon`, t.`DeliveryLat`, t.`DeliveryLon` 
+		$result = $db->query("SELECT t.`ID`, t.`Owner`, t.`Cost`, t.`PickupLat`, t.`PickupLon`, t.`DeliveryLat`, t.`DeliveryLon`, 'true' AS `IsInAuction` 
 			FROM `TransportRequest` t 
 			JOIN `AuctionRequests` a ON t.ID = a.TransportRequest 
 			WHERE a.`Auction` = $auction");
