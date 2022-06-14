@@ -15,32 +15,29 @@ import Agent.CarrierAgent;
 import Auction.TransportRequest;
 import UIResource.HTTPResource.HTTPRequests;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
+import javax.swing.JPanel;
+
 public class TourPlanning {
    private final CarrierAgent agent;
-
    private Location depot;
-
    private double costPerDistance;
    private double fixedCost;
    private double internalCost;
    private double loadingCost;
    
    private VehicleImpl vehicle;
-
    private VehicleRoutingProblem problem;
-
    private VehicleRoutingProblemSolution bestSolution;
-
    private List<TransportRequest> requests;
-
    private CostCalculator cost;
 
-
    /**
-    * Initial a tour with agent ID
+    * Initial a tour of current carrier agent.
+    * Transport request is updated from DB.
     */
    public TourPlanning(CarrierAgent agent) {
       this.agent = agent;
@@ -52,14 +49,44 @@ public class TourPlanning {
       refreshRequests();
    }
 
+   /**
+    * Initial an empty tour with the current carrier agent data.
+    * Transport request list is set empty.
+    * <p>
+    * Purpose for visualizing and cost calculating the chosen requests in current request list of carrier. 
+    */
+   public TourPlanning(String username) {
+      this.agent = (CarrierAgent) HTTPRequests.getAgent(username);
+      setDepot(agent.getDepotX(), agent.getDepotY());
+      this.costPerDistance = agent.getCostPerDistance();
+      this.fixedCost = agent.getFixedCost();
+      this.internalCost = agent.getInternalCost();
+      this.loadingCost = agent.getLoadingCost();
+      requests = new ArrayList<>();
+   }
 
    /**
-    * Refresh list of request
+    * Update list of request from carrier DB
     */
    public void refreshRequests() {
       this.requests = HTTPRequests.getTransportRequestsOfAgent(agent);
    }
 
+   /**
+    * Refresh list of request
+    */
+   public void addRequest(TransportRequest request) {
+       requests.add(request);
+   }
+
+   /**
+    * Tour optimize
+    */
+   public JPanel visualize() {
+       tourOptimize();
+       return new VisualView(problem, bestSolution).display();
+   }
+   
    /**
     * Tour optimize
     */
@@ -69,12 +96,10 @@ public class TourPlanning {
       setBestSolution();
    }
 
-
    /**
     * Build a vehicle with vehicle type, capacity, username and set it to depot location
     */
    private void vehicleRegister() {
-
       final int WEIGHT_INDEX = 0;
       VehicleTypeImpl.Builder vehicleTypeBuilder = VehicleTypeImpl.Builder.newInstance("MiniCooper").addCapacityDimension(WEIGHT_INDEX, 2);
       VehicleType vehicleType = vehicleTypeBuilder.build();
@@ -84,7 +109,6 @@ public class TourPlanning {
       vehicleBuilder.setType(vehicleType);
       vehicle = vehicleBuilder.build();
    }
-
 
    /**
     * Setup VRP
@@ -96,8 +120,7 @@ public class TourPlanning {
          vrpBuilder.addJob(request.getShipmentObj());
       }
 		problem = vrpBuilder.build();
-   }
-   
+   }   
 
    /**
     * Solving VRP and get the best solution
@@ -108,7 +131,6 @@ public class TourPlanning {
       bestSolution = Solutions.bestOf(solutions);
    }
 
-
    /**
     * Cost setup
     */
@@ -116,7 +138,6 @@ public class TourPlanning {
       tourOptimize();
       cost = new CostCalculator(this);
    }
-
 
    /**
     * Get profit of a certain request on tour
@@ -126,7 +147,6 @@ public class TourPlanning {
       return cost.profit(request);
    }
 
-
    /**
     * Get the sum of profit made by delivering all request
     */
@@ -134,7 +154,6 @@ public class TourPlanning {
       setCost();
       return cost.revenueSum();
    }
-
    
    /**
     * Get the total revenue
@@ -143,7 +162,6 @@ public class TourPlanning {
       setCost();
       return cost.revenueTotal();
    }
-
    
    /**
     * Get total earning that carrier will get from customers after delivering all request
@@ -152,7 +170,6 @@ public class TourPlanning {
       setCost();
       return cost.totalIn();
    }
-
    
    /**
     * Get total cost that carrier has to pay for delivering all request on a tour
@@ -161,7 +178,6 @@ public class TourPlanning {
       setCost();
       return cost.totalOut();
    }
-
    
    /**
     * Get the earning that carrier will get from customer for delivering a certain request
@@ -170,7 +186,6 @@ public class TourPlanning {
       setCost();
       return cost.transportCostIn(request.getPickup(), request.getDelivery());
    }
-
    
    /**
     * Get the cost that carrier has to pay for delivering a certain request while on tour
@@ -179,7 +194,6 @@ public class TourPlanning {
       setCost();
       return cost.transportCostOut(request.getID());
    }
-
    
    /**
     * Get the total length of current tour
@@ -188,12 +202,9 @@ public class TourPlanning {
       setCost();
       return cost.tourLength();
    }
-
-
-   /**
-    * Basic getters and setters needed
-    */
-
+   
+   // Basic getters and setters needed
+   
    public double getCostPerDistance() {
       return this.costPerDistance;
    }
@@ -201,7 +212,6 @@ public class TourPlanning {
    public double getFixedCost() {
       return this.fixedCost;
    }
-
 
    public double getInternalCost() {
       return this.internalCost;

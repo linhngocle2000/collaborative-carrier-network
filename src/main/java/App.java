@@ -20,15 +20,12 @@ public class App {
     private static RegisterUI registerUI;
     private static JoinAuctionUI joinAuctionUI;
     private static StartAuctionUI auctioneerUI;
-    private static AdministrationUI adminUI;
 
     private static AuctioneerAgent auctioneer;
     private static CarrierAgent carrier;
 
+    public App() {
 
-    static public void main(String[] args) {
-
-        welcomeUI = new WelcomeUI();
         loginUI = new LoginUI();
         registerUI = new RegisterUI();
         joinAuctionUI = new JoinAuctionUI();
@@ -130,7 +127,6 @@ public class App {
             } else {
                 auctioneer = null;
                 carrier = (CarrierAgent)user;
-                adminUI = new AdministrationUI(carrier);
                 joinAuctionUI.setAgent(carrier);
                 joinAuctionUI.startUpdate();
                 joinAuctionUI.setVisible(true);
@@ -140,27 +136,32 @@ public class App {
         });
 
         JButton auctioneerLogoutBtn = auctioneerUI.getLogoutBtn();
-        auctioneerLogoutBtn.addActionListener(e2 -> {
-            auctioneerUI.setVisible(false);
-            welcomeUI.setVisible(true);
+        auctioneerLogoutBtn.addActionListener(e -> {
+            auctioneerUI.dispose();
+            // welcomeUI.setVisible(true);
             // Reset data
             auctioneer = null;
             HTTPRequests.logout();
+            new App();
         });
 
-        JButton carrierJoinAuctionMyTRBtn = joinAuctionUI.getMyTRBtn();
-        carrierJoinAuctionMyTRBtn.addActionListener(e -> adminUI.setVisible(true));
+        // JButton carrierJoinAuctionMyTRBtn = joinAuctionUI.getMyTRBtn();
+        // carrierJoinAuctionMyTRBtn.addActionListener(e -> adminUI.setVisible(true));
 
         JButton carrierJoinAuctionLogoutBtn = joinAuctionUI.getLogoutBtn();
         carrierJoinAuctionLogoutBtn.addActionListener(e -> {
-            adminUI.setVisible(false);
-            joinAuctionUI.setVisible(false);
             joinAuctionUI.stopUpdate();
-            welcomeUI.setVisible(true);
+            joinAuctionUI.dispose();
+            // welcomeUI.setVisible(true);
             // Reset data
             carrier = null;
             HTTPRequests.logout();
+            new App();
         });
+        
+    }
 
+    static public void main(String[] args) {
+        new App();
     }
 }
