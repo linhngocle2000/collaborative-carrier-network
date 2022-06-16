@@ -31,7 +31,7 @@ A bundle which contains only transport requests that are elements in another bun
 ## Generating bundle
 
 * <b>Solution 1:</b> 
-   * Requests have pickup location that within a certain radius from the special depot location are considered as set of high posibililty for that depot location.
+   * Requests have pickup location that within a certain radius from the special depot location are considered as set of high posibililty for that depot location. (Or maybe get the mean location between pickup and deliver location)
    * If the number of request in the bundle don't reach the max size of that bundle, the radius can be grown.
 
 <p></p>
