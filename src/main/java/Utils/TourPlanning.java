@@ -32,7 +32,7 @@ public class TourPlanning {
    private VehicleImpl vehicle;
    private VehicleRoutingProblem problem;
    private VehicleRoutingProblemSolution bestSolution;
-   private List<TransportRequest> requests;
+   private List<TransportRequest> requests = new ArrayList<>();
    private CostCalculator cost;
 
    /**
@@ -63,7 +63,6 @@ public class TourPlanning {
       this.fixedCost = agent.getFixedCost();
       this.internalCost = agent.getInternalCost();
       this.loadingCost = agent.getLoadingCost();
-      requests = new ArrayList<>();
    }
 
    /**
@@ -79,15 +78,17 @@ public class TourPlanning {
       this.fixedCost = 0;
       this.internalCost = 1;
       this.loadingCost = 0;
-      requests = new ArrayList<>();
    }
 
    /**
     * Update list of request from carrier DB
     */
    public void refreshRequests() {
-      this.requests = HTTPRequests.getTransportRequestsOfAgent(agent);
-      cost = null;
+      if (agent != null) {
+         this.requests.clear();
+         this.requests.addAll(HTTPRequests.getTransportRequestsOfAgent(agent));
+         cost = null;
+      }
    }
 
    /**

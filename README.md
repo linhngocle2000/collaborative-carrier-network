@@ -86,6 +86,6 @@ Carrier A then have to pay for bundle B with price b and bundle C with price (c 
 > Check on add new if request is duplicated then the paying price will be replace with the higher one.
 
 &nbsp;
-# How to decide which bundles gonna be sold
+# How to decide which bundles gonna be sold (not finish)
 
 All bundle will be sold at the same time.
