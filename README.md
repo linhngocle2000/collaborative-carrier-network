@@ -12,9 +12,14 @@ Generating function will loop until the number of special depot location is narr
 
 The big radius set when generating special depot location will help faster to narrow down the number of depot location. The small one will help the bundle fitting more to the carrier.
 
+&nbsp;
 ## Bundle
 
-A bundle with fixed size contains transport requests which make profit to a special depot location.
+A bundle is a nested list of transport request.
+
+> <code>Bundle = List<List\<TransportRequest>></code>
+
+A bundle has fixed size and contains transport requests which make profit to a special depot location.
 
 The number of transport requests in a bundle has to be equal or smaller than the size of bundle
 
@@ -26,8 +31,9 @@ A bundle which contains only transport requests that are elements in another bun
 
 > <b>Example 2:</b> Bundle A = {R1, R2} and Bundle B = {R1, R2, R4, R5}, Bundle A will be deleted, only Bundle B stay existed.
 
-> <b>Tip:</b> Using containsAll() method.
+> <h3><b>Tip:</b></h3> Using <code>containsAll()</code> method.
 
+&nbsp;
 ## Generating bundle
 
 * <b>Solution 1:</b> 
@@ -39,6 +45,7 @@ A bundle which contains only transport requests that are elements in another bun
 * <b>Solution 2:</b>
    * Randomly pick requests to form a bundle until the max size is reached.
 
+&nbsp;
 ## Profit calculation
 
 A route is defined as from pickup location to deliver location.
@@ -50,6 +57,37 @@ In this situation, the fixed earning cost and loading/unloading cost is not nece
 * All the request within a bundle has to make positive profit.
 * The total revenue of that bundle based on the special depot location also has to be positive. (because the total revenue takes the whole tour length into accounting) ???
 
-#
+&nbsp;
+# How carrier gonna bid on the bundle
+
+## Not all transport request within a bundle could make profit to the carrier.
+
+* In order to help the carrier to maximize their profit while bidding the bundle, as long as <u>the average profit of all requests within a bundle</u>  is higher than the wishing profit of carrier this bundle will be recommended for such carrier to bid.
+
+* In automatic way, a carrier will always bid on such bundles.
+
+> <b>Example:</b>  
+Carrier A set his/her wishing profit for automatic bid is 30.\
+Bundle B = {R1, R2, R3, R4}.\
+Profit gain on doing R1 is 100, on R2 is 80, on R3 is 50, on R4 is -10.\
+The average profit that carrier A gonna have after doing all requests in bundle B is 55.\
+Carrier A will automatically bid on bundle B.
+
+> In this example situation, the carrier gonna place their highest possible bid to get such 30 profit from the bundle which is 25.
+
+&nbsp;
+## Two bundle could have some common transport requests.
+
+* In case a carrier has won on bidding 2 or more bundles which have some common transport requests, the paying price on second bundle or other (not the 1st one) will be deducted based on number of common transport request.
+
+> <b>Example:</b> Carrier A has won on bidding bundle B and C which has N requests. These two bundles have 2 common transport requests.\
+Carrier A then have to pay for bundle B with price b and bundle C with price (c - c/N*2). Prices b and c are the 2nd highest bid price on each bundle and b > c
+
+> <h3><b>Tip:</b></h3> We could transfer all requests in winning bundles into a <code>HashMap</code> of winning request with the price winner has to pay. Price of a request is decided by the 2nd highest bid on that bundle over the number of requests within that bundle.
+
+> Check on add new if request is duplicated then the paying price will be replace with the higher one.
+
+&nbsp;
 # How to decide which bundles gonna be sold
 
+All bundle will be sold at the same time.
