@@ -67,6 +67,22 @@ public class TourPlanning {
    }
 
    /**
+    * Initial an empty tour with a certain depot location.
+    * Transport request list is set empty.s
+    * <p>
+    * Purpose for generating bundle
+    */
+   public TourPlanning(Location depot) {
+      this.agent = null;
+      this.depot = depot;
+      this.costPerDistance = 2;
+      this.fixedCost = 0;
+      this.internalCost = 1;
+      this.loadingCost = 0;
+      requests = new ArrayList<>();
+   }
+
+   /**
     * Update list of request from carrier DB
     */
    public void refreshRequests() {
@@ -75,10 +91,18 @@ public class TourPlanning {
    }
 
    /**
-    * Refresh list of request
+    * Add new request into current tour
     */
    public void addRequest(TransportRequest request) {
       requests.add(request);
+      cost = null;
+   }
+
+   /**
+    * Add certain list of request into current tour
+    */
+   public void addRequests(List<TransportRequest> request) {
+      requests.addAll(request);
       cost = null;
    }
 

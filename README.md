@@ -15,11 +15,9 @@ The big radius set when generating special depot location will help faster to na
 &nbsp;
 ## Bundle
 
-A bundle is a nested list of transport request.
+A bundle is a list of transport request.
 
-> <code>Bundle = List<List\<TransportRequest>></code>
-
-A bundle has fixed size and contains transport requests which make profit to a special depot location.
+A bundle has fixed size and contains only transport requests which make profit to a special depot location.
 
 The number of transport requests in a bundle has to be equal or smaller than the size of bundle
 
@@ -31,7 +29,7 @@ A bundle which contains only transport requests that are elements in another bun
 
 > <b>Example 2:</b> Bundle A = {R1, R2} and Bundle B = {R1, R2, R4, R5}, Bundle A will be deleted, only Bundle B stay existed.
 
-> <h3><b>Tip:</b></h3> Using <code>containsAll()</code> method.
+> <h3><b>Tip:</b></h3> Using <code>containsAll()</code> method. Form all bundle into a nested list of transport request.
 
 &nbsp;
 ## Generating bundle
