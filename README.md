@@ -89,3 +89,14 @@ Carrier A then have to pay for bundle B with price b and bundle C with price (c 
 # How to decide which bundles gonna be sold (not finish)
 
 All bundle will be sold at the same time.
+
+The highest bid price (winning price) on a bundle is distributed over all requests within that bundle. This average bid price on a request will be considered (C_a).
+
+If two or more carriers have won repectively two or more bundles which contain some common requests, then only the bundle have the highest C_a will be sold, the rest will be deformed. The uncommon requests in un-sold bundles will be put back to normal bid list. (Or put into second bid list, this list will be started after the current bid list end).
+
+In case bundles A ,B and C have some common requests, and carrier 1 has won on bidding bundles A and B, carrier 2 has won bundle C, then C_a of carrier 1 will be C_a on bundle A + C_a on bundle B while C_a of carrier 2 stay remain. This time bundles A and B will be sold, C will be deformed.
+
+In case bundles A and B have common requests, bundles B and C have common requests, and these bundles are respectively bid by carriers 1, 2 and 3, then bundles A and C will be sold, B will be deformed. 
+
+We can set a profit calculator for the C_a. A smart calculator will decide which bundles gonna be sold to make the highest profit from selling bundle.
+
