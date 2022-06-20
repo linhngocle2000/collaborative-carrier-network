@@ -35,3 +35,4 @@ $handler->register('getBids', [Auction::class, 'getBids']);
 $handler->register('startAuction', [Auction::class, 'startAuction']);
 $handler->register('endAuction', [Auction::class, 'endAuction']);
 $handler->register('setWinner', [Auction::class, 'setWinner']);
+$handler->register('resetAuction', [Auction::class, 'resetAuction']);

@@ -188,4 +188,16 @@ class Auction
 			throw $ex;
 		}
 	}
+
+	public static function resetAuction($data)
+	{
+		TokenHelper::assertToken();
+
+		$db = Database::getConnection();
+		$result = $db->query("DELETE FROM `Auction`");
+		if (!$result)
+		{
+			throw new \Exception("Failed to reset auctions");
+		}
+	}
 }
