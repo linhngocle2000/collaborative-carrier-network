@@ -97,4 +97,53 @@ class TransportRequest
 		}
 		return $requests;
 	}
+
+	public static function stashRequests($data)
+	{
+		TokenHelper::assertToken();
+
+		$db = Database::getConnection();
+		try
+		{
+			$db->begin_transaction();
+			$result = $db->query("TRUNCATE `OldTransportRequest`");
+			if (!$result)
+			{
+				throw new \Exception('Failed to truncate old transport requests');
+			}
+			$result = $db->query("INSERT INTO `OldTransportRequest` SELECT * FROM `TransportRequest`");
+			if (!$result)
+			{
+				throw new \Exception('Failed to stash current transport requests');
+			}
+			$db->commit();
+		}
+		catch (\Throwable $ex)
+		{
+			$db->rollback();
+			throw $ex;
+		}
+	}
+
+	public static function getStashedRequests($data)
+	{
+		TokenHelper::assertToken();
+
+		$query = "SELECT `ID`, `Owner`, `Cost`, `PickupLat`, `PickupLon`, `DeliveryLat`, `DeliveryLon` FROM `OldTransportRequest`";
+		if (is_array($data) && array_key_exists('Agent', $data))
+		{
+			$agent = $data['Agent'];
+			$query .= " WHERE `Owner` = '$agent'";
+		}
+
+		$db = Database::getConnection();
+		$result = $db->query($query);
+
+		$requests = [];
+		while ($row = $result->fetch_assoc())
+		{
+			$requests[] = $row;
+		}
+		return $requests;
+	}
 }
