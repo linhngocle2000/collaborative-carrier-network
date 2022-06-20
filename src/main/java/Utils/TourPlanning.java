@@ -30,9 +30,10 @@ public class TourPlanning {
    private double loadingCost;
 
    private VehicleImpl vehicle;
+   private final String vehicleID;
    private VehicleRoutingProblem problem;
    private VehicleRoutingProblemSolution bestSolution;
-   private List<TransportRequest> requests = new ArrayList<>();
+   private List<TransportRequest> requests;
    private CostCalculator cost;
 
    /**
@@ -42,6 +43,7 @@ public class TourPlanning {
    public TourPlanning(CarrierAgent agent) {
       this.agent = agent;
       setDepot(agent.getDepotX(), agent.getDepotY());
+      this.vehicleID = agent.getUsername();
       this.costPerDistance = agent.getCostPerDistance();
       this.fixedCost = agent.getFixedCost();
       this.internalCost = agent.getInternalCost();
@@ -59,21 +61,23 @@ public class TourPlanning {
    public TourPlanning(String username) {
       this.agent = (CarrierAgent) HTTPRequests.getAgent(username);
       setDepot(agent.getDepotX(), agent.getDepotY());
+      this.vehicleID = agent.getUsername();
       this.costPerDistance = agent.getCostPerDistance();
       this.fixedCost = agent.getFixedCost();
       this.internalCost = agent.getInternalCost();
       this.loadingCost = agent.getLoadingCost();
+      this.requests = new ArrayList<>();
    }
 
    /**
-    * Initial an empty tour with a certain depot location.
-    * Transport request list is set empty.s
+    * Initial an empty tour.
+    * Transport request list is empty.
     * <p>
-    * Purpose for generating bundle
+    * Purpose for generating bundles
     */
-   public TourPlanning(Location depot) {
+   public TourPlanning() {
       this.agent = null;
-      this.depot = depot;
+      this.vehicleID = "bundle";
       this.costPerDistance = 2;
       this.fixedCost = 0;
       this.internalCost = 1;
@@ -134,7 +138,7 @@ public class TourPlanning {
             .addCapacityDimension(WEIGHT_INDEX, 2);
       VehicleType vehicleType = vehicleTypeBuilder.build();
 
-      Builder vehicleBuilder = VehicleImpl.Builder.newInstance(agent.getUsername());
+      Builder vehicleBuilder = VehicleImpl.Builder.newInstance(vehicleID);
       vehicleBuilder.setStartLocation(depot);
       vehicleBuilder.setType(vehicleType);
       vehicle = vehicleBuilder.build();
@@ -264,6 +268,10 @@ public class TourPlanning {
       return this.agent;
    }
 
+   public void setDepot(Location depot) {
+      this.depot = depot;
+   }
+
    public void setDepot(double depotX, double depotY) {
       this.depot = Location.newInstance(depotX, depotY);
    }
@@ -274,6 +282,10 @@ public class TourPlanning {
 
    public List<TransportRequest> getRequests() {
       return this.requests;
+   }
+
+   public void setRequests(List<TransportRequest> requests) {
+      this.requests = requests;
    }
 
 }

@@ -58,7 +58,7 @@ In this situation, the fixed earning cost and loading/unloading cost is not nece
 &nbsp;
 # How carrier gonna bid on the bundle
 
-## Not all transport request within a bundle could make profit to the carrier.
+* Not all transport request within a bundle could make profit to the carrier.
 
 * In order to help the carrier to maximize their profit while bidding the bundle, as long as <u>the average profit of all requests within a bundle</u>  is higher than the wishing profit of carrier this bundle will be recommended for such carrier to bid.
 
@@ -74,19 +74,9 @@ Carrier A will automatically bid on bundle B.
 > In this example situation, the carrier gonna place their highest possible bid to get such 30 profit from the bundle which is 25.
 
 &nbsp;
-## Two bundle could have some common transport requests.
-
-* In case a carrier has won on bidding 2 or more bundles which have some common transport requests, the paying price on second bundle or other (not the 1st one) will be deducted based on number of common transport request.
-
-> <b>Example:</b> Carrier A has won on bidding bundle B and C which has N requests. These two bundles have 2 common transport requests.\
-Carrier A then have to pay for bundle B with price b and bundle C with price (c - c/N*2). Prices b and c are the 2nd highest bid price on each bundle and b > c
-
-> <h3><b>Tip:</b></h3> We could transfer all requests in winning bundles into a <code>HashMap</code> of winning request with the price winner has to pay. Price of a request is decided by the 2nd highest bid on that bundle over the number of requests within that bundle.
-
-> Check on add new if request is duplicated then the paying price will be replace with the higher one.
-
-&nbsp;
 # How to decide which bundles gonna be sold (not finish)
+
+* Solution 1:
 
 All bundle will be sold at the same time.
 
@@ -99,4 +89,22 @@ In case bundles A ,B and C have some common requests, and carrier 1 has won on b
 In case bundles A and B have common requests, bundles B and C have common requests, and these bundles are respectively bid by carriers 1, 2 and 3, then bundles A and C will be sold, B will be deformed. 
 
 We can set a profit calculator for the C_a. A smart calculator will decide which bundles gonna be sold to make the highest profit from selling bundle.
+
+* Solution 2:
+
+Set maximum number of bundle that a carrier can win on bidding is 1. 
+
+Then ???
+
+&nbsp;
+# A Carrier has won multiple bundles which contain common requests.
+
+* In case a carrier has won on bidding 2 or more bundles which have some common transport requests, the paying price on second bundle or other (not the 1st one) will be deducted based on number of common transport request.
+
+> <b>Example:</b> Carrier A has won on bidding bundle B and C which has N requests. These two bundles have 2 common transport requests.\
+Carrier A then have to pay for bundle B with price b and bundle C with price (c - c/N*2). Prices b and c are the 2nd highest bid price on each bundle and b > c
+
+> <h3><b>Tip:</b></h3> We could transfer all requests in winning bundles of a carrier into a <code>HashMap</code> of winning request with the price winner has to pay. Price of a request is decided by the 2nd highest bid on that bundle over the number of requests within that bundle.
+
+> Check on add new if request is duplicated then the paying price will be replace with the higher one.
 
