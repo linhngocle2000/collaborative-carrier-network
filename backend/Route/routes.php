@@ -24,6 +24,7 @@ $handler->register('getRequestsOfAgent', [TransportRequest::class, 'getRequestsO
 $handler->register('getRequestsOfAuction', [TransportRequest::class, 'getRequestsOfAuction']);
 $handler->register('stashRequests', [TransportRequest::class, 'stashRequests']);
 $handler->register('getStashedRequests', [TransportRequest::class, 'getStashedRequests']);
+$handler->register('resetCost', [TransportRequest::class, 'resetCost']);
 
 // Auction routes
 $handler->register('addAuction', [Auction::class, 'addAuction']);

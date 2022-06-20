@@ -146,4 +146,16 @@ class TransportRequest
 		}
 		return $requests;
 	}
+
+	public static function resetCost($data)
+	{
+		TokenHelper::assertToken();
+
+		$db = Database::getConnection();
+		$result = $db->query("UPDATE `TransportRequest` SET `Cost` = 0");
+		if (!$result)
+		{
+			throw new \Exception("Failed to reset transport request costs");
+		}
+	}
 }
