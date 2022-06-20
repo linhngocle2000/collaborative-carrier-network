@@ -269,7 +269,7 @@ public class AdministrationUI extends JFrame {
             if(!visUI.isVisible()) {
                 visUI.setVisible(true);
             }
-            TourPlanning currentTour = new TourPlanning(carrier.getUsername());
+            TourPlanning currentTour = new TourPlanning(carrier);
             int[] selectedRow = table.getSelectedRows();
             for (int row : selectedRow) {
                 TransportRequest request = model.getRequest(row);

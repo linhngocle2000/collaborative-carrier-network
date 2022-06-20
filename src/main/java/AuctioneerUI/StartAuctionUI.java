@@ -1,5 +1,6 @@
 package AuctioneerUI;
 
+import Agent.CarrierAgent;
 import UIResource.UIData;
 import UIResource.HTTPResource.HTTPRequests;
 import UIResource.scrollbar.ScrollBarCustom;
@@ -13,14 +14,21 @@ import javax.swing.table.TableColumnModel;
 
 import Agent.AuctioneerAgent;
 import Auction.Auction;
+import Auction.TransportRequest;
+import Auction.Bid;
+import Auction.VickreyAuction;
+import Utils.TourPlanning;
 
 import java.awt.*;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowFocusListener;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.text.SimpleDateFormat;
 import java.util.List;
 import java.util.Objects;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 
 public class StartAuctionUI extends JFrame {
@@ -35,6 +43,7 @@ public class StartAuctionUI extends JFrame {
     private AuctioneerAgent agent;
     private AuctionUI auctionUI;
     private Auction selectedAuction;
+    static final int MAX_T = 5;
 
     public StartAuctionUI() {
 
@@ -42,15 +51,7 @@ public class StartAuctionUI extends JFrame {
 // Frame
 ///////////
 
-        addWindowFocusListener(new WindowFocusListener() {
-            public void windowLostFocus(WindowEvent e) {}
-            public void windowGainedFocus(WindowEvent e) {
-                if (auctionUI == null || !auctionUI.isVisible()) {
-                    logoutBtn.setEnabled(true);
-                    setDefaultCloseOperation(EXIT_ON_CLOSE);
-                }
-            }
-        });
+        setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
 
         setTitle("CCN");
         setSize(620, 700);
@@ -247,15 +248,6 @@ public class StartAuctionUI extends JFrame {
         constraints.insets = new java.awt.Insets(30, 0, 0, 0);
         rootPanel.add(errorLabel, constraints);
 
-//        int delay = 10000; //milliseconds
-//        ActionListener taskPerformer = new ActionListener() {
-//            public void actionPerformed(ActionEvent evt) {
-//                loadAuctions();
-//            }
-//        };
-//        Timer reload = new Timer(delay, taskPerformer);
-//        reload.start();
-//        reload.setRepeats(true);
 
 ///////////
 // Combine
@@ -268,6 +260,21 @@ public class StartAuctionUI extends JFrame {
         pack();
 
         setResizable(false);
+
+        List<CarrierAgent> bidders = HTTPRequests.getCarrierAgents();
+        List<Auction> auctions = HTTPRequests.getAllAuctions();
+        for (Auction auction : auctions) {
+            auction.setAuctionStrategy(new VickreyAuction());
+            auction.start();
+            ExecutorService pool = Executors.newFixedThreadPool(MAX_T);
+            for (CarrierAgent bidder : bidders) {
+                Runnable r = new Task(bidder, auction);
+                pool.execute(r);
+            }
+            pool.shutdown();
+            auction.end();
+        }
+
     }
 
     public void loadAuctions() {
@@ -305,4 +312,31 @@ public class StartAuctionUI extends JFrame {
         nameLabel.setText(agent.getDisplayname());
     }
 
+}
+
+class Task implements Runnable
+{
+    private CarrierAgent carrier;
+    private TransportRequest transReq;
+    private Auction auction;
+
+    public Task(CarrierAgent agent, Auction a)
+    {
+        this.carrier = agent;
+        this.transReq = a.getDefaultTransportRequest();
+        this.auction = a;
+    }
+
+    // Prints task name and sleeps for 1s
+    // This Whole process is repeated 5 times
+    public void run()
+    {
+        TourPlanning tour = new TourPlanning(carrier);
+        double price = tour.getProfit(transReq)-1000.00;
+        if (price>=0) {
+            Bid bid = HTTPRequests.addBid(auction, carrier, price);
+            auction.addBid(bid);
+        }
+        System.out.println("Tour planning for carrier "+carrier.getUsername()+" and request " + transReq.getRouteString() +" completed");
+    }
 }

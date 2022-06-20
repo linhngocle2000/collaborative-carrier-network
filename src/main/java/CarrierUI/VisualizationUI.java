@@ -24,7 +24,7 @@ public class VisualizationUI extends JFrame {
 
         setTitle("CCN");
         setLocationRelativeTo(null);
-        setDefaultCloseOperation(HIDE_ON_CLOSE);
+        setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
 
 ///////////
 // Panels

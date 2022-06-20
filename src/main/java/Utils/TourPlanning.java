@@ -50,23 +50,6 @@ public class TourPlanning {
    }
 
    /**
-    * Initial an empty tour with the current carrier agent data.
-    * Transport request list is set empty.
-    * <p>
-    * Purpose for visualizing and cost calculating the chosen requests in current
-    * request list of carrier.
-    */
-   public TourPlanning(String username) {
-      this.agent = (CarrierAgent) HTTPRequests.getAgent(username);
-      setDepot(agent.getDepotX(), agent.getDepotY());
-      this.costPerDistance = agent.getCostPerDistance();
-      this.fixedCost = agent.getFixedCost();
-      this.internalCost = agent.getInternalCost();
-      this.loadingCost = agent.getLoadingCost();
-      requests = new ArrayList<>();
-   }
-
-   /**
     * Update list of request from carrier DB
     */
    public void refreshRequests() {

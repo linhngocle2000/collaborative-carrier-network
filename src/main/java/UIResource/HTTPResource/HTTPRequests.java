@@ -354,7 +354,7 @@ public class HTTPRequests {
         }
     }
 
-    public static Bid addBid(Auction auction, CarrierAgent agent, int price) {
+    public static Bid addBid(Auction auction, CarrierAgent agent, double price) {
         try {
             var json = send(RequestBody.addBid(auction, price, token));
             boolean result = json.getBoolean("success");

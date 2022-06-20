@@ -252,7 +252,7 @@ public class AuctionUI extends JFrame {
                 price.setText("-");
             } else {
                 winner.setText(winningBid.getBidder().getDisplayname());
-                price.setText(Integer.toString(winningBid.getPrice()));
+                //price.setText(Integer.toString(winningBid.getPrice()));
             }
             auction.notifyWinner();
         }).start();
