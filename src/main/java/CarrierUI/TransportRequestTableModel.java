@@ -15,7 +15,7 @@ public class TransportRequestTableModel extends AbstractTableModel {
 
 	public TransportRequestTableModel(TourPlanning tour) {
 		this.tour = tour;
-		profitMap = new HashMap<TransportRequest, Double>();
+		profitMap = new HashMap<>();
 		for (TransportRequest t : tour.getRequests()) {
 			profitMap.put(t, tour.getProfit(t));
 		}
@@ -50,7 +50,7 @@ public class TransportRequestTableModel extends AbstractTableModel {
 				}
 				return "-";
 			case 3:
-				return request.isInAuction() ? "Is in auction" : "";
+				return profitMap.get(request)<=0 ? "IN AUCTION" : "";
 		}
 		return null;
 	}

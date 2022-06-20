@@ -312,7 +312,7 @@ public class JoinAuctionUI extends JFrame {
      * Maybe implement this as reload button like in StartAuctionUI instead of
      * periodic updates 😐
      */
-    public void loadTable() {
+    public void auctionOff() {
 
         // Update table model
         var auctions = HTTPRequests.getActiveAuctions();

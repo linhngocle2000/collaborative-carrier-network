@@ -2,6 +2,7 @@ package CarrierUI;
 
 import Auction.Auction;
 import Auction.TransportRequest;
+import UIResource.scrollbar.ScrollBarCustom;
 import Utils.TourPlanning;
 import UIResource.UIData;
 import UIResource.HTTPResource.HTTPRequests;
@@ -21,16 +22,15 @@ public class AdministrationUI extends JFrame {
 
     private Color background = UIData.getBackground();
     private Font font = UIData.getFont();
-    private Color errorColor = UIData.getErrorColor();
     private Border emptyBorder = UIData.getEmptyBorder();
     private VisualizationUI visUI;
     private JPanel leftVisualPanel, rightVisualPanel;
     private JTable table;
-    
+    private JButton logoutBtn;
+
     private CarrierAgent carrier;
     private TourPlanning tour;
     private TransportRequestTableModel model;
-    private CalculatorUI costCalcUI;
 
     public AdministrationUI(CarrierAgent carrier) {
         this.carrier = carrier;
@@ -39,7 +39,7 @@ public class AdministrationUI extends JFrame {
         visUI = new VisualizationUI();
         leftVisualPanel = visUI.getLeftVisualPanel();
         rightVisualPanel = visUI.getRightVisualPanel();
-        costCalcUI = new CalculatorUI(tour);
+        //costCalcUI = new CalculatorUI(tour);
 
 ///////////
 // Frame
@@ -49,7 +49,7 @@ public class AdministrationUI extends JFrame {
         setPreferredSize(new Dimension(650, 720));
         setTitle("CCN");
         setLocationRelativeTo(null);
-        setDefaultCloseOperation(HIDE_ON_CLOSE);
+        setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
 
 ///////////
 // Panels
@@ -80,23 +80,6 @@ public class AdministrationUI extends JFrame {
 // Panels
 ///////////
 
-        JButton reloadBtn = new JButton("\u27f3");
-        reloadBtn.setFont(font.deriveFont(Font.BOLD, 28));
-        reloadBtn.setBorder(emptyBorder);
-        reloadBtn.setBackground(background);
-        reloadBtn.setHorizontalAlignment(SwingConstants.CENTER);
-        reloadBtn.addActionListener(e -> {
-            reloadRequests();
-        });
-
-        GridBagConstraints constraints = new GridBagConstraints();
-        constraints.gridx = 0;
-        constraints.gridy = 0;
-        constraints.weightx = 1.0;
-        constraints.weighty = 1.0;
-        constraints.anchor = GridBagConstraints.NORTHEAST;
-        constraints.insets = new Insets(10, 0, 0, 35);
-        topPanel.add(reloadBtn, constraints);
 
 ///////////
 // Table
@@ -106,7 +89,7 @@ public class AdministrationUI extends JFrame {
         tableHeader.setFont(font.deriveFont(Font.BOLD, 16));
         tableHeader.setHorizontalAlignment(SwingConstants.CENTER);
 
-        constraints = new GridBagConstraints();
+        GridBagConstraints constraints = new GridBagConstraints();
         constraints.gridx = 0;
         constraints.gridy = 0;
         constraints.gridwidth = GridBagConstraints.REMAINDER;
@@ -114,29 +97,13 @@ public class AdministrationUI extends JFrame {
         constraints.insets = new Insets(0, 0, 30, 0);
         rootPanel.add(tableHeader, constraints);
 
-        table = new JTable(model) {
-            public Component prepareRenderer(TableCellRenderer renderer, int row, int column)
-            {
-                Border lastBorder = new MatteBorder(0,0,1,0,Color.BLACK);
-                Component c = super.prepareRenderer(renderer, row, column);
-                JComponent jc = (JComponent)c;
-                // Add a border to the selected row
-                if (isRowSelected(row)) {
-                    jc.setBorder(emptyBorder);
-                }
-                if (row == getModel().getRowCount()-1) {
-                    jc.setBorder(lastBorder);
-                }
-                return c;
-            }
-        };
+        table = new JTable(model);
+        table.setRowSelectionAllowed(false);
         table.setShowHorizontalLines(false);
-        table.setSelectionBackground(new Color(222, 222, 222, 255));
         table.setRowHeight(25);
         table.setIntercellSpacing(new Dimension(0, 0));
         table.setDefaultEditor(Object.class, null);
         table.getTableHeader().setReorderingAllowed(false);
-        table.clearSelection();
         DefaultTableCellRenderer centerRenderer = new DefaultTableCellRenderer();
         centerRenderer.setHorizontalAlignment(JLabel.CENTER);
         TableColumnModel columnModel = table.getColumnModel();
@@ -149,7 +116,12 @@ public class AdministrationUI extends JFrame {
         }
 
         JScrollPane scrollPane = new JScrollPane(table);
-        scrollPane.setPreferredSize(new Dimension(550, 323));
+        if (model.getRowCount() <= 12) {
+            scrollPane.setPreferredSize(new Dimension(550, model.getRowCount()*25+23));
+        } else {
+            scrollPane.setPreferredSize(new Dimension(550, 323));
+            scrollPane.setVerticalScrollBar(new ScrollBarCustom(12, model.getRowCount()));
+        }
 
         constraints = new GridBagConstraints();
         constraints.gridx = 0;
@@ -260,7 +232,7 @@ public class AdministrationUI extends JFrame {
 // Buttons
 ///////////
 
-        JButton auctionOff = new JButton("Auction off");
+/*        JButton auctionOff = new JButton("Auction off");
         auctionOff.setFocusPainted(false);
         auctionOff.setEnabled(false);
         table.getSelectionModel().addListSelectionListener(event -> {
@@ -276,37 +248,20 @@ public class AdministrationUI extends JFrame {
             TransportRequest request = model.getRequest(table.getSelectedRow());
             Auction auction = HTTPRequests.addAuction();
             if (auction != null && HTTPRequests.addTransportRequestToAuction(auction, request)) {
-                reloadRequests();
             } else {
                 auctionOff.setEnabled(true);
             }
-        });
+        });*/
 
-        JButton costCalc = new JButton("Cost calculator");
-        costCalc.setFocusPainted(false);
-        costCalc.addActionListener(e -> {
-            if(!costCalcUI.isVisible()) {
-                costCalcUI.setVisible(true);
-            }
-        });
+        logoutBtn = new JButton("Logout");
+        logoutBtn.setFocusPainted(false);
+
+        visUI.setVisible(true);
+        leftVisualPanel.removeAll();
+        leftVisualPanel.add(tour.visualize());
+        leftVisualPanel.revalidate();
 
         JPopupMenu popupMenu = new JPopupMenu();
-        JMenuItem visualizeInP1 = new JMenuItem("Panel 1");
-        popupMenu.add(visualizeInP1);
-        visualizeInP1.addActionListener(e -> {
-            if(!visUI.isVisible()) {
-                visUI.setVisible(true);
-            }
-            TourPlanning currentTour = new TourPlanning(carrier.getUsername());
-            int[] selectedRow = table.getSelectedRows();
-            for (int row : selectedRow) {
-                TransportRequest request = model.getRequest(row);
-                currentTour.addRequest(request);
-            }
-            leftVisualPanel.removeAll();
-            leftVisualPanel.add(currentTour.visualize());
-            leftVisualPanel.revalidate();
-        });
 
         JMenuItem visualizeInP2 = new JMenuItem("Panel 2");
         popupMenu.add(visualizeInP2);
@@ -332,11 +287,9 @@ public class AdministrationUI extends JFrame {
         showIn.setEnabled(false);
         table.getSelectionModel().addListSelectionListener(event -> showIn.setEnabled(table.getSelectedRowCount() > 0));
 
-        auctionOff.setPreferredSize(costCalc.getPreferredSize());
 
-        bottomPanel.add(auctionOff);
         bottomPanel.add(showIn);
-        bottomPanel.add(costCalc);
+        bottomPanel.add(logoutBtn);
 
         constraints = new GridBagConstraints();
         constraints.gridx = 0;
@@ -358,9 +311,25 @@ public class AdministrationUI extends JFrame {
 
     }
 
-    private void reloadRequests() {
-        tour.refreshRequests();
-        model.refreshTour();
+    public void auctionOff() {
+        for (int i = 0; i < table.getRowCount(); i++) {
+            if (Float.parseFloat(table.getValueAt(i,2).toString().replace(",","."))<=0) {
+                TransportRequest request = model.getRequest(i);
+                Auction auction = HTTPRequests.addAuction();
+                HTTPRequests.addTransportRequestToAuction(auction, request);
+                table.setValueAt("IN AUCTION",i, 3);
+                table.revalidate();
+            }
+        }
     }
+
+    public JButton getLogoutBtn() {
+        return logoutBtn;
+    }
+
+    public VisualizationUI getVisUI() {
+        return visUI;
+    }
+
 
 }

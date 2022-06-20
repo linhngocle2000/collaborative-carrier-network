@@ -215,17 +215,13 @@ public class StartAuctionUI extends JFrame {
 
         startBtn.addActionListener(e -> {
             errorLabel.setText("");
-            if(Objects.requireNonNull(HTTPRequests.getInactiveAuctions()).contains(selectedAuction)) {
                 auctionUI = new AuctionUI();
                 auctionUI.setAuction(selectedAuction);
                 auctionUI.setVisible(true);
                 startBtn.setEnabled(false);
                 logoutBtn.setEnabled(false);
-                setDefaultCloseOperation(0);
-            } else {
-                errorLabel.setText("Auction "+selectedAuction.getID()+" already started.");
-                loadAuctions();
-            }
+                setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
+
         });
 
         reloadBtn.addActionListener(e -> loadAuctions());

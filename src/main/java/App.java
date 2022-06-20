@@ -6,7 +6,6 @@ import CarrierUI.AdministrationUI;
 import StartUI.LoginUI;
 import StartUI.RegisterUI;
 import StartUI.WelcomeUI;
-import CarrierUI.JoinAuctionUI;
 import UIResource.HTTPResource.HTTPRequests;
 import Utils.Converter;
 
@@ -18,18 +17,18 @@ public class App {
     private static WelcomeUI welcomeUI;
     private static LoginUI loginUI;
     private static RegisterUI registerUI;
-    private static JoinAuctionUI joinAuctionUI;
     private static StartAuctionUI auctioneerUI;
     private static AdministrationUI adminUI;
 
     private static AuctioneerAgent auctioneer;
     private static CarrierAgent carrier;
 
+    private static JButton carrierLogoutBtn;
+
     public App() {
 
         loginUI = new LoginUI();
         registerUI = new RegisterUI();
-        joinAuctionUI = new JoinAuctionUI();
         auctioneerUI = new StartAuctionUI();
 
         welcomeUI = new WelcomeUI();
@@ -129,9 +128,15 @@ public class App {
                 auctioneer = null;
                 carrier = (CarrierAgent)user;
                 adminUI = new AdministrationUI(carrier);
-                joinAuctionUI.setAgent(carrier);
-                joinAuctionUI.loadTable();
-                joinAuctionUI.setVisible(true);
+                adminUI.auctionOff();
+                adminUI.setVisible(true);
+                carrierLogoutBtn = adminUI.getLogoutBtn();
+                carrierLogoutBtn.addActionListener(event -> {
+                    adminUI.getVisUI().dispose();
+                    adminUI.dispose();
+                    HTTPRequests.logout();
+                    new App();
+                });
             }
             loginUI.setVisible(false);
             loginUI.reset();
@@ -140,26 +145,11 @@ public class App {
         JButton auctioneerLogoutBtn = auctioneerUI.getLogoutBtn();
         auctioneerLogoutBtn.addActionListener(e -> {
             auctioneerUI.dispose();
-            // welcomeUI.setVisible(true);
-            // Reset data
-            // auctioneer = null;
             HTTPRequests.logout();
             new App();
         });
 
-        JButton carrierJoinAuctionMyTRBtn = joinAuctionUI.getMyTRBtn();
-        carrierJoinAuctionMyTRBtn.addActionListener(e -> adminUI.setVisible(true));
 
-        JButton carrierJoinAuctionLogoutBtn = joinAuctionUI.getLogoutBtn();
-        carrierJoinAuctionLogoutBtn.addActionListener(e -> {
-            adminUI.setVisible(false);
-            joinAuctionUI.dispose();
-            // welcomeUI.setVisible(true);
-            // Reset data
-            // carrier = null;
-            HTTPRequests.logout();
-            new App();
-        });
         
     }
 
