@@ -1,5 +1,7 @@
 package Auction;
 
+import org.json.JSONObject;
+
 import com.graphhopper.jsprit.core.problem.Location;
 import com.graphhopper.jsprit.core.problem.job.Shipment;
 
@@ -16,6 +18,20 @@ public class TransportRequest {
 		this.deliveryY = deliveryY;
 		this.inAuction = inAuction;
 	}
+
+	/**
+	 * This method does not set the owner of the request.
+	 * setOwner must be called on the returned object.
+	 */
+	public static TransportRequest parse(JSONObject json) {
+		int id = json.getInt("ID");
+		float pickupX = json.getFloat("PickupLat");
+		float pickupY = json.getFloat("PickupLon");
+		float deliveryX = json.getFloat("DeliveryLat");
+		float deliveryY = json.getFloat("DeliveryLon");
+		boolean inAuction = json.getBoolean("IsInAuction");
+		return new TransportRequest(id, null, pickupX, pickupY, deliveryX, deliveryY, inAuction);
+	}
 	
 	// Variables
 	
@@ -23,6 +39,16 @@ public class TransportRequest {
 	private CarrierAgent owner;
 	private float pickupX, pickupY, deliveryX, deliveryY;
 	private boolean inAuction;
+
+	// Setters
+
+	public void setOwner(CarrierAgent agent) throws Exception {
+		if (owner != null) {
+			throw new Exception("Can not set another owner if owner is already set");
+		}
+
+		owner = agent;
+	}
 
 	// Getters
 
