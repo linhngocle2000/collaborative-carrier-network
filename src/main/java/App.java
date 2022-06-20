@@ -121,15 +121,15 @@ public class App {
             if (user.isAuctioneer()) {
                 carrier = null;
                 auctioneer = (AuctioneerAgent)user;
-                auctioneerUI.setAgent(auctioneer);
-                auctioneerUI.loadAuctions();
                 auctioneerUI.setVisible(true);
+                //auctioneerUI.startAuctions();
             } else {
                 auctioneer = null;
                 carrier = (CarrierAgent)user;
                 adminUI = new AdministrationUI(carrier);
                 adminUI.auctionOff();
                 adminUI.setVisible(true);
+                adminUI.getVisUI().setVisible(true);
                 carrierLogoutBtn = adminUI.getLogoutBtn();
                 carrierLogoutBtn.addActionListener(event -> {
                     adminUI.getVisUI().dispose();
@@ -141,16 +141,6 @@ public class App {
             loginUI.setVisible(false);
             loginUI.reset();
         });
-
-        JButton auctioneerLogoutBtn = auctioneerUI.getLogoutBtn();
-        auctioneerLogoutBtn.addActionListener(e -> {
-            auctioneerUI.dispose();
-            HTTPRequests.logout();
-            new App();
-        });
-
-
-        
     }
 
     static public void main(String[] args) {

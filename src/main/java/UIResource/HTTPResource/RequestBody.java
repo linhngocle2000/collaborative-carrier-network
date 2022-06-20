@@ -140,6 +140,7 @@ public class RequestBody {
         JSONObject data = new JSONObject();
         data.put("Auction", auction.getID());
         data.put("Username", bid == null ? null : bid.getBidder().getUsername());
+        data.put("Cost", bid == null ? null : bid.getPrice());
         return body("setWinner", token, data);
     }
 

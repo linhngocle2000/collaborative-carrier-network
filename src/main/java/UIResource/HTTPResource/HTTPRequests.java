@@ -164,10 +164,6 @@ public class HTTPRequests {
                 result.add(request);
             }
             return result;
-        } catch (IOException | InterruptedException e) {
-            e.printStackTrace();
-            lastError = e;
-            return null;
         } catch (Exception e) {
             e.printStackTrace();
             lastError = e;
@@ -203,14 +199,38 @@ public class HTTPRequests {
                 result.add(request);
             }
             return result;
-        } catch (IOException | InterruptedException e) {
-            e.printStackTrace();
-            lastError = e;
-            return null;
         } catch (Exception e) {
             e.printStackTrace();
             lastError = e;
             return null;
+        }
+    }
+
+    /**
+     * Set cost of all transport requests to 0
+     */
+    public static boolean resetCost() {
+        try {
+            var json = send(body("resetCost", token, null));
+            return json.getBoolean("success");
+        } catch (IOException | InterruptedException e) {
+            e.printStackTrace();
+            lastError = e;
+            return false;
+        }
+    }
+
+    /**
+     * Reset auction table
+     */
+    public static boolean resetAuction() {
+        try {
+            var json = send(body("resetAuction", token, null));
+            return json.getBoolean("success");
+        } catch (IOException | InterruptedException e) {
+            e.printStackTrace();
+            lastError = e;
+            return false;
         }
     }
 
@@ -273,10 +293,6 @@ public class HTTPRequests {
                 result.add(request);
             }
             return result;
-        } catch (IOException | InterruptedException e) {
-            e.printStackTrace();
-            lastError = e;
-            return null;
         } catch (Exception e) {
             e.printStackTrace();
             lastError = e;

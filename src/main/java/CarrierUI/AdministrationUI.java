@@ -15,6 +15,7 @@ import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableColumnModel;
 import java.awt.*;
+import java.util.List;
 
 import org.openide.awt.*;
 
@@ -45,8 +46,8 @@ public class AdministrationUI extends JFrame {
 // Frame
 ///////////
 
-        setMinimumSize(new Dimension(650, 720));
-        setPreferredSize(new Dimension(650, 720));
+        setMinimumSize(new Dimension(630, 720));
+        setPreferredSize(new Dimension(630, 720));
         setTitle("CCN");
         setLocationRelativeTo(null);
         setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
@@ -99,6 +100,7 @@ public class AdministrationUI extends JFrame {
 
         table = new JTable(model);
         table.setRowSelectionAllowed(false);
+        table.setCellSelectionEnabled(false);
         table.setShowHorizontalLines(false);
         table.setRowHeight(25);
         table.setIntercellSpacing(new Dimension(0, 0));
@@ -107,19 +109,19 @@ public class AdministrationUI extends JFrame {
         DefaultTableCellRenderer centerRenderer = new DefaultTableCellRenderer();
         centerRenderer.setHorizontalAlignment(JLabel.CENTER);
         TableColumnModel columnModel = table.getColumnModel();
-        columnModel.getColumn(0).setPreferredWidth(70);
+        columnModel.getColumn(0).setPreferredWidth(50);
         columnModel.getColumn(1).setPreferredWidth(230);
-        columnModel.getColumn(2).setPreferredWidth(150);
-        columnModel.getColumn(3).setPreferredWidth(100);
+        columnModel.getColumn(2).setPreferredWidth(125);
+        columnModel.getColumn(3).setPreferredWidth(125);
         for (int i = 0; i<4; i++) {
             columnModel.getColumn(i).setCellRenderer(centerRenderer);
         }
 
         JScrollPane scrollPane = new JScrollPane(table);
         if (model.getRowCount() <= 12) {
-            scrollPane.setPreferredSize(new Dimension(550, model.getRowCount()*25+23));
+            scrollPane.setPreferredSize(new Dimension(530, model.getRowCount()*25+23));
         } else {
-            scrollPane.setPreferredSize(new Dimension(550, 323));
+            scrollPane.setPreferredSize(new Dimension(530, 323));
             scrollPane.setVerticalScrollBar(new ScrollBarCustom(12, model.getRowCount()));
         }
 
@@ -232,63 +234,23 @@ public class AdministrationUI extends JFrame {
 // Buttons
 ///////////
 
-/*        JButton auctionOff = new JButton("Auction off");
-        auctionOff.setFocusPainted(false);
-        auctionOff.setEnabled(false);
-        table.getSelectionModel().addListSelectionListener(event -> {
-            if (table.getSelectedRowCount()==1) {
-                TransportRequest request = model.getRequest(table.getSelectedRow());
-                auctionOff.setEnabled(request != null && !request.isInAuction());
-            } else {
-                auctionOff.setEnabled(false);
-            }
-        });
-        auctionOff.addActionListener(e -> {
-            auctionOff.setEnabled(false);
-            TransportRequest request = model.getRequest(table.getSelectedRow());
-            Auction auction = HTTPRequests.addAuction();
-            if (auction != null && HTTPRequests.addTransportRequestToAuction(auction, request)) {
-            } else {
-                auctionOff.setEnabled(true);
-            }
-        });*/
 
         logoutBtn = new JButton("Logout");
         logoutBtn.setFocusPainted(false);
 
-        visUI.setVisible(true);
+        List<TransportRequest> oldRequests = HTTPRequests.getStashedTransportRequests(carrier);
+        TourPlanning oldTour = new TourPlanning(carrier,oldRequests);
+
+
         leftVisualPanel.removeAll();
-        leftVisualPanel.add(tour.visualize());
+        leftVisualPanel.add(oldTour.visualize());
         leftVisualPanel.revalidate();
 
-        JPopupMenu popupMenu = new JPopupMenu();
 
-        JMenuItem visualizeInP2 = new JMenuItem("Panel 2");
-        popupMenu.add(visualizeInP2);
-        visualizeInP2.addActionListener(e -> {
-            if(!visUI.isVisible()) {
-                visUI.setVisible(true);
-            }
-            TourPlanning currentTour = new TourPlanning(carrier);
-            int[] selectedRow = table.getSelectedRows();
-            for (int row : selectedRow) {
-                TransportRequest request = model.getRequest(row);
-                currentTour.addRequest(request);
-            }
-            rightVisualPanel.removeAll();
-            rightVisualPanel.add(currentTour.visualize());
-            rightVisualPanel.revalidate();
-        });
+        rightVisualPanel.removeAll();
+        rightVisualPanel.add(tour.visualize());
+        rightVisualPanel.revalidate();
 
-        TextIcon icon = new TextIcon(bottomPanel, "Show in", TextIcon.Layout.HORIZONTAL);
-        icon.setFont(font.deriveFont(Font.BOLD, 12));
-        JButton showIn = DropDownButtonFactory.createDropDownButton(icon, popupMenu);
-        showIn.setFocusPainted(false);
-        showIn.setEnabled(false);
-        table.getSelectionModel().addListSelectionListener(event -> showIn.setEnabled(table.getSelectedRowCount() > 0));
-
-
-        bottomPanel.add(showIn);
         bottomPanel.add(logoutBtn);
 
         constraints = new GridBagConstraints();

@@ -9,7 +9,7 @@ import Utils.TourPlanning;
 
 public class TransportRequestTableModel extends AbstractTableModel {
 
-	private final static String[] columns = { "ID", "Transport request", "Profit (\u20AC)", "Notes" };
+	private final static String[] columns = { "ID", "Transport request", "Profit (\u20AC)", "Price (\u20AC)" };
 	private HashMap<TransportRequest, Double> profitMap;
 	private TourPlanning tour;
 
@@ -50,7 +50,7 @@ public class TransportRequestTableModel extends AbstractTableModel {
 				}
 				return "-";
 			case 3:
-				return profitMap.get(request)<=0 ? "IN AUCTION" : "";
+				return String.format("%.2f", request.getCost());
 		}
 		return null;
 	}

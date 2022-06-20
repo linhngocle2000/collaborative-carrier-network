@@ -16,7 +16,7 @@ public class Auction {
 	public Auction(int id, int iteration) {
 		this.id = id;
 		this.iteration = iteration;
-		requests = new ArrayList<TransportRequest>();
+		requests = new ArrayList<>();
 	}
 
 	public void start() {
@@ -57,7 +57,7 @@ public class Auction {
 	// Setter
 
 	public void setTransportRequests(List<TransportRequest> requests) {
-		this.requests = new ArrayList<TransportRequest>(requests);
+		this.requests = new ArrayList<>(requests);
 	}
 
 	public void setAuctionStrategy(AuctionStrategy strategy) {

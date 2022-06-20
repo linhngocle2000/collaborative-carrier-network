@@ -16,7 +16,19 @@ public class TransportRequest {
 		this.pickupY = pickupY;
 		this.deliveryX = deliveryX;
 		this.deliveryY = deliveryY;
-		this.inAuction = inAuction;
+		//this.inAuction = inAuction;
+		this.cost = 0;
+	}
+
+	public TransportRequest(int id, CarrierAgent owner, float pickupX, float pickupY, float deliveryX, float deliveryY, float price) {
+		this.id = id;
+		this.owner = owner;
+		this.pickupX = pickupX;
+		this.pickupY = pickupY;
+		this.deliveryX = deliveryX;
+		this.deliveryY = deliveryY;
+		//this.inAuction = inAuction;
+		this.cost = price;
 	}
 
 	/**
@@ -25,12 +37,13 @@ public class TransportRequest {
 	 */
 	public static TransportRequest parse(JSONObject json) {
 		int id = json.getInt("ID");
+		float cost = json.getFloat("Cost");
 		float pickupX = json.getFloat("PickupLat");
 		float pickupY = json.getFloat("PickupLon");
 		float deliveryX = json.getFloat("DeliveryLat");
 		float deliveryY = json.getFloat("DeliveryLon");
-		boolean inAuction = json.getBoolean("IsInAuction");
-		return new TransportRequest(id, null, pickupX, pickupY, deliveryX, deliveryY, inAuction);
+		// boolean inAuction = json.getBoolean("IsInAuction");
+		return new TransportRequest(id, null, pickupX, pickupY, deliveryX, deliveryY, cost);
 	}
 	
 	// Variables
@@ -38,7 +51,8 @@ public class TransportRequest {
 	private int id;
 	private CarrierAgent owner;
 	private float pickupX, pickupY, deliveryX, deliveryY;
-	private boolean inAuction;
+	//private boolean inAuction;
+	private float cost;
 
 	// Setters
 
@@ -90,11 +104,14 @@ public class TransportRequest {
 	public float getDeliveryY() {
 		return deliveryY;
 	}
+	public float getCost() {
+		return cost;
+	}
 
 	/**
 	 * @return True if this request will be sold in an auction
 	 */
-	public boolean isInAuction() {
+	/*public boolean isInAuction() {
 		return inAuction;
-	}
+	}*/
 }

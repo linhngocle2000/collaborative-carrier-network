@@ -49,6 +49,16 @@ public class TourPlanning {
       refreshRequests();
    }
 
+   public TourPlanning(CarrierAgent agent, List<TransportRequest> r) {
+      this.agent = agent;
+      setDepot(agent.getDepotX(), agent.getDepotY());
+      this.costPerDistance = agent.getCostPerDistance();
+      this.fixedCost = agent.getFixedCost();
+      this.internalCost = agent.getInternalCost();
+      this.loadingCost = agent.getLoadingCost();
+      this.requests = r;
+   }
+
    /**
     * Update list of request from carrier DB
     */
