@@ -144,6 +144,7 @@ class Auction
 		$db = Database::getConnection();
 		$auction = intval($data['Auction']);
 		$winner = $db->escape_string($data['Username']);
+		$cost = $data['Cost'] ? doubleval($data['Cost']) : 0;
 
 		try
 		{
@@ -162,7 +163,7 @@ class Auction
 			{
 				// Transfer requests
 				$result = $db->query("UPDATE `TransportRequest`
-				SET `Owner` = '$winner'
+				SET `Owner` = '$winner', `Cost` = $cost
 				WHERE `ID` IN (SELECT `TransportRequest`
 					FROM `AuctionRequests`
 					WHERE `Auction` = $auction)");
