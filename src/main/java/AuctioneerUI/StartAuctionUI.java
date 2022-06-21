@@ -3,16 +3,9 @@ package AuctioneerUI;
 import Agent.CarrierAgent;
 import UIResource.UIData;
 import UIResource.HTTPResource.HTTPRequests;
-import UIResource.scrollbar.ScrollBarCustom;
+
 import javax.swing.*;
-import javax.swing.border.Border;
 
-import javax.swing.border.MatteBorder;
-import javax.swing.table.DefaultTableCellRenderer;
-import javax.swing.table.TableCellRenderer;
-import javax.swing.table.TableColumnModel;
-
-import Agent.AuctioneerAgent;
 import Auction.Auction;
 import Auction.TransportRequest;
 import Auction.Bid;
@@ -20,13 +13,7 @@ import Auction.VickreyAuction;
 import Utils.TourPlanning;
 
 import java.awt.*;
-import java.awt.event.WindowEvent;
-import java.awt.event.WindowFocusListener;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.text.SimpleDateFormat;
 import java.util.List;
-import java.util.Objects;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -39,8 +26,11 @@ public class StartAuctionUI extends JFrame {
     private int width = UIData.getWidth();
     private int height = UIData.getHeight();
     static final int MAX_T = 5;
+    private List<CarrierAgent> bidders;
 
     public StartAuctionUI() {
+
+        bidders = HTTPRequests.getCarrierAgents();
 
 ///////////
 // Frame
@@ -93,28 +83,44 @@ public class StartAuctionUI extends JFrame {
 
     }
 
+    public void checkCarrierList() {
+        if (bidders==null || bidders.isEmpty()) {
+            this.dispose();
+            HTTPRequests.logout();
+            System.exit(0);
+        }
+    }
+
+    public void auctionOff() {
+        checkCarrierList();
+        ExecutorService pool = Executors.newFixedThreadPool(MAX_T);
+        for (CarrierAgent carrier : bidders) {
+            Runnable r = new AuctionTask(carrier);
+            pool.execute(r);
+        }
+        pool.shutdown();
+    }
+
     public void startAuctions() {
+        checkCarrierList();
         HTTPRequests.resetCost();
         HTTPRequests.stashTransportRequests();
-        List<CarrierAgent> bidders = HTTPRequests.getCarrierAgents();
-        if (bidders!=null && !bidders.isEmpty()) {
-            for (int i = 0; i < 3; i++) {
-                List<Auction> auctions = HTTPRequests.getAllAuctions();
-                if (auctions!=null && !auctions.isEmpty()) {
-                    for (Auction auction : auctions) {
-                        auction.setAuctionStrategy(new VickreyAuction());
-                        auction.start();
-                        ExecutorService pool = Executors.newFixedThreadPool(MAX_T);
-                        for (CarrierAgent bidder : bidders) {
-                            Runnable r = new Task(bidder, auction);
-                            pool.execute(r);
-                        }
-                        pool.shutdown();
-                        auction.end();
-                        Bid winningBid = auction.getWinningBid();
-                        if (winningBid == null) {
-                            auction.notifyWinner();
-                        }
+        for (int i = 0; i < 3; i++) {
+            List<Auction> auctions = HTTPRequests.getAllAuctions();
+            if (auctions!=null && !auctions.isEmpty()) {
+                for (Auction auction : auctions) {
+                    auction.setAuctionStrategy(new VickreyAuction());
+                    auction.start();
+                    ExecutorService pool = Executors.newFixedThreadPool(MAX_T);
+                    for (CarrierAgent bidder : bidders) {
+                        Runnable r = new BidTask(bidder, auction);
+                        pool.execute(r);
+                    }
+                    pool.shutdown();
+                    auction.end();
+                    Bid winningBid = auction.getWinningBid();
+                    if (winningBid == null) {
+                        auction.notifyWinner();
                     }
                 }
             }
@@ -127,21 +133,19 @@ public class StartAuctionUI extends JFrame {
 
 }
 
-class Task implements Runnable
+class BidTask implements Runnable
 {
     private CarrierAgent carrier;
     private TransportRequest transReq;
     private Auction auction;
 
-    public Task(CarrierAgent agent, Auction a)
+    public BidTask(CarrierAgent agent, Auction a)
     {
         this.carrier = agent;
         this.transReq = a.getDefaultTransportRequest();
         this.auction = a;
     }
 
-    // Prints task name and sleeps for 1s
-    // This Whole process is repeated 5 times
     public void run()
     {
         TourPlanning tour = new TourPlanning(carrier);
@@ -151,5 +155,28 @@ class Task implements Runnable
             auction.addBid(bid);
         }
         System.out.println("Tour planning for carrier "+carrier.getUsername()+" and request " + transReq.getRouteString() +" completed");
+    }
+}
+
+class AuctionTask implements Runnable
+{
+    private CarrierAgent carrier;
+
+    public AuctionTask(CarrierAgent agent)
+    {
+        this.carrier = agent;
+    }
+
+    public void run()
+    {
+        TourPlanning tour = new TourPlanning(carrier);
+        for (TransportRequest tr : tour.getRequests()) {
+            if (tour.getProfit(tr)<=0) {
+                Auction auction = HTTPRequests.addAuction();
+                HTTPRequests.addTransportRequestToAuction(auction, tr);
+                System.out.println("Request " + tr.getRouteString() + " sent to auction.");
+            }
+        }
+        System.out.println("Requests of carrier "+carrier.getUsername()+" checked.");
     }
 }

@@ -46,11 +46,11 @@ public class TransportRequestTableModel extends AbstractTableModel {
 				return request.getRouteString();
 			case 2:
 				if (profitMap.containsKey(request)) {
-					return String.format("%.2f", profitMap.get(request));
+					return String.format("%.2f", profitMap.get(request)).replace(",", ".");
 				}
 				return "-";
 			case 3:
-				return String.format("%.2f", request.getCost());
+				return String.format("%.2f", request.getCost()).replace(",", ".");
 		}
 		return null;
 	}

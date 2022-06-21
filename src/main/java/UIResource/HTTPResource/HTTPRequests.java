@@ -143,7 +143,7 @@ public class HTTPRequests {
         try {
             var json = send(RequestBody.addTransportRequest(agent, pickupX, pickupY, deliveryX, deliveryY, token));
             int id = json.getInt("data");
-            return new TransportRequest(id, agent, pickupX, pickupY, deliveryX, deliveryY, false);
+            return new TransportRequest(id, agent, pickupX, pickupY, deliveryX, deliveryY);
         } catch (IOException | InterruptedException e) {
             e.printStackTrace();
             lastError = e;

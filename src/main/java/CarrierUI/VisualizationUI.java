@@ -32,11 +32,11 @@ public class VisualizationUI extends JFrame {
 
         JPanel rightPanel = new JPanel();
 
-        TitledBorder leftVisualTitle = new TitledBorder("Panel 1");
+        TitledBorder leftVisualTitle = new TitledBorder("Before");
         leftVisualTitle.setTitleJustification(TitledBorder.CENTER);
         leftVisualTitle.setTitlePosition(TitledBorder.TOP);
 
-        TitledBorder rightVisualTitle = new TitledBorder("Panel 2");
+        TitledBorder rightVisualTitle = new TitledBorder("After");
         rightVisualTitle.setTitleJustification(TitledBorder.CENTER);
         rightVisualTitle.setTitlePosition(TitledBorder.TOP);
 

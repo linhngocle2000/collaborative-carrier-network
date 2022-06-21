@@ -29,7 +29,6 @@ public class App {
 
         loginUI = new LoginUI();
         registerUI = new RegisterUI();
-        auctioneerUI = new StartAuctionUI();
 
         welcomeUI = new WelcomeUI();
         welcomeUI.setVisible(true);
@@ -120,14 +119,15 @@ public class App {
             }
             if (user.isAuctioneer()) {
                 carrier = null;
+                auctioneerUI = new StartAuctionUI();
                 auctioneer = (AuctioneerAgent)user;
                 auctioneerUI.setVisible(true);
+                //auctioneerUI.auctionOff();
                 //auctioneerUI.startAuctions();
             } else {
                 auctioneer = null;
                 carrier = (CarrierAgent)user;
                 adminUI = new AdministrationUI(carrier);
-                adminUI.auctionOff();
                 adminUI.setVisible(true);
                 adminUI.getVisUI().setVisible(true);
                 carrierLogoutBtn = adminUI.getLogoutBtn();

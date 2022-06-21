@@ -9,25 +9,23 @@ import Agent.CarrierAgent;
 
 public class TransportRequest {
 	
-	public TransportRequest(int id, CarrierAgent owner, float pickupX, float pickupY, float deliveryX, float deliveryY, boolean inAuction) {
+	public TransportRequest(int id, CarrierAgent owner, double pickupX, double pickupY, double deliveryX, double deliveryY) {
 		this.id = id;
 		this.owner = owner;
 		this.pickupX = pickupX;
 		this.pickupY = pickupY;
 		this.deliveryX = deliveryX;
 		this.deliveryY = deliveryY;
-		//this.inAuction = inAuction;
 		this.cost = 0;
 	}
 
-	public TransportRequest(int id, CarrierAgent owner, float pickupX, float pickupY, float deliveryX, float deliveryY, float price) {
+	public TransportRequest(int id, CarrierAgent owner, double pickupX, double pickupY, double deliveryX, double deliveryY, double price) {
 		this.id = id;
 		this.owner = owner;
 		this.pickupX = pickupX;
 		this.pickupY = pickupY;
 		this.deliveryX = deliveryX;
 		this.deliveryY = deliveryY;
-		//this.inAuction = inAuction;
 		this.cost = price;
 	}
 
@@ -37,12 +35,11 @@ public class TransportRequest {
 	 */
 	public static TransportRequest parse(JSONObject json) {
 		int id = json.getInt("ID");
-		float cost = json.getFloat("Cost");
-		float pickupX = json.getFloat("PickupLat");
-		float pickupY = json.getFloat("PickupLon");
-		float deliveryX = json.getFloat("DeliveryLat");
-		float deliveryY = json.getFloat("DeliveryLon");
-		// boolean inAuction = json.getBoolean("IsInAuction");
+		double cost = json.getDouble("Cost");
+		double pickupX = json.getDouble("PickupLat");
+		double pickupY = json.getDouble("PickupLon");
+		double deliveryX = json.getDouble("DeliveryLat");
+		double deliveryY = json.getDouble("DeliveryLon");
 		return new TransportRequest(id, null, pickupX, pickupY, deliveryX, deliveryY, cost);
 	}
 	
@@ -50,9 +47,8 @@ public class TransportRequest {
 	
 	private int id;
 	private CarrierAgent owner;
-	private float pickupX, pickupY, deliveryX, deliveryY;
-	//private boolean inAuction;
-	private float cost;
+	private double pickupX, pickupY, deliveryX, deliveryY;
+	private double cost;
 
 	// Setters
 
@@ -92,26 +88,20 @@ public class TransportRequest {
 	public CarrierAgent getOwner() {
 		return owner;
 	}
-	public float getPickupX() {
+	public double getPickupX() {
 		return pickupX;
 	}
-	public float getPickupY() {
+	public double getPickupY() {
 		return pickupY;
 	}
-	public float getDeliveryX() {
+	public double getDeliveryX() {
 		return deliveryX;
 	}
-	public float getDeliveryY() {
+	public double getDeliveryY() {
 		return deliveryY;
 	}
-	public float getCost() {
+	public double getCost() {
 		return cost;
 	}
 
-	/**
-	 * @return True if this request will be sold in an auction
-	 */
-	/*public boolean isInAuction() {
-		return inAuction;
-	}*/
 }
