@@ -61,36 +61,29 @@ public class App {
                 String name = registerUI.getNameText();
                 String username = registerUI.getUsernameText();
                 String password = registerUI.getPasswordText();
-                boolean isAuctioneer = registerUI.isAuctioneer();
-                if (!isAuctioneer) {
-                    String transReq = registerUI.getTrText();
-                    float depotX = registerUI.getDepotLatText();
-                    float depotY = registerUI.getDepotLonText();
-                    float pickupBaserate = registerUI.getBaseRateAText();
-                    float externalTravelCost = registerUI.getBasePriceText();
-                    float loadBaserate = registerUI.getBaseRateBText();
-                    float internalTravelCost = registerUI.getBaseInRateText();
-                    if(!registerUI.verifyTRInput()) {
-                        throw new Exception("Transport requests are not entered correctly.");
-                    }
-                    if (!registerUI.verifyPriceInput()) {
-                        throw new Exception("Price is not entered correctly.");
-                    }
-                    if (!registerUI.verifyDepotInput()) {
-                        throw new Exception("Depot is not entered correctly.");
-                    }
-                    if (!HTTPRequests.registerCarrier(name, username, password, depotX, depotY, pickupBaserate, externalTravelCost, loadBaserate, internalTravelCost)) {
-                        throw new Exception("Username " + username + " is already used.");
-                    }
-                    ArrayList<Float> tr = Converter.convertStringToTR(transReq);
-                    carrier = (CarrierAgent)HTTPRequests.login(username, password);
-                    for (int i = 0; i<(tr.size()); i+=4) {
-                        HTTPRequests.addTransportRequest(carrier, tr.get(i), tr.get(i+1), tr.get(i+2), tr.get(i+3));
-                    }
-                } else {
-                    if (!HTTPRequests.registerAuctioneer(name, username, password)) {
-                        throw new Exception("Username " + username + " is already used.");
-                    }
+                String transReq = registerUI.getTrText();
+                float depotX = registerUI.getDepotLatText();
+                float depotY = registerUI.getDepotLonText();
+                float pickupBaserate = registerUI.getBaseRateAText();
+                float externalTravelCost = registerUI.getBasePriceText();
+                float loadBaserate = registerUI.getBaseRateBText();
+                float internalTravelCost = registerUI.getBaseInRateText();
+                if(!registerUI.verifyTRInput()) {
+                    throw new Exception("Transport requests are not entered correctly.");
+                }
+                if (!registerUI.verifyPriceInput()) {
+                    throw new Exception("Price is not entered correctly.");
+                }
+                if (!registerUI.verifyDepotInput()) {
+                    throw new Exception("Depot is not entered correctly.");
+                }
+                if (!HTTPRequests.registerCarrier(name, username, password, depotX, depotY, pickupBaserate, externalTravelCost, loadBaserate, internalTravelCost)) {
+                    throw new Exception("Username " + username + " is already used.");
+                }
+                ArrayList<Float> tr = Converter.convertStringToTR(transReq);
+                carrier = (CarrierAgent)HTTPRequests.login(username, password);
+                for (int i = 0; i<(tr.size()); i+=4) {
+                    HTTPRequests.addTransportRequest(carrier, tr.get(i), tr.get(i+1), tr.get(i+2), tr.get(i+3));
                 }
                 registerUI.setErrorLabel("");
                 registerUI.showSuccessLabel();

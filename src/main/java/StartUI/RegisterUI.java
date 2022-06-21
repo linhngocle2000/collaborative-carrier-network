@@ -12,7 +12,6 @@ public class RegisterUI extends JFrame {
     private JTextField nameText, trText, usernameText, baseRateAText, basePriceText, baseRateBText, baseInRateText, depotLonText, depotLatText;
     private JPasswordField passwordText;
     private JLabel errorLabel,successLabel;
-    private JComboBox<String> roleOptions;
 
     private Color background = UIData.getBackground();
     private Font font = UIData.getFont();
@@ -62,72 +61,30 @@ public class RegisterUI extends JFrame {
         constraints.insets = new java.awt.Insets(20, 0, 15, 0);
         rootPanel.add(loginLabel, constraints);
 
-        JLabel role = new JLabel("Role");
-        role.setHorizontalAlignment(SwingConstants.LEFT);
-        JPanel rolePanel = new JPanel();
-        rolePanel.add(role);
-        rolePanel.setBackground(background);
 
-        constraints = new GridBagConstraints();
-        constraints.gridx = 0;
-        constraints.gridy = 1;
-        constraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
-        constraints.insets = new java.awt.Insets(10, 0, 0, 0);
-        rootPanel.add(rolePanel, constraints);
-
-        String[] optionsToChoose = {"Auctioneer", "Carrier"};
-        roleOptions = new JComboBox<>(optionsToChoose);
-        roleOptions.setPreferredSize(new Dimension(90,22));
-        roleOptions.setBackground(background);
-        roleOptions.addItemListener(e -> {
-            if (roleOptions.getSelectedIndex()==1) {
-                trText.setEditable(true);
-                baseRateAText.setEditable(true);
-                baseRateBText.setEditable(true);
-                baseInRateText.setEditable(true);
-                basePriceText.setEditable(true);
-                depotLatText.setEditable(true);
-                depotLonText.setEditable(true);
-            } else {
-                trText.setEditable(false);
-                baseRateAText.setEditable(false);
-                baseRateBText.setEditable(false);
-                baseInRateText.setEditable(false);
-                basePriceText.setEditable(false);
-                depotLatText.setEditable(false);
-                depotLonText.setEditable(false);
-            }
-        });
-
-        constraints = new GridBagConstraints();
-        constraints.gridx = 0;
-        constraints.gridy = 2;
-        constraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
-        constraints.insets = new java.awt.Insets(0, 5, 0, 0);
-        rootPanel.add(roleOptions, constraints);
-
-        JLabel nameLabel = new JLabel("Name");
+        JLabel nameLabel = new JLabel("Agent name");
         nameLabel.setHorizontalAlignment(SwingConstants.LEFT);
         JPanel namePanel = new JPanel();
         namePanel.add(nameLabel);
         namePanel.setBackground(background);
 
         constraints = new GridBagConstraints();
-        constraints.gridx = 1;
+        constraints.gridx = 0;
         constraints.gridy = 1;
         constraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
-        constraints.insets = new java.awt.Insets(10, 10, 0, 0);
+        constraints.insets = new java.awt.Insets(10, 0, 0, 0);
         rootPanel.add(namePanel, constraints);
 
         // Join name text field
         nameText = new JTextField();
-        nameText.setPreferredSize(new Dimension(160, 22));
+        nameText.setPreferredSize(new Dimension(335, 22));
 
         constraints = new GridBagConstraints();
-        constraints.gridx = 1;
+        constraints.gridx = 0;
         constraints.gridy = 2;
+        constraints.gridwidth = 2;
         constraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
-        constraints.insets = new java.awt.Insets(0, 15, 0, 3);
+        constraints.insets = new java.awt.Insets(0, 5, 0, 0);
         rootPanel.add(nameText, constraints);
 
         JLabel usernameLabel = new JLabel("Username");
@@ -212,7 +169,6 @@ public class RegisterUI extends JFrame {
 
         trText = new JTextField();
         trText.setPreferredSize(new Dimension(335, 22));
-        trText.setEditable(false);
 
         constraints = new GridBagConstraints();
         constraints.gridx = 0;
@@ -248,7 +204,6 @@ public class RegisterUI extends JFrame {
 
         baseRateAText = new JTextField();
         baseRateAText.setPreferredSize(new Dimension(160, 22));
-        baseRateAText.setEditable(false);
 
         constraints = new GridBagConstraints();
         constraints.gridx = 0;
@@ -273,7 +228,6 @@ public class RegisterUI extends JFrame {
 
         basePriceText = new JTextField();
         basePriceText.setPreferredSize(new Dimension(160, 22));
-        basePriceText.setEditable(false);
 
         constraints = new GridBagConstraints();
         constraints.gridx = 0;
@@ -308,7 +262,6 @@ public class RegisterUI extends JFrame {
 
         baseRateBText = new JTextField();
         baseRateBText.setPreferredSize(new Dimension(160, 22));
-        baseRateBText.setEditable(false);
 
         constraints = new GridBagConstraints();
         constraints.gridx = 1;
@@ -333,7 +286,6 @@ public class RegisterUI extends JFrame {
 
         baseInRateText = new JTextField();
         baseInRateText.setPreferredSize(new Dimension(160, 22));
-        baseInRateText.setEditable(false);
 
         constraints = new GridBagConstraints();
         constraints.gridx = 1;
@@ -358,7 +310,6 @@ public class RegisterUI extends JFrame {
 
         depotLatText = new JTextField();
         depotLatText.setPreferredSize(new Dimension(160, 22));
-        depotLatText.setEditable(false);
 
         constraints = new GridBagConstraints();
         constraints.gridx = 0;
@@ -383,7 +334,6 @@ public class RegisterUI extends JFrame {
 
         depotLonText = new JTextField();
         depotLonText.setPreferredSize(new Dimension(160, 22));
-        depotLonText.setEditable(false);
 
         constraints = new GridBagConstraints();
         constraints.gridx = 1;
@@ -474,7 +424,6 @@ public class RegisterUI extends JFrame {
     }
 
     public void deactivate() {
-        roleOptions.setEnabled(false);
         nameText.setEditable(false);
         usernameText.setEditable(false);
         passwordText.setEditable(false);
@@ -534,9 +483,6 @@ public class RegisterUI extends JFrame {
         return Float.parseFloat(s);
     }
 
-    public boolean isAuctioneer() {
-        return roleOptions.getSelectedIndex()==0;
-    }
 
     public boolean areAllFieldsFilled() {
         if (getNameText().equals("")) {
@@ -546,8 +492,7 @@ public class RegisterUI extends JFrame {
         } else if (getPasswordText().equals("")) {
             return false;
         } else {
-            return (roleOptions.getSelectedIndex() == 0) ||
-                    !trText.getText().trim().equals("") &&
+            return !trText.getText().trim().equals("") &&
                             !baseRateAText.getText().trim().equals("") &&
                             !baseRateBText.getText().trim().equals("") &&
                             !baseInRateText.getText().trim().equals("") &&
