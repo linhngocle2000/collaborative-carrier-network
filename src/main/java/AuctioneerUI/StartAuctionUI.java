@@ -9,10 +9,12 @@ import javax.swing.*;
 import Auction.Auction;
 import Auction.TransportRequest;
 import Auction.Bid;
+import Auction.Bundle.BundleHelper;
 import Auction.VickreyAuction;
 import Utils.TourPlanning;
 
 import java.awt.*;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -103,6 +105,26 @@ public class StartAuctionUI extends JFrame {
         pool.awaitTermination(Long.MAX_VALUE, TimeUnit.NANOSECONDS); // Without this call, the executor service may not finish all auction tasks!
     }
 
+    public void bundleAuction() {
+        checkCarrierList();
+
+        // Add all transport requests to the same root auction
+        Auction auction = HTTPRequests.addAuction();
+        ExecutorService pool = Executors.newFixedThreadPool(MAX_T);
+        for (CarrierAgent carrier : bidders) {
+            pool.submit(new BundleAuctionTask(auction, carrier));
+        }
+        pool.shutdown();
+        pool.awaitTermination(Long.MAX_VALUE, TimeUnit.NANOSECONDS); // Without this call, the executor service may not finish all auction tasks!
+
+        // Load list of all transport requests
+        List<TransportRequests> elementaryRequests = HTTPRequests.getTransportRequestsOfAuction(auction);
+        BundleHelper helper = new BundleHelper();
+
+        // TODO: Split all requests of the root auction into seperate auctions with bundles
+        // TODO: Delete root auction
+    }
+
     public void startAuctions() {
         checkCarrierList();
         HTTPRequests.resetCost();
@@ -182,5 +204,31 @@ class AuctionTask implements Runnable
             }
         }
         System.out.println("Requests of carrier "+carrier.getUsername()+" checked.");
+    }
+}
+
+class BundleAuctionTask implements Runnable
+{
+    private Auction auction;
+    private CarrierAgent carrier;
+
+    public BundleAuctionTask(Auction auction, CarrierAgent carrier)
+    {
+        this.auction = auction;
+        this.carrier = carrier;
+    }
+
+    public void run()
+    {
+        TourPlanning tour = new TourPlanning(carrier);
+        for (TransportRequest tr : tour.getRequests()) 
+        {
+            if (tour.getProfit(tr) <= 0) 
+            {
+                HTTPRequests.addTransportRequestToAuction(auction, tr);
+                System.out.println("Request " + tr.getRouteString() + " sent to auction.");
+            }
+        }
+        System.out.println("Requests of carrier " + carrier.getUsername() + " checked.");
     }
 }
