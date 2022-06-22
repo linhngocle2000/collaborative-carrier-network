@@ -27,9 +27,7 @@ public class Auction {
 
 	public void addBid(Bid bid) {
 		// Guard against bid insertion after auction has ended
-		if (isActive && bid.getID() > lastBidID) {
-			strategy.addBid(bid);
-		}
+		strategy.addBid(bid);
 	}
 
 	public void end() {

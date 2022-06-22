@@ -27,6 +27,7 @@ public class StartAuctionUI extends JFrame {
     private int height = UIData.getHeight();
     static final int MAX_T = 5;
     private List<CarrierAgent> bidders;
+    private ExecutorService tourPool;
 
     public StartAuctionUI() {
 
@@ -93,15 +94,16 @@ public class StartAuctionUI extends JFrame {
 
     public void auctionOff() {
         checkCarrierList();
-        ExecutorService pool = Executors.newFixedThreadPool(MAX_T);
+        tourPool = Executors.newFixedThreadPool(MAX_T);
         for (CarrierAgent carrier : bidders) {
             Runnable r = new AuctionTask(carrier);
-            pool.execute(r);
+            tourPool.execute(r);
         }
-        pool.shutdown();
+        tourPool.shutdown();
     }
 
     public void startAuctions() {
+        while(!tourPool.isShutdown()) {}
         checkCarrierList();
         HTTPRequests.resetCost();
         HTTPRequests.stashTransportRequests();
@@ -109,25 +111,28 @@ public class StartAuctionUI extends JFrame {
             List<Auction> auctions = HTTPRequests.getAllAuctions();
             if (auctions!=null && !auctions.isEmpty()) {
                 for (Auction auction : auctions) {
-                    auction.setAuctionStrategy(new VickreyAuction());
-                    auction.start();
                     ExecutorService pool = Executors.newFixedThreadPool(MAX_T);
+                    auction.setAuctionStrategy(new VickreyAuction());
                     for (CarrierAgent bidder : bidders) {
                         Runnable r = new BidTask(bidder, auction);
                         pool.execute(r);
                     }
                     pool.shutdown();
-                    auction.end();
-                    Bid winningBid = auction.getWinningBid();
-                    if (winningBid == null) {
+                    List<Bid> bids = HTTPRequests.getBids(auction);
+                    if (bids != null) {
+                        for(Bid bid : bids) {
+                            auction.addBid(bid);
+                        }
+                        Bid winningBid = auction.getWinningBid();
+                        System.out.println("Winning bid for auction " + auction.getID()+": "+ winningBid.getPrice());
                         auction.notifyWinner();
                     }
                 }
             }
         }
         HTTPRequests.resetAuction();
-        this.dispose();
         HTTPRequests.logout();
+        System.exit(0);
     }
 
 
@@ -149,12 +154,15 @@ class BidTask implements Runnable
     public void run()
     {
         TourPlanning tour = new TourPlanning(carrier);
-        double price = tour.getProfit(transReq)-1000.00;
-        if (price>=0) {
-            Bid bid = HTTPRequests.addBid(auction, carrier, price);
-            auction.addBid(bid);
+        if (!tour.getRequests().contains(transReq)) {
+            tour.addRequest(transReq);
+            double price = tour.getProfit(transReq) - 1;
+            if (price >= 0) {
+                Bid bid = HTTPRequests.addBid(auction, carrier, price);
+                System.out.println("Carrier " + carrier.getUsername() + " bid for " + transReq.getRouteString() + " with " + bid.getPrice());
+            }
         }
-        System.out.println("Tour planning for carrier "+carrier.getUsername()+" and request " + transReq.getRouteString() +" completed");
+
     }
 }
 

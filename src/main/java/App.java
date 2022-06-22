@@ -115,8 +115,8 @@ public class App {
                 auctioneerUI = new StartAuctionUI();
                 auctioneer = (AuctioneerAgent)user;
                 auctioneerUI.setVisible(true);
-                //auctioneerUI.auctionOff();
-                //auctioneerUI.startAuctions();
+                auctioneerUI.auctionOff();
+                auctioneerUI.startAuctions();
             } else {
                 auctioneer = null;
                 carrier = (CarrierAgent)user;

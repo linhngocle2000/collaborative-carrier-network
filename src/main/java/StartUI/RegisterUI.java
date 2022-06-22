@@ -28,8 +28,8 @@ public class RegisterUI extends JFrame {
 ///////////
 
         setTitle("CCN");
-        setSize(500, 620);
-        setMinimumSize(new Dimension(500, 620));
+        setSize(500, 650);
+        setMinimumSize(new Dimension(500, 650));
         setLocationRelativeTo(null);
         setDefaultCloseOperation(EXIT_ON_CLOSE);
 

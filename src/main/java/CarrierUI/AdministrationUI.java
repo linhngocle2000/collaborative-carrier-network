@@ -70,6 +70,10 @@ public class AdministrationUI extends JFrame {
         bottomPanel.setBackground(background);
         bottomPanel.setLayout(new GridBagLayout());
 
+        JPanel btnPanel = new JPanel();
+        btnPanel.setBackground(background);
+        btnPanel.setLayout(new GridBagLayout());
+
         JPanel totalPanel = new JPanel();
         TitledBorder totalTitle = new TitledBorder("Revenue report");
         totalTitle.setTitleJustification(TitledBorder.CENTER);
@@ -322,11 +326,11 @@ public class AdministrationUI extends JFrame {
 
         constraints = new GridBagConstraints();
         constraints.gridx = 0;
-        constraints.gridy = 4;
+        constraints.gridy = 0;
         constraints.gridwidth = GridBagConstraints.REMAINDER;
         constraints.anchor = GridBagConstraints.CENTER;
-        constraints.insets = new Insets(0, 0, 0, 0);
-        rootPanel.add(logoutBtn, constraints);
+        constraints.insets = new Insets(0, 0, 20, 0);
+        btnPanel.add(logoutBtn, constraints);
 
 
         List<TransportRequest> oldRequests = HTTPRequests.getStashedTransportRequests(carrier);
@@ -349,6 +353,7 @@ public class AdministrationUI extends JFrame {
 // Combine
 ///////////
         getContentPane().add(rootPanel, BorderLayout.CENTER);
+        getContentPane().add(btnPanel, BorderLayout.SOUTH);
 
         pack();
 

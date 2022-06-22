@@ -80,14 +80,14 @@ public class HTTPRequests {
         return result;
     }
 
-    public static Agent getAgent(String username) {
+    public static CarrierAgent getAgent(String username) {
         try {
             var json = send(RequestBody.getAgent(username, token));
             boolean success = json.getBoolean("success");
             if (!success) {
                 return null;
             }
-            return AgentFactory.fromJSON(json.getJSONObject("data"));
+            return AgentFactory.carrierFromJSON(json.getJSONObject("data"));
         } catch (IOException | InterruptedException e) {
             e.printStackTrace();
             lastError = e;
@@ -121,6 +121,7 @@ public class HTTPRequests {
             return null;
         }
     }
+
 
     public static List<AuctioneerAgent> getAuctioneerAgents() {
         try {
@@ -189,7 +190,7 @@ public class HTTPRequests {
                 if (map.containsKey(username)) {
                     owner = map.get(username);
                 } else {
-                    owner = (CarrierAgent) getAgent(username);
+                    owner = getAgent(username);
                     map.put(username, owner);
                 }
                 if (owner == null) {
@@ -283,7 +284,7 @@ public class HTTPRequests {
                 } else if (map.containsKey(username)) {
                     owner = map.get(username);
                 } else {
-                    owner = (CarrierAgent) getAgent(username);
+                    owner = getAgent(username);
                     map.put(username, owner);
                 }
                 if (owner == null) {
@@ -479,7 +480,7 @@ public class HTTPRequests {
                 if (map.containsKey(username)) {
                     bidder = map.get(username);
                 } else {
-                    bidder = (CarrierAgent) getAgent(username);
+                    bidder = getAgent(username);
                     map.put(username, bidder);
                 }
                 if (bidder == null) {
