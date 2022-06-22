@@ -16,6 +16,7 @@ import java.awt.*;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 
 
 public class StartAuctionUI extends JFrame {
@@ -25,7 +26,7 @@ public class StartAuctionUI extends JFrame {
     private Font font = UIData.getFont();
     private int width = UIData.getWidth();
     private int height = UIData.getHeight();
-    static final int MAX_T = 5;
+    static final int MAX_T = Runtime.getRuntime().availableProcessors() + 1;
     private List<CarrierAgent> bidders;
 
     public StartAuctionUI() {
@@ -96,16 +97,18 @@ public class StartAuctionUI extends JFrame {
         ExecutorService pool = Executors.newFixedThreadPool(MAX_T);
         for (CarrierAgent carrier : bidders) {
             Runnable r = new AuctionTask(carrier);
-            pool.execute(r);
+            pool.submit(r); // Use submit instead of execute
         }
         pool.shutdown();
+        pool.awaitTermination(Long.MAX_VALUE, TimeUnit.NANOSECONDS); // Without this call, the executor service may not finish all auction tasks!
     }
 
     public void startAuctions() {
         checkCarrierList();
         HTTPRequests.resetCost();
         HTTPRequests.stashTransportRequests();
-        for (int i = 0; i < 3; i++) {
+        for (int i = 0; i < 3; i++) 
+        {
             List<Auction> auctions = HTTPRequests.getAllAuctions();
             if (auctions!=null && !auctions.isEmpty()) {
                 for (Auction auction : auctions) {
@@ -114,9 +117,10 @@ public class StartAuctionUI extends JFrame {
                     ExecutorService pool = Executors.newFixedThreadPool(MAX_T);
                     for (CarrierAgent bidder : bidders) {
                         Runnable r = new BidTask(bidder, auction);
-                        pool.execute(r);
+                        pool.submit(r); // Use submit instead of execute
                     }
                     pool.shutdown();
+                    pool.awaitTermination(Long.MAX_VALUE, TimeUnit.NANOSECONDS); // Without this call, the executor service may not finish all bid tasks!
                     auction.end();
                     Bid winningBid = auction.getWinningBid();
                     if (winningBid == null) {
