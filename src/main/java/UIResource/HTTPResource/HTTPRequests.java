@@ -39,9 +39,11 @@ public class HTTPRequests {
         }
     }
 
-    public static boolean registerCarrier(String name, String username, String password, float depotX, float depotY, float pickupBaserate, float externalTravelCost, float loadBaserate, float internalTravelCost) {
+    public static boolean registerCarrier(String name, String username, String password, float depotX, float depotY,
+            float pickupBaserate, float externalTravelCost, float loadBaserate, float internalTravelCost) {
         try {
-            var json = send(RequestBody.registerCarrier(name, username, password, depotX, depotY, pickupBaserate, externalTravelCost, loadBaserate, internalTravelCost));
+            var json = send(RequestBody.registerCarrier(name, username, password, depotX, depotY, pickupBaserate,
+                    externalTravelCost, loadBaserate, internalTravelCost));
             var success = json.getBoolean("success");
             if (!success) {
                 JSONObject error = json.getJSONObject("error");
@@ -98,7 +100,7 @@ public class HTTPRequests {
             var json = send(RequestBody.getAllAgents(token));
             var array = json.getJSONArray("data");
             List<Agent> result = new ArrayList<>(array.length());
-            array.forEach(obj -> result.add(AgentFactory.fromJSON((JSONObject)obj)));
+            array.forEach(obj -> result.add(AgentFactory.fromJSON((JSONObject) obj)));
             return result;
         } catch (IOException | InterruptedException e) {
             e.printStackTrace();
@@ -136,11 +138,12 @@ public class HTTPRequests {
 
     // Transport request
 
-    public static TransportRequest addTransportRequest(CarrierAgent agent, float pickupX, float pickupY, float deliveryX, float deliveryY) {
+    public static TransportRequest addTransportRequest(CarrierAgent agent, float pickupX, float pickupY,
+            float deliveryX, float deliveryY) {
         try {
             var json = send(RequestBody.addTransportRequest(agent, pickupX, pickupY, deliveryX, deliveryY, token));
             int id = json.getInt("data");
-            return new TransportRequest(id, agent, pickupX, pickupY, deliveryX, deliveryY, false);
+            return new TransportRequest(id, agent, pickupX, pickupY, deliveryX, deliveryY);
         } catch (IOException | InterruptedException e) {
             e.printStackTrace();
             lastError = e;
@@ -154,18 +157,14 @@ public class HTTPRequests {
             var json = send(RequestBody.getTransportRequestsOfAgent(agent, token));
             var array = json.getJSONArray("data");
             List<TransportRequest> result = new ArrayList<>(array.length());
-            for(Object obj : array) {
+            for (Object obj : array) {
                 JSONObject j = (JSONObject) obj;
-                int id = j.getInt("ID");
-                float pickupX = j.getFloat("PickupLat");
-                float pickupY = j.getFloat("PickupLon");
-                float deliveryX = j.getFloat("DeliveryLat");
-                float deliveryY = j.getFloat("DeliveryLon");
-                boolean inAuction = j.getBoolean("IsInAuction");
-                result.add(new TransportRequest(id, agent, pickupX, pickupY, deliveryX, deliveryY, inAuction));
+                var request = TransportRequest.parse(j);
+                request.setOwner(agent);
+                result.add(request);
             }
             return result;
-        } catch (IOException | InterruptedException e) {
+        } catch (Exception e) {
             e.printStackTrace();
             lastError = e;
             return null;
@@ -183,29 +182,118 @@ public class HTTPRequests {
             ArrayList<TransportRequest> result = new ArrayList<>(array.length());
             for (Object obj : array) {
                 JSONObject j = (JSONObject) obj;
-                int id = j.getInt("ID");
                 String username = j.getString("Owner");
-                float pickupX = j.getFloat("PickupLat");
-                float pickupY = j.getFloat("PickupLon");
-                float deliveryX = j.getFloat("DeliveryLat");
-                float deliveryY = j.getFloat("DeliveryLon");
-                boolean inAuction = j.getBoolean("IsInAuction");
+                var request = TransportRequest.parse(j);
 
                 CarrierAgent owner;
                 if (map.containsKey(username)) {
                     owner = map.get(username);
                 } else {
-                    owner = (CarrierAgent)getAgent(username);
+                    owner = (CarrierAgent) getAgent(username);
                     map.put(username, owner);
                 }
                 if (owner == null) {
-                    lastError = new Exception("Could not retrieve owner of transport request");
-                    return null;
+                    throw new Exception("Could not retrieve owner of transport request");
                 }
-                result.add(new TransportRequest(id, owner, pickupX, pickupY, deliveryX, deliveryY, inAuction));
+                request.setOwner(owner);
+                result.add(request);
             }
             return result;
+        } catch (Exception e) {
+            e.printStackTrace();
+            lastError = e;
+            return null;
+        }
+    }
+
+    /**
+     * Set cost of all transport requests to 0
+     */
+    public static boolean resetCost() {
+        try {
+            var json = send(body("resetCost", token, null));
+            return json.getBoolean("success");
         } catch (IOException | InterruptedException e) {
+            e.printStackTrace();
+            lastError = e;
+            return false;
+        }
+    }
+
+    /**
+     * Reset auction table
+     */
+    public static boolean resetAuction() {
+        try {
+            var json = send(body("resetAuction", token, null));
+            return json.getBoolean("success");
+        } catch (IOException | InterruptedException e) {
+            e.printStackTrace();
+            lastError = e;
+            return false;
+        }
+    }
+
+    /**
+     * Saves all transport requests in a stash.
+     * The last stash is deleted before the new stash is created.
+     */
+    public static boolean stashTransportRequests() {
+        try {
+            var json = send(body("stashRequests", token, null));
+            return json.getBoolean("success");
+        } catch (IOException | InterruptedException e) {
+            e.printStackTrace();
+            lastError = e;
+            return false;
+        }
+    }
+
+    /**
+     * Returns the stashed transport requests
+     * 
+     * @param agent If set this function will only return stashed transport requests
+     *              that belong to this agent. If null all stashed transport
+     *              requests are returned.
+     */
+    public static List<TransportRequest> getStashedTransportRequests(CarrierAgent agent) {
+        try {
+            // Cache agents for multiple ownership
+            HashMap<String, CarrierAgent> map = new HashMap<>();
+
+            // Prepare data
+            JSONObject data = null;
+            if (agent != null) {
+                data = new JSONObject();
+                data.put("Agent", agent.getUsername());
+            }
+
+            // Load requests
+            var json = send(body("getStashedRequests", token, data));
+            var array = json.getJSONArray("data");
+            ArrayList<TransportRequest> result = new ArrayList<>(array.length());
+            for (Object obj : array) {
+                JSONObject j = (JSONObject) obj;
+                String username = j.getString("Owner");
+                var request = TransportRequest.parse(j);
+
+                CarrierAgent owner;
+                if (agent != null) {
+                    owner = agent;
+                } else if (map.containsKey(username)) {
+                    owner = map.get(username);
+                } else {
+                    owner = (CarrierAgent) getAgent(username);
+                    map.put(username, owner);
+                }
+                if (owner == null) {
+                    throw new Exception("Could not retrieve owner of transport request");
+                }
+                request.setOwner(owner);
+                result.add(request);
+            }
+            return result;
+        } catch (Exception e) {
             e.printStackTrace();
             lastError = e;
             return null;
@@ -247,7 +335,7 @@ public class HTTPRequests {
             var array = json.getJSONArray("data");
             var result = new ArrayList<Auction>();
             for (Object obj : array) {
-                JSONObject j = (JSONObject)obj;
+                JSONObject j = (JSONObject) obj;
                 int id = j.getInt("ID");
                 boolean isActive = j.getBoolean("IsActive");
                 int iteration = j.getInt("Iteration");
@@ -256,7 +344,7 @@ public class HTTPRequests {
                 if (requests == null) {
                     // Last error already set by getTransportRequestsOfAuction
                     return null;
-                }                
+                }
                 auction.setTransportRequests(requests);
                 result.add(auction);
             }
@@ -354,9 +442,13 @@ public class HTTPRequests {
         }
     }
 
-    public static Bid addBid(Auction auction, CarrierAgent agent, int price) {
+    public static Bid addBid(Auction auction, CarrierAgent agent, double price) {
         try {
-            var json = send(RequestBody.addBid(auction, price, token));
+            JSONObject data = new JSONObject();
+            data.put("Auction", auction.getID());
+            data.put("Agent", agent.getUsername());
+            data.put("Price", price);
+            var json = send(body("addBid", token, data));
             boolean result = json.getBoolean("success");
             if (!result) {
                 return null;
@@ -451,6 +543,18 @@ public class HTTPRequests {
 
     public static Exception getLastError() {
         return lastError;
+    }
+
+    private static String body(String command, String token, Object data) {
+        JSONObject requestBody = new JSONObject();
+        requestBody.put("Cmd", command);
+        if (token != null) {
+            requestBody.put("Token", token);
+        }
+        if (data != null) {
+            requestBody.put("Data", data);
+        }
+        return requestBody.toString();
     }
 
     private static JSONObject send(String body) throws IOException, InterruptedException {

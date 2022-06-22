@@ -1,5 +1,7 @@
 package Auction;
 
+import org.json.JSONObject;
+
 import com.graphhopper.jsprit.core.problem.Location;
 import com.graphhopper.jsprit.core.problem.job.Shipment;
 
@@ -7,22 +9,56 @@ import Agent.CarrierAgent;
 
 public class TransportRequest {
 	
-	public TransportRequest(int id, CarrierAgent owner, float pickupX, float pickupY, float deliveryX, float deliveryY, boolean inAuction) {
+	public TransportRequest(int id, CarrierAgent owner, double pickupX, double pickupY, double deliveryX, double deliveryY) {
 		this.id = id;
 		this.owner = owner;
 		this.pickupX = pickupX;
 		this.pickupY = pickupY;
 		this.deliveryX = deliveryX;
 		this.deliveryY = deliveryY;
-		this.inAuction = inAuction;
+		this.cost = 0;
+	}
+
+	public TransportRequest(int id, CarrierAgent owner, double pickupX, double pickupY, double deliveryX, double deliveryY, double price) {
+		this.id = id;
+		this.owner = owner;
+		this.pickupX = pickupX;
+		this.pickupY = pickupY;
+		this.deliveryX = deliveryX;
+		this.deliveryY = deliveryY;
+		this.cost = price;
+	}
+
+	/**
+	 * This method does not set the owner of the request.
+	 * setOwner must be called on the returned object.
+	 */
+	public static TransportRequest parse(JSONObject json) {
+		int id = json.getInt("ID");
+		double cost = json.getDouble("Cost");
+		double pickupX = json.getDouble("PickupLat");
+		double pickupY = json.getDouble("PickupLon");
+		double deliveryX = json.getDouble("DeliveryLat");
+		double deliveryY = json.getDouble("DeliveryLon");
+		return new TransportRequest(id, null, pickupX, pickupY, deliveryX, deliveryY, cost);
 	}
 	
 	// Variables
 	
 	private int id;
 	private CarrierAgent owner;
-	private float pickupX, pickupY, deliveryX, deliveryY;
-	private boolean inAuction;
+	private double pickupX, pickupY, deliveryX, deliveryY;
+	private double cost;
+
+	// Setters
+
+	public void setOwner(CarrierAgent agent) throws Exception {
+		if (owner != null) {
+			throw new Exception("Can not set another owner if owner is already set");
+		}
+
+		owner = agent;
+	}
 
 	// Getters
 
@@ -52,23 +88,20 @@ public class TransportRequest {
 	public CarrierAgent getOwner() {
 		return owner;
 	}
-	public float getPickupX() {
+	public double getPickupX() {
 		return pickupX;
 	}
-	public float getPickupY() {
+	public double getPickupY() {
 		return pickupY;
 	}
-	public float getDeliveryX() {
+	public double getDeliveryX() {
 		return deliveryX;
 	}
-	public float getDeliveryY() {
+	public double getDeliveryY() {
 		return deliveryY;
 	}
-
-	/**
-	 * @return True if this request will be sold in an auction
-	 */
-	public boolean isInAuction() {
-		return inAuction;
+	public double getCost() {
+		return cost;
 	}
+
 }

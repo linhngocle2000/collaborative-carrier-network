@@ -9,13 +9,13 @@ import Utils.TourPlanning;
 
 public class TransportRequestTableModel extends AbstractTableModel {
 
-	private final static String[] columns = { "ID", "Transport request", "Profit (\u20AC)", "Notes" };
+	private final static String[] columns = { "ID", "Transport request", "Profit (\u20AC)", "Price (\u20AC)" };
 	private HashMap<TransportRequest, Double> profitMap;
 	private TourPlanning tour;
 
 	public TransportRequestTableModel(TourPlanning tour) {
 		this.tour = tour;
-		profitMap = new HashMap<TransportRequest, Double>();
+		profitMap = new HashMap<>();
 		for (TransportRequest t : tour.getRequests()) {
 			profitMap.put(t, tour.getProfit(t));
 		}
@@ -46,11 +46,11 @@ public class TransportRequestTableModel extends AbstractTableModel {
 				return request.getRouteString();
 			case 2:
 				if (profitMap.containsKey(request)) {
-					return String.format("%.2f", profitMap.get(request));
+					return String.format("%.2f", profitMap.get(request)).replace(",", ".");
 				}
 				return "-";
 			case 3:
-				return request.isInAuction() ? "Is in auction" : "";
+				return String.format("%.2f", request.getCost()).replace(",", ".");
 		}
 		return null;
 	}

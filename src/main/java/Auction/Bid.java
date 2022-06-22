@@ -5,7 +5,7 @@ import Agent.CarrierAgent;
 public class Bid {
 
 	
-	public Bid(int id, Auction auction, CarrierAgent bidder, int price) {
+	public Bid(int id, Auction auction, CarrierAgent bidder, double price) {
 		this.id = id;
 		this.auction = auction;
 		this.bidder = bidder;
@@ -13,8 +13,9 @@ public class Bid {
 	}
 	
 	// Variables 
-	
-	private int id, price;
+
+	private int id;
+	private double price;
 	private Auction auction;
 	private CarrierAgent bidder;
 
@@ -32,7 +33,7 @@ public class Bid {
 		return auction;
 	}
 
-	public int getPrice() {
+	public double getPrice() {
 		return price;
 	}
 
