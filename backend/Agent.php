@@ -3,6 +3,7 @@
 namespace CCN;
 
 use CCN\Util\TokenHelper;
+use Exception;
 
 class Agent
 {
@@ -18,9 +19,12 @@ class Agent
 		$password = $db->escape_string($data['Password']);
 		$name = $db->escape_string($data['Name']);
 		$isAuctioneer = intval(boolval($data['IsAuctioneer']));
-		$vehicle = $db->escape_string($data['Vehicle']);
-		$depotLat = floatval($data['DepotLat']);
-		$depotLon = floatval($data['DepotLon']);
+		$depotLat = $isAuctioneer ? 0 : floatval($data['DepotLat']);
+		$depotLon = $isAuctioneer ? 0 : floatval($data['DepotLon']);
+		$pickup = $isAuctioneer ? 0 : floatval($data['PickupBaserate']);
+		$travelExtern = $isAuctioneer ? 0 : floatval($data['TravelCostPerKM']);
+		$load = $isAuctioneer ? 0 : floatval($data['LoadBaserate']);
+		$travelIntern = $isAuctioneer ? 0 : floatval($data['InternalTravelCostPerKM']);
 		$hash = password_hash($password, PASSWORD_DEFAULT);
 
 		$result = $db->query("SELECT COUNT(*) AS `Count` FROM `Agent` WHERE `Username` = '$username'");
@@ -34,13 +38,13 @@ class Agent
 			throw new \Exception("Username $username is alread used");
 		}
 
-		$result = $db->query("INSERT INTO `Agent` (`Username`, `Name`, `Password`, `IsAuctioneer`, `Vehicle`, `DepotLat`, `DepotLon`) VALUES ('$username', '$name', '$hash', $isAuctioneer, '$vehicle', $depotLat, $depotLon)");
+		$result = $db->query("INSERT INTO `Agent` (`Username`, `Name`, `Password`, `IsAuctioneer`, `DepotLat`, `DepotLon`, `PickupBaserate`, `TravelCostPerKM`, `LoadBaserate`, `InternalTravelCostPerKM`) VALUES ('$username', '$name', '$hash', $isAuctioneer, $depotLat, $depotLon, $pickup, $travelExtern, $load, $travelIntern)");
 		if ($result === false)
 		{
 			throw new \Exception($db->error);
 		}
 
-		return new Agent($username, $name, $isAuctioneer, $vehicle, $depotLat, $depotLon);
+		return new Agent($username, $name, $isAuctioneer);
 	}
 
 	/**
@@ -58,7 +62,7 @@ class Agent
 			$username = $db->escape_string($data['Username']);
 			$password = $db->escape_string($data['Password']);
 
-			$result = $db->query("SELECT `Username`, `Name`, `Password`, `IsAuctioneer`, `Vehicle`, `DepotLat`, `DepotLon` FROM `Agent` WHERE `Username` LIKE '$username'");
+			$result = $db->query("SELECT `Username`, `Name`, `Password`, `IsAuctioneer`, `DepotLat`, `DepotLon`, `PickupBaserate`, `TravelCostPerKM`, `LoadBaserate`, `InternalTravelCostPerKM` FROM `Agent` WHERE `Username` LIKE '$username'");
 			if ($result === false)
 			{
 				throw new \Exception($db->error);
@@ -103,13 +107,48 @@ class Agent
 		}
 	}
 
+	/** @return array */
+	public static function getAgent($data)
+	{
+		TokenHelper::assertToken();
+
+		$db = Database::getConnection();
+		$username = $db->escape_string($data['Username']);
+		$result = $db->query("SELECT `Username`, `Name`, `IsAuctioneer`, `DepotLat`, `DepotLon`, `PickupBaserate`, `TravelCostPerKM`, `LoadBaserate`, `InternalTravelCostPerKM` FROM `Agent` WHERE `Username` = '$username'");
+		if ($result === false || $result->num_rows == 0)
+		{
+			throw new \Exception("$username not found");
+		}
+
+		$row = $result->fetch_assoc();
+		$isAuctioneer = boolval($row['IsAuctioneer']);
+
+		$agent = [
+			'Username' => $username = $row['Username'],
+			'Name' => $row['Name'],
+			'IsAuctioneer' => $isAuctioneer,
+		];
+
+		if (!$isAuctioneer)
+		{
+			$agent['DepotLat'] = $row['DepotLat'];
+			$agent['DepotLon'] = $row['DepotLon'];
+			$agent['PickupBaserate'] = $row['PickupBaserate'];
+			$agent['TravelCostPerKM'] = $row['TravelCostPerKM'];
+			$agent['LoadBaserate'] = $row['LoadBaserate'];
+			$agent['InternalTravelCostPerKM'] = $row['InternalTravelCostPerKM'];
+		}
+
+		return $agent;
+	}
+
 	/** @return array List of agents */
 	public static function getAgents($data)
 	{
 		TokenHelper::assertToken();
 
 		$db = Database::getConnection();
-		$result = $db->query("SELECT a.Username, a.Name AS UserDisplayname, a.IsAuctioneer, a.Vehicle, a.DepotLat, a.DepotLon, ac.ID AS AuctionID, ac.Name AS AuctionName FROM `Agent` a LEFT JOIN `Auction` ac ON a.Username = ac.Auctioneer");
+		$result = $db->query("SELECT a.Username, a.Name AS UserDisplayname, a.IsAuctioneer, a.DepotLat, a.DepotLon, a.PickupBaserate, a.TravelCostPerKM, a.LoadBaserate, a.InternalTravelCostPerKM, ac.ID AS AuctionID, ac.Name AS AuctionName FROM `Agent` a LEFT JOIN `Auction` ac ON a.Username = ac.Auctioneer");
 		$agents = [];
 		while ($row = $result->fetch_assoc())
 		{
@@ -130,9 +169,12 @@ class Agent
 				}
 				else
 				{
-					$agents[$username]['Vehicle'] = $row['Vehicle'];
 					$agents[$username]['DepotLat'] = $row['DepotLat'];
 					$agents[$username]['DepotLon'] = $row['DepotLon'];
+					$agents[$username]['PickupBaserate'] = $row['PickupBaserate'];
+					$agents[$username]['TravelCostPerKM'] = $row['TravelCostPerKM'];
+					$agents[$username]['LoadBaserate'] = $row['LoadBaserate'];
+					$agents[$username]['InternalTravelCostPerKM'] = $row['InternalTravelCostPerKM'];
 				}
 			}
 
@@ -187,7 +229,7 @@ class Agent
 		TokenHelper::assertToken();
 
 		$db = Database::getConnection();
-		$result = $db->query("SELECT `Username`, `Name`, `Vehicle`, `DepotLat`, `DepotLon` FROM `Agent` WHERE NOT `IsAuctioneer`");
+		$result = $db->query("SELECT `Username`, `Name`, `DepotLat`, `DepotLon`, `PickupBaserate`, `TravelCostPerKM`, `LoadBaserate`, `InternalTravelCostPerKM` FROM `Agent` WHERE NOT `IsAuctioneer`");
 		$agents = [];
 		while ($row = $result->fetch_assoc())
 		{
@@ -197,22 +239,51 @@ class Agent
 	}
 
 	/**
+	 * @param  string $token Session token of an auctioneer agent
+	 * @return Agent
+	 */
+	public static function getAgentFromToken($token)
+	{
+		$db = Database::getConnection();
+		$token = $db->escape_string($token);
+		$result = $db->query("SELECT * FROM `Session` s LEFT JOIN `Agent` a ON s.Agent = a.Username WHERE s.Token = '$token'");
+		if (empty($result))
+		{
+			throw new Exception('Token not matched to an agent');
+		}
+		$row = $result->fetch_assoc();
+		$username = $row['Username'];
+		$name = $row['Name'];
+		$isAuctioneer = $row['IsAuctioneer'];
+
+		return new Agent($username, $name, $isAuctioneer);
+	}
+
+	/**
 	 * Only call this constructor if you know this user exists!
 	 * @param string $username The unique username used to identify the agent
 	 * @param string $name A display name for the Gui
 	 * @param bool $isAuctioneer True if this agent is the auctioneer
-	 * @param string $vehicle Name of the ship
-	 * @param float $depotLat Latitude of the depot
-	 * @param float $depotLon Longitude of the depot
 	 */
-	function __construct($username, $name, $isAuctioneer, $vehicle, $depotLat, $depotLon)
+	function __construct($username, $name, $isAuctioneer) //, $depotLat, $depotLon)
 	{
+		//  * @param float $depotLat Latitude of the depot
+		//  * @param float $depotLon Longitude of the depot
 		$this->username = $username;
 		$this->name = $name;
 		$this->isAuctioneer = $isAuctioneer;
-		$this->vehicle = $vehicle;
-		$this->depotLat = $depotLat;
-		$this->depotLon = $depotLon;
+		// $this->depotLat = $depotLat;
+		// $this->depotLon = $depotLon;
+	}
+
+	public function getUsername()
+	{
+		return $this->username;
+	}
+
+	public function isAuctioneer()
+	{
+		return $this->isAuctioneer;
 	}
 
 	/** @var string $username */
@@ -221,10 +292,8 @@ class Agent
 	private $name;
 	/** @var bool $isAuctioneer */
 	private $isAuctioneer;
-	/** @var string $vehicle */
-	private $vehicle;
-	/** @var string|float $depotLat */
-	private $depotLat;
-	/** @var string|float $depotLon */
-	private $depotLon;
+	// /** @var string|float $depotLat */
+	// private $depotLat;
+	// /** @var string|float $depotLon */
+	// private $depotLon;
 }

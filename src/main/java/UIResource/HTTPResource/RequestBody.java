@@ -111,13 +111,6 @@ public class RequestBody {
         return body("addRequestToAuction", token, data);
     }
 
-    public static String addBid(Auction auction, double price, String token) {
-        JSONObject data = new JSONObject();
-        data.put("Auction", auction.getID());
-        data.put("Price", price);
-        return body("addBid", token, data);
-    }
-
     public static String getBids(Auction auction, String token) {
         JSONObject data = new JSONObject();
         data.put("Auction", auction.getID());

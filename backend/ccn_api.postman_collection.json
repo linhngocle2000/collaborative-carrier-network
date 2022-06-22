@@ -15,7 +15,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"Cmd\": \"register\",\r\n    \"Data\": {\r\n        \"Username\": \"hans\",\r\n        \"Name\": \"Hans Peter\",\r\n        \"Password\": \"hans\",\r\n        \"IsAuctioneer\": false,\r\n        \"Vehicle\": \"Ship_01\",\r\n        \"DepotLat\": 53.891299,\r\n        \"DepotLon\": 8.711086\r\n    }\r\n}",
+							"raw": "{\r\n    \"Cmd\": \"register\",\r\n    \"Debug\": true,\r\n    \"Data\": {\r\n        \"Username\": \"max\",\r\n        \"Name\": \"Max \",\r\n        \"Password\": \"Max Caulfield\",\r\n        \"IsAuctioneer\": false,\r\n        \"DepotLat\": {{$randomLatitude}},\r\n        \"DepotLon\": {{$randomLongitude}},\r\n        \"PickupBaserate\": {{$randomPrice}},\r\n        \"TravelCostPerKM\": {{$randomPrice}},\r\n        \"LoadBaserate\": {{$randomPrice}},\r\n        \"InternalTravelCostPerKM\": {{$randomPrice}}\r\n    }\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -38,7 +38,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"Cmd\": \"login\",\r\n    \"Data\": {\r\n        \"Username\": \"hans\",\r\n        \"Password\": \"hans\"\r\n    }\r\n}",
+							"raw": "{\r\n    \"Cmd\": \"login\",\r\n    \"Debug\": true,\r\n    \"Data\": {\r\n        \"Username\": \"hans\",\r\n        \"Password\": \"hans\"\r\n    }\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -55,13 +55,36 @@
 					"response": []
 				},
 				{
-					"name": "Get agents",
+					"name": "Get agent",
 					"request": {
 						"method": "POST",
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"Cmd\": \"getAgents\",\r\n    \"Token\": \"{{AuthToken}}\"\r\n}",
+							"raw": "{\r\n    \"Cmd\": \"getAgent\",\r\n    \"Token\": \"{{AuthToken}}\",\r\n    \"Debug\": true,\r\n    \"Data\": {\r\n        \"Username\": \"chris\"\r\n    }\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{URL}}",
+							"host": [
+								"{{URL}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get all agents",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"Cmd\": \"getAgents\",\r\n    \"Debug\": true,\r\n    \"Token\": \"{{AuthToken}}\"\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -84,7 +107,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"Cmd\": \"getAuctioneers\",\r\n    \"Token\": \"{{AuthToken}}\"\r\n}",
+							"raw": "{\r\n    \"Cmd\": \"getAuctioneers\",\r\n    \"Token\": \"{{AuthToken}}\",\r\n    \"Debug\": true\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -107,7 +130,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"Cmd\": \"getCarriers\",\r\n    \"Token\": \"{{AuthToken}}\"\r\n}",
+							"raw": "{\r\n    \"Cmd\": \"getCarriers\",\r\n    \"Token\": \"{{AuthToken}}\",\r\n    \"Debug\": true\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -135,7 +158,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"Cmd\": \"addRequest\",\r\n    \"Token\": \"{{AuthToken}}\",\r\n    \"Data\": [\r\n        {\r\n            \"Agent\": \"chris\",\r\n            \"PickupLat\": {{$randomLatitude}},\r\n            \"PickupLon\": {{$randomLongitude}},\r\n            \"DeliveryLat\": {{$randomLatitude}},\r\n            \"DeliveryLon\": {{$randomLongitude}}\r\n        }\r\n    ]\r\n}",
+							"raw": "{\r\n    \"Cmd\": \"addRequest\",\r\n    \"Token\": \"{{AuthToken}}\",\r\n    \"Data\": [\r\n        {\r\n            \"Agent\": \"chris\",\r\n            \"PickupLat\": {{$randomLatitude}},\r\n            \"PickupLon\": {{$randomLongitude}},\r\n            \"DeliveryLat\": {{$randomLatitude}},\r\n            \"DeliveryLon\": {{$randomLongitude}}\r\n        }\r\n    ],\r\n    \"Debug\": true\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -152,13 +175,59 @@
 					"response": []
 				},
 				{
-					"name": "Get requests",
+					"name": "Get all requests",
 					"request": {
 						"method": "POST",
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"Cmd\": \"getRequests\",\r\n    \"Token\": \"{{AuthToken}}\"\r\n}",
+							"raw": "{\r\n    \"Cmd\": \"getRequests\",\r\n    \"Token\": \"{{AuthToken}}\",\r\n    \"Debug\": true\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{URL}}",
+							"host": [
+								"{{URL}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get requests of agent",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"Cmd\": \"getRequestsOfAgent\",\r\n    \"Token\": \"{{AuthToken}}\",\r\n    \"Debug\": true,\r\n    \"Data\": {\r\n        \"Agent\": \"chris\"\r\n    }\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{URL}}",
+							"host": [
+								"{{URL}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get requests of auction",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"Cmd\": \"getRequestsOfAuction\",\r\n    \"Token\": \"{{AuthToken}}\",\r\n    \"Debug\": true,\r\n    \"Data\": {\r\n        \"Auction\": \"2\"\r\n    }\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -177,27 +246,78 @@
 			]
 		},
 		{
-			"name": "Get auctions",
-			"request": {
-				"method": "POST",
-				"header": [],
-				"body": {
-					"mode": "raw",
-					"raw": "{\r\n    \"Cmd\": \"getAuctions\",\r\n    \"Token\": \"{{AuthToken}}\"\r\n}",
-					"options": {
-						"raw": {
-							"language": "json"
+			"name": "Auction",
+			"item": [
+				{
+					"name": "Add auction",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"Cmd\": \"addAuction\",\r\n    \"Token\": \"{{AuctioneerToken}}\",\r\n    \"Debug\": true,\r\n    \"Data\": {\r\n\r\n    }\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{URL}}",
+							"host": [
+								"{{URL}}"
+							]
 						}
-					}
+					},
+					"response": []
 				},
-				"url": {
-					"raw": "{{URL}}",
-					"host": [
-						"{{URL}}"
-					]
+				{
+					"name": "Get auctions",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"Cmd\": \"getAuctions\",\r\n    \"Token\": \"{{AuthToken}}\",\r\n    \"Debug\": true\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{URL}}",
+							"host": [
+								"{{URL}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get auctions Copy",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"Cmd\": \"addRequestToAuction\",\r\n    \"Token\": \"{{AuctioneerToken}}\",\r\n    \"Debug\": true,\r\n    \"Data\": {\r\n        \"TransportRequest\": 4,\r\n        \"Auction\": 2\r\n    }\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{URL}}",
+							"host": [
+								"{{URL}}"
+							]
+						}
+					},
+					"response": []
 				}
-			},
-			"response": []
+			]
 		}
 	],
 	"event": [
@@ -229,6 +349,11 @@
 		{
 			"key": "AuthToken",
 			"value": "39426cdc28c5290f625b839848622365",
+			"type": "default"
+		},
+		{
+			"key": "AuctioneerToken",
+			"value": "6a1604ea536a3d3e88e01b91bf54d3ba",
 			"type": "default"
 		}
 	]

@@ -445,7 +445,11 @@ public class HTTPRequests {
 
     public static Bid addBid(Auction auction, CarrierAgent agent, double price) {
         try {
-            var json = send(RequestBody.addBid(auction, price, token));
+            JSONObject data = new JSONObject();
+            data.put("Auction", auction.getID());
+            data.put("Agent", agent.getUsername());
+            data.put("Price", price);
+            var json = send(body("addBid", token, data));
             boolean result = json.getBoolean("success");
             if (!result) {
                 return null;

@@ -16,6 +16,7 @@ import java.awt.*;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 
 
 public class StartAuctionUI extends JFrame {
@@ -25,9 +26,8 @@ public class StartAuctionUI extends JFrame {
     private Font font = UIData.getFont();
     private int width = UIData.getWidth();
     private int height = UIData.getHeight();
-    static final int MAX_T = 5;
+    static final int MAX_T = Runtime.getRuntime().availableProcessors() + 1;
     private List<CarrierAgent> bidders;
-    private ExecutorService tourPool;
 
     public StartAuctionUI() {
 
@@ -94,45 +94,44 @@ public class StartAuctionUI extends JFrame {
 
     public void auctionOff() {
         checkCarrierList();
-        tourPool = Executors.newFixedThreadPool(MAX_T);
+        ExecutorService pool = Executors.newFixedThreadPool(MAX_T);
         for (CarrierAgent carrier : bidders) {
             Runnable r = new AuctionTask(carrier);
-            tourPool.execute(r);
+            pool.submit(r); // Use submit instead of execute
         }
-        tourPool.shutdown();
+        pool.shutdown();
+        pool.awaitTermination(Long.MAX_VALUE, TimeUnit.NANOSECONDS); // Without this call, the executor service may not finish all auction tasks!
     }
 
     public void startAuctions() {
-        while(!tourPool.isShutdown()) {}
         checkCarrierList();
         HTTPRequests.resetCost();
         HTTPRequests.stashTransportRequests();
-        for (int i = 0; i < 3; i++) {
+        for (int i = 0; i < 3; i++) 
+        {
             List<Auction> auctions = HTTPRequests.getAllAuctions();
             if (auctions!=null && !auctions.isEmpty()) {
                 for (Auction auction : auctions) {
-                    ExecutorService pool = Executors.newFixedThreadPool(MAX_T);
                     auction.setAuctionStrategy(new VickreyAuction());
+                    auction.start();
+                    ExecutorService pool = Executors.newFixedThreadPool(MAX_T);
                     for (CarrierAgent bidder : bidders) {
                         Runnable r = new BidTask(bidder, auction);
-                        pool.execute(r);
+                        pool.submit(r); // Use submit instead of execute
                     }
                     pool.shutdown();
-                    List<Bid> bids = HTTPRequests.getBids(auction);
-                    if (bids != null) {
-                        for(Bid bid : bids) {
-                            auction.addBid(bid);
-                        }
-                        Bid winningBid = auction.getWinningBid();
-                        System.out.println("Winning bid for auction " + auction.getID()+": "+ winningBid.getPrice());
+                    pool.awaitTermination(Long.MAX_VALUE, TimeUnit.NANOSECONDS); // Without this call, the executor service may not finish all bid tasks!
+                    auction.end();
+                    Bid winningBid = auction.getWinningBid();
+                    if (winningBid == null) {
                         auction.notifyWinner();
                     }
                 }
             }
         }
         HTTPRequests.resetAuction();
+        this.dispose();
         HTTPRequests.logout();
-        System.exit(0);
     }
 
 
@@ -154,15 +153,12 @@ class BidTask implements Runnable
     public void run()
     {
         TourPlanning tour = new TourPlanning(carrier);
-        if (!tour.getRequests().contains(transReq)) {
-            tour.addRequest(transReq);
-            double price = tour.getProfit(transReq) - 1;
-            if (price >= 0) {
-                Bid bid = HTTPRequests.addBid(auction, carrier, price);
-                System.out.println("Carrier " + carrier.getUsername() + " bid for " + transReq.getRouteString() + " with " + bid.getPrice());
-            }
+        double price = tour.getProfit(transReq)-1000.00;
+        if (price>=0) {
+            Bid bid = HTTPRequests.addBid(auction, carrier, price);
+            auction.addBid(bid);
         }
-
+        System.out.println("Tour planning for carrier "+carrier.getUsername()+" and request " + transReq.getRouteString() +" completed");
     }
 }
 
