@@ -92,7 +92,7 @@ public class StartAuctionUI extends JFrame {
         }
     }
 
-    public void auctionOff() {
+    public void auctionOff() throws InterruptedException {
         checkCarrierList();
         ExecutorService pool = Executors.newFixedThreadPool(MAX_T);
         for (CarrierAgent carrier : bidders) {
@@ -103,7 +103,7 @@ public class StartAuctionUI extends JFrame {
         pool.awaitTermination(Long.MAX_VALUE, TimeUnit.NANOSECONDS); // Without this call, the executor service may not finish all auction tasks!
     }
 
-    public void startAuctions() {
+    public void startAuctions() throws InterruptedException {
         checkCarrierList();
         HTTPRequests.resetCost();
         HTTPRequests.stashTransportRequests();
@@ -122,8 +122,12 @@ public class StartAuctionUI extends JFrame {
                     pool.shutdown();
                     pool.awaitTermination(Long.MAX_VALUE, TimeUnit.NANOSECONDS); // Without this call, the executor service may not finish all bid tasks!
                     auction.end();
-                    Bid winningBid = auction.getWinningBid();
-                    if (winningBid == null) {
+                    List<Bid> bids = HTTPRequests.getBids(auction);
+                    if (bids!=null) {
+                        for (Bid bid : bids) {
+                            auction.addBid(bid);
+                        }
+                        //Bid winningBid = auction.getWinningBid();
                         auction.notifyWinner();
                     }
                 }
@@ -132,6 +136,7 @@ public class StartAuctionUI extends JFrame {
         HTTPRequests.resetAuction();
         this.dispose();
         HTTPRequests.logout();
+        System.exit(0);
     }
 
 
@@ -153,12 +158,18 @@ class BidTask implements Runnable
     public void run()
     {
         TourPlanning tour = new TourPlanning(carrier);
-        double price = tour.getProfit(transReq)-1000.00;
-        if (price>=0) {
-            Bid bid = HTTPRequests.addBid(auction, carrier, price);
-            auction.addBid(bid);
+        if (!tour.getRequests().contains(transReq)) {
+            tour.addRequest(transReq);
+            double price = tour.getProfit(transReq) - 1;
+            price = Math.round(price * 100.0) / 100.0;
+            System.out.println(carrier.getUsername() + " profit " + price + " for " + transReq.getRouteString());
+            if (price >= 0) {
+                Bid bid = HTTPRequests.addBid(auction, carrier, price);
+                assert bid != null;
+                System.out.println(carrier.getUsername() + " bid for request " + transReq.getRouteString() + " with " + bid.getPrice());
+            }
         }
-        System.out.println("Tour planning for carrier "+carrier.getUsername()+" and request " + transReq.getRouteString() +" completed");
+
     }
 }
 

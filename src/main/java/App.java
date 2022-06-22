@@ -115,8 +115,16 @@ public class App {
                 auctioneerUI = new StartAuctionUI();
                 auctioneer = (AuctioneerAgent)user;
                 auctioneerUI.setVisible(true);
-                auctioneerUI.auctionOff();
-                auctioneerUI.startAuctions();
+                try {
+                    auctioneerUI.auctionOff();
+                } catch (InterruptedException ex) {
+                    ex.printStackTrace();
+                }
+                try {
+                    auctioneerUI.startAuctions();
+                } catch (InterruptedException ex) {
+                    ex.printStackTrace();
+                }
             } else {
                 auctioneer = null;
                 carrier = (CarrierAgent)user;
