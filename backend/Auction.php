@@ -63,11 +63,11 @@ class Auction
 	{
 		TokenHelper::assertToken();
 
-		$agent = Agent::getAgentFromToken(TokenHelper::getToken())->getUsername();
+		$db = Database::getConnection();
+		$agent = $db->escape_string($data['Agent']);
 		$auction = intval($data['Auction']);
 		$price = intval($data['Price']);
 
-		$db = Database::getConnection();
 		$result = $db->query("INSERT INTO `Bid` (`Agent`, `Auction`, `Price`) VALUES ('$agent', $auction, $price)");
 		if (empty($result) || $db->affected_rows != 1)
 		{
