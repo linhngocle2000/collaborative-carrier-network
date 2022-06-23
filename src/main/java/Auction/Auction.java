@@ -1,9 +1,11 @@
 package Auction;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
 import UIResource.HTTPResource.HTTPRequests;
+import org.json.JSONException;
 
 public class Auction {
 
@@ -19,7 +21,7 @@ public class Auction {
 		requests = new ArrayList<>();
 	}
 
-	public void start() {
+	public void start() throws IOException, InterruptedException, JSONException {
 		strategy.start();
 		HTTPRequests.startAuction(this);
 		isActive = true;
@@ -30,7 +32,7 @@ public class Auction {
 		strategy.addBid(bid);
 	}
 
-	public void end() {
+	public void end() throws IOException, InterruptedException, JSONException {
 		isActive = false;
 		strategy.end();
 		HTTPRequests.endAuction(this);
@@ -48,7 +50,7 @@ public class Auction {
 	 * Sends a message to the winner of the auction and transfers ownership
 	 * of transport requests
 	 */
-	public void notifyWinner() {
+	public void notifyWinner() throws IOException, InterruptedException, JSONException {
 		HTTPRequests.setWinner(this, getWinningBid());
 	}
 

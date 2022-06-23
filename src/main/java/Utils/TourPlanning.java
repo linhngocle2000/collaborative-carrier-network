@@ -14,10 +14,10 @@ import com.graphhopper.jsprit.core.util.Solutions;
 import Agent.CarrierAgent;
 import Auction.TransportRequest;
 import UIResource.HTTPResource.HTTPRequests;
+import org.json.JSONException;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
+import java.io.IOException;
+import java.util.*;
 
 import javax.swing.JPanel;
 
@@ -39,7 +39,7 @@ public class TourPlanning {
     * Initial a tour of current carrier agent.
     * Transport request is updated from DB.
     */
-   public TourPlanning(CarrierAgent agent) {
+   public TourPlanning(CarrierAgent agent) throws Exception {
       this.agent = agent;
       setDepot(agent.getDepotX(), agent.getDepotY());
       this.costPerDistance = agent.getCostPerDistance();
@@ -62,7 +62,7 @@ public class TourPlanning {
    /**
     * Update list of request from carrier DB
     */
-   public void refreshRequests() {
+   public void refreshRequests() throws Exception {
       this.requests = HTTPRequests.getTransportRequestsOfAgent(agent);
       cost = null;
    }
@@ -238,6 +238,14 @@ public class TourPlanning {
 
    public VehicleRoutingProblemSolution getBestSolution() {
       return this.bestSolution;
+   }
+
+   public List<Integer> getRequestIDs() {
+      List<Integer> res = new ArrayList<>();
+      for(TransportRequest req : requests) {
+         res.add(Integer.parseInt(req.getID()));
+      }
+      return res;
    }
 
    public List<TransportRequest> getRequests() {

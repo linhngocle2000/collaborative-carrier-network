@@ -10,6 +10,7 @@ import UIResource.HTTPResource.HTTPRequests;
 import Utils.Converter;
 
 import javax.swing.*;
+import java.io.IOException;
 import java.util.ArrayList;
 
 public class App {
@@ -105,7 +106,12 @@ public class App {
             loginUI.setErrorLabel("");
             String username = loginUI.getNameText();
             String password = loginUI.getPasswordText();
-            Agent user = HTTPRequests.login(username, password);
+            Agent user = null;
+            try {
+                user = HTTPRequests.login(username, password);
+            } catch (Exception ex) {
+                ex.printStackTrace();
+            }
             if (user == null) {
                 loginUI.setErrorLabel("Incorrect username/password.");
                 return;
@@ -115,16 +121,8 @@ public class App {
                 auctioneerUI = new StartAuctionUI();
                 auctioneer = (AuctioneerAgent)user;
                 auctioneerUI.setVisible(true);
-                try {
-                    auctioneerUI.auctionOff();
-                } catch (InterruptedException ex) {
-                    ex.printStackTrace();
-                }
-                try {
-                    auctioneerUI.startAuctions();
-                } catch (InterruptedException ex) {
-                    ex.printStackTrace();
-                }
+                auctioneerUI.auctionOff();
+                auctioneerUI.startAuctions();
             } else {
                 auctioneer = null;
                 carrier = (CarrierAgent)user;
