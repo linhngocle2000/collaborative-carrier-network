@@ -1,6 +1,7 @@
 package CarrierUI;
 
 import Auction.TransportRequest;
+import UIResource.scrollbar.ScrollBarCustom;
 import Utils.TourPlanning;
 import UIResource.UIData;
 import UIResource.HTTPResource.HTTPRequests;
@@ -14,6 +15,9 @@ import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.TableColumnModel;
 import java.awt.*;
 import java.util.List;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class AdministrationUI extends JFrame {
 
@@ -33,6 +37,8 @@ public class AdministrationUI extends JFrame {
     private Color errorColor = UIData.getErrorColor();
     private Color successColor = UIData.getSuccessColor();
 
+    private static Logger LOGGER = LoggerFactory.getLogger(AdministrationUI.class);
+
     public AdministrationUI(CarrierAgent carrier) {
         this.carrier = carrier;
         try {
@@ -44,7 +50,6 @@ public class AdministrationUI extends JFrame {
         visUI = new VisualizationUI();
         leftVisualPanel = visUI.getLeftVisualPanel();
         rightVisualPanel = visUI.getRightVisualPanel();
-        //costCalcUI = new CalculatorUI(tour);
 
 ///////////
 // Frame
@@ -123,13 +128,13 @@ public class AdministrationUI extends JFrame {
         }
 
         JScrollPane scrollPane = new JScrollPane(table);
-        scrollPane.setPreferredSize(new Dimension(530, 323));
-        /*if (model.getRowCount() <= 12) {
+
+        if (model.getRowCount() <= 12) {
             scrollPane.setPreferredSize(new Dimension(530, model.getRowCount()*25+23));
         } else {
-
+            scrollPane.setPreferredSize(new Dimension(530, 323));
             scrollPane.setVerticalScrollBar(new ScrollBarCustom(12, model.getRowCount()));
-        }*/
+        }
 
         constraints = new GridBagConstraints();
         constraints.gridx = 0;
@@ -372,7 +377,7 @@ public class AdministrationUI extends JFrame {
         try {
             oldRequests = HTTPRequests.getStashedTransportRequests(carrier);
         } catch (Exception e) {
-            e.printStackTrace();
+            LOGGER.warn(e.getMessage());
         }
         TourPlanning oldTour = new TourPlanning(carrier,oldRequests);
 
@@ -380,11 +385,13 @@ public class AdministrationUI extends JFrame {
         leftVisualPanel.removeAll();
         leftVisualPanel.add(oldTour.visualize());
         leftVisualPanel.revalidate();
+        LOGGER.info("Before tour visualized");
 
 
         rightVisualPanel.removeAll();
         rightVisualPanel.add(tour.visualize());
         rightVisualPanel.revalidate();
+        LOGGER.info("After tour visualized");
 
 
 

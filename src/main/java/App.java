@@ -10,8 +10,11 @@ import UIResource.HTTPResource.HTTPRequests;
 import Utils.Converter;
 
 import javax.swing.*;
-import java.io.IOException;
 import java.util.ArrayList;
+
+import org.apache.log4j.PropertyConfigurator;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class App {
 
@@ -25,6 +28,7 @@ public class App {
     private static CarrierAgent carrier;
 
     private static JButton carrierLogoutBtn;
+    private static Logger LOGGER = LoggerFactory.getLogger(App.class);
 
     public App() {
 
@@ -38,18 +42,21 @@ public class App {
         welcomeLoginBtn.addActionListener(e -> {
             welcomeUI.setVisible(false);
             loginUI.setVisible(true);
+            LOGGER.info("Login screen");
         });
 
         JButton welcomeRegisterBtn = welcomeUI.getRegisterBtn();
         welcomeRegisterBtn.addActionListener(e -> {
             welcomeUI.setVisible(false);
             registerUI.setVisible(true);
+            LOGGER.info("Register screen");
         });
 
         JButton loginBackBtn = loginUI.getBackBtn();
         loginBackBtn.addActionListener(e -> {
             loginUI.setVisible(false);
             welcomeUI.setVisible(true);
+            LOGGER.info("Welcome screen");
         });
 
         JButton registerRegisterBtn = registerUI.getRegisterBtn();
@@ -89,8 +96,10 @@ public class App {
                 registerUI.setErrorLabel("");
                 registerUI.showSuccessLabel();
                 registerUI.deactivate();
+                LOGGER.info("Carrier " + carrier.getUsername() + " registered");
             } catch (Exception ex) {
                 registerUI.setErrorLabel(ex.getMessage());
+                LOGGER.warn(ex.getMessage());
             }
         });
 
@@ -98,6 +107,7 @@ public class App {
         registerBackBtn.addActionListener(e -> {
             registerUI.setVisible(false);
             welcomeUI.setVisible(true);
+            LOGGER.info("Welcome screen");
         });
 
         JButton loginLoginBtn = loginUI.getLoginBtn();
@@ -110,13 +120,14 @@ public class App {
             try {
                 user = HTTPRequests.login(username, password);
             } catch (Exception ex) {
-                ex.printStackTrace();
+                LOGGER.warn(ex.getMessage());
             }
             if (user == null) {
                 loginUI.setErrorLabel("Incorrect username/password.");
                 return;
             }
             if (user.isAuctioneer()) {
+                LOGGER.info("Auctioneer logged in");
                 carrier = null;
                 auctioneerUI = new StartAuctionUI();
                 auctioneer = (AuctioneerAgent)user;
@@ -126,23 +137,24 @@ public class App {
             } else {
                 auctioneer = null;
                 carrier = (CarrierAgent)user;
+                LOGGER.info("Carrier " + carrier.getUsername() + " logged in");
                 adminUI = new AdministrationUI(carrier);
                 adminUI.setVisible(true);
                 adminUI.getVisUI().setVisible(true);
                 carrierLogoutBtn = adminUI.getLogoutBtn();
                 carrierLogoutBtn.addActionListener(event -> {
+                    LOGGER.info("Carrier " + carrier.getUsername() + " logged out");
                     adminUI.getVisUI().dispose();
                     adminUI.dispose();
                     HTTPRequests.logout();
                     new App();
                 });
             }
-            loginUI.setVisible(false);
-            loginUI.reset();
         });
     }
 
     static public void main(String[] args) {
+        PropertyConfigurator.configure("src/main/resources/log4j.properties");
         new App();
     }
 }

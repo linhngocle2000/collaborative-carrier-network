@@ -14,6 +14,9 @@ import org.json.*;
 import Agent.*;
 import Auction.*;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 /**
  * Contains all requests to the server backend.
  * If a request fails, null or in some cases false is returned by the function.
@@ -21,26 +24,32 @@ import Auction.*;
  */
 public class HTTPRequests {
 
+    private static Logger LOGGER = LoggerFactory.getLogger(HTTPRequests.class);
+
     // Agent
 
     public static boolean registerCarrier(String name, String username, String password, float depotX, float depotY,
         float pickupBaserate, float externalTravelCost, float loadBaserate, float internalTravelCost) throws IOException, InterruptedException,JSONException {
+        LOGGER.info("registerCarrier " + username);
         var json = send(RequestBody.registerCarrier(name, username, password, depotX, depotY, pickupBaserate,
                 externalTravelCost, loadBaserate, internalTravelCost));
         var success = json.getBoolean("success");
         if (!success) {
             JSONObject error = json.getJSONObject("error");
             lastError = new Exception(error.getString("message"));
+            LOGGER.warn(error.getString("message"));
         }
         return success;
     }
 
     public static Agent login(String username, String password) throws IOException, InterruptedException,JSONException {
+        LOGGER.info("login " + username);
         var json = send(RequestBody.login(username, password));
         boolean success = json.getBoolean("success");
         if (!success) {
             JSONObject error = json.getJSONObject("error");
             lastError = new Exception(error.getString("message"));
+            LOGGER.warn(error.getString("message"));
             return null;
         }
         var data = json.getJSONObject("data");
@@ -55,11 +64,13 @@ public class HTTPRequests {
     }
 
     public static CarrierAgent getAgent(String username) throws IOException, InterruptedException, JSONException{
+        LOGGER.info("getAgent " + username);
         var json = send(RequestBody.getAgent(username, token));
         boolean success = json.getBoolean("success");
         if (!success) {
             JSONObject error = json.getJSONObject("error");
             lastError = new Exception(error.getString("message"));
+            LOGGER.warn(error.getString("message"));
             return null;
         }
         return AgentFactory.carrierFromJSON(json.getJSONObject("data"));
@@ -80,11 +91,13 @@ public class HTTPRequests {
     }
 
     public static List<CarrierAgent> getCarrierAgents() throws IOException, InterruptedException, JSONException {
+        LOGGER.info("getCarrierAgents");
         var json = send(RequestBody.getCarrierAgents(token));
         boolean success = json.getBoolean("success");
         if (!success) {
             JSONObject error = json.getJSONObject("error");
             lastError = new Exception(error.getString("message"));
+            LOGGER.warn(error.getString("message"));
             return null;
         }
         var array = json.getJSONArray("data");
@@ -98,11 +111,13 @@ public class HTTPRequests {
 
     public static TransportRequest addTransportRequest(CarrierAgent agent, float pickupX, float pickupY,
             float deliveryX, float deliveryY) throws IOException, InterruptedException, JSONException {
+        LOGGER.info("addTransportRequest " + agent.getUsername());
         var json = send(RequestBody.addTransportRequest(agent, pickupX, pickupY, deliveryX, deliveryY, token));
         boolean success = json.getBoolean("success");
         if (!success) {
             JSONObject error = json.getJSONObject("error");
             lastError = new Exception(error.getString("message"));
+            LOGGER.warn(error.getString("message"));
             return null;
         }
         int id = json.getInt("data");
@@ -111,11 +126,13 @@ public class HTTPRequests {
 
     public static List<TransportRequest> getTransportRequestsOfAgent(CarrierAgent agent) throws Exception {
             // Load requests
+        LOGGER.info("getTransportRequestsOfAgent " + agent.getUsername());
         var json = send(RequestBody.getTransportRequestsOfAgent(agent, token));
         boolean success = json.getBoolean("success");
         if (!success) {
             JSONObject error = json.getJSONObject("error");
             lastError = new Exception(error.getString("message"));
+            LOGGER.warn(error.getString("message"));
             return null;
         }
         var array = json.getJSONArray("data");
@@ -130,6 +147,7 @@ public class HTTPRequests {
     }
 
     public static List<TransportRequest> getTransportRequestsOfAuction(Auction auction) throws Exception {
+        LOGGER.info("getTransportRequestsOfAuction " + auction.getID());
         // Cache agents for multiple ownership
         HashMap<String, CarrierAgent> map = new HashMap<>();
 
@@ -139,6 +157,7 @@ public class HTTPRequests {
         if (!success) {
             JSONObject error = json.getJSONObject("error");
             lastError = new Exception(error.getString("message"));
+            LOGGER.warn(error.getString("message"));
             return null;
         }
         var array = json.getJSONArray("data");
@@ -168,11 +187,13 @@ public class HTTPRequests {
      * Set cost of all transport requests to 0
      */
     public static boolean resetCost() throws IOException, InterruptedException, JSONException {
+        LOGGER.info("resetCost");
         var json = send(body("resetCost", token, null));
         boolean success = json.getBoolean("success");
         if (!success) {
             JSONObject error = json.getJSONObject("error");
             lastError = new Exception(error.getString("message"));
+            LOGGER.warn(error.getString("message"));
         }
         return success;
     }
@@ -181,12 +202,13 @@ public class HTTPRequests {
      * Reset auction table
      */
     public static boolean resetAuction() throws IOException, InterruptedException, JSONException {
-
+        LOGGER.info("resetAuction");
         var json = send(body("resetAuction", token, null));
         boolean success = json.getBoolean("success");
         if (!success) {
             JSONObject error = json.getJSONObject("error");
             lastError = new Exception(error.getString("message"));
+            LOGGER.warn(error.getString("message"));
         }
         return success;
     }
@@ -196,11 +218,13 @@ public class HTTPRequests {
      * The last stash is deleted before the new stash is created.
      */
     public static boolean stashTransportRequests() throws IOException, InterruptedException, JSONException {
+        LOGGER.info("stashTransportRequests");
         var json = send(body("stashRequests", token, null));
         boolean success = json.getBoolean("success");
         if (!success) {
             JSONObject error = json.getJSONObject("error");
             lastError = new Exception(error.getString("message"));
+            LOGGER.warn(error.getString("message"));
         }
         return success;
     }
@@ -213,15 +237,14 @@ public class HTTPRequests {
      *              requests are returned.
      */
     public static List<TransportRequest> getStashedTransportRequests(CarrierAgent agent) throws Exception {
+        LOGGER.info("getStashedTransportRequests " + agent.getUsername());
         // Cache agents for multiple ownership
         HashMap<String, CarrierAgent> map = new HashMap<>();
 
         // Prepare data
         JSONObject data = null;
-        if (agent != null) {
-            data = new JSONObject();
-            data.put("Agent", agent.getUsername());
-        }
+        data = new JSONObject();
+        data.put("Agent", agent.getUsername());
 
         // Load requests
         var json = send(body("getStashedRequests", token, data));
@@ -229,6 +252,7 @@ public class HTTPRequests {
         if (!success) {
             JSONObject error = json.getJSONObject("error");
             lastError = new Exception(error.getString("message"));
+            LOGGER.warn(error.getString("message"));
             return null;
         }
         var array = json.getJSONArray("data");
@@ -239,17 +263,7 @@ public class HTTPRequests {
             var request = TransportRequest.parse(j);
 
             CarrierAgent owner;
-            if (agent != null) {
-                owner = agent;
-            } else if (map.containsKey(username)) {
-                owner = map.get(username);
-            } else {
-                owner = getAgent(username);
-                map.put(username, owner);
-            }
-            if (owner == null) {
-                throw new Exception("Could not retrieve owner of transport request");
-            }
+            owner = agent;
             request.setOwner(owner);
             result.add(request);
         }
@@ -259,11 +273,13 @@ public class HTTPRequests {
     // Auction
 
     public static Auction addAuction() throws IOException, InterruptedException, JSONException {
+        LOGGER.info("addAuction");
         var json = send(RequestBody.addAuction(token));
         boolean success = json.getBoolean("success");
         if (!success) {
             JSONObject error = json.getJSONObject("error");
             lastError = new Exception(error.getString("message"));
+            LOGGER.warn(error.getString("message"));
             return null;
         }
         int id = json.getInt("data");
@@ -274,11 +290,13 @@ public class HTTPRequests {
      * @return All auctions whether they are active or not
      */
     public static List<Auction> getAllAuctions() throws Exception {
+        LOGGER.info("getAllAuctions");
         var json = send(RequestBody.getAuctions(token));
         boolean success = json.getBoolean("success");
         if (!success) {
             JSONObject error = json.getJSONObject("error");
             lastError = new Exception(error.getString("message"));
+            LOGGER.warn(error.getString("message"));
             return null;
         }
         var array = json.getJSONArray("data");
@@ -302,16 +320,19 @@ public class HTTPRequests {
 
 
     public static boolean addTransportRequestToAuction(Auction auction, TransportRequest request) throws IOException, InterruptedException, JSONException {
+        LOGGER.info("addTransportRequestToAuction " + auction.getID());
         var json = send(RequestBody.addRequestToAuction(auction, request, token));
         boolean success = json.getBoolean("success");
         if (!success) {
             JSONObject error = json.getJSONObject("error");
             lastError = new Exception(error.getString("message"));
+            LOGGER.warn(error.getString("message"));
         }
         return success;
     }
 
     public static Bid addBid(Auction auction, CarrierAgent agent, double price) throws IOException, InterruptedException, JSONException {
+        LOGGER.info("addBid " + auction.getID());
         JSONObject data = new JSONObject();
         data.put("Auction", auction.getID());
         data.put("Agent", agent.getUsername());
@@ -321,6 +342,7 @@ public class HTTPRequests {
         if (!result) {
             JSONObject error = json.getJSONObject("error");
             lastError = new Exception(error.getString("message"));
+            LOGGER.warn(error.getString("message"));
             return null;
         }
         int id = json.getInt("data");
@@ -328,6 +350,7 @@ public class HTTPRequests {
     }
 
     public static List<Bid> getBids(Auction auction) throws IOException, InterruptedException, JSONException {
+        LOGGER.info("getBids " + auction.getID());
         // Cache agents for multiple bids by same agent
         HashMap<String, CarrierAgent> map = new HashMap<>();
 
@@ -336,6 +359,7 @@ public class HTTPRequests {
         if (!success) {
             JSONObject error = json.getJSONObject("error");
             lastError = new Exception(error.getString("message"));
+            LOGGER.warn(error.getString("message"));
             return null;
         }
         var array = json.getJSONArray("data");
@@ -355,7 +379,7 @@ public class HTTPRequests {
             if (bidder == null) {
                 String message = "Could not retrieve bidder";
                 lastError = new Exception(message);
-                System.err.println(message);
+                LOGGER.warn(message);
                 return null;
             }
             result.add(new Bid(id, auction, bidder, price));
@@ -364,33 +388,37 @@ public class HTTPRequests {
     }
 
     public static boolean startAuction(Auction auction) throws IOException, InterruptedException, JSONException {
-
+        LOGGER.info("startAuction " + auction.getID());
         var json = send(RequestBody.startAuction(auction, token));
         boolean success = json.getBoolean("success");
         if (!success) {
             JSONObject error = json.getJSONObject("error");
             lastError = new Exception(error.getString("message"));
+            LOGGER.warn(error.getString("message"));
         }
         return success;
     }
 
     public static boolean endAuction(Auction auction) throws IOException, InterruptedException, JSONException {
-
+        LOGGER.info("endAuction " + auction.getID());
         var json = send(RequestBody.endAuction(auction, token));
         boolean success = json.getBoolean("success");
         if (!success) {
             JSONObject error = json.getJSONObject("error");
             lastError = new Exception(error.getString("message"));
+            LOGGER.warn(error.getString("message"));
         }
         return success;
     }
 
     public static boolean setWinner(Auction auction, Bid bid) throws IOException, InterruptedException, JSONException {
+        LOGGER.info("setWinner " + auction.getID());
         var json = send(RequestBody.setWinner(auction, bid, token));
         boolean success = json.getBoolean("success");
         if (!success) {
             JSONObject error = json.getJSONObject("error");
             lastError = new Exception(error.getString("message"));
+            LOGGER.warn(error.getString("message"));
         }
         return success;
     }
@@ -429,11 +457,11 @@ public class HTTPRequests {
             var error = json.getJSONObject("error");
             if (error.has("message")) {
                 String message = error.getString("message");
-                System.err.println(message);
                 lastError = new Exception(message);
+                LOGGER.warn(error.getString("message"));
             }
             if (error.has("stacktrace")) {
-                System.err.println(error.getString("stacktrace"));
+                LOGGER.warn(error.getString("stacktrace"));
             }
         }
         return json;
