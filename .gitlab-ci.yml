@@ -3,12 +3,13 @@ image: maven:3-jdk-11
 stages:
   - build
 
-maven-build:
-  stage: build
-  script: "mvn package"
+java:
+  stage: test
+  script:
+    - mvn verify
   artifacts:
-    paths:
-      - target/reports/TEST-*.xml
+    when: always
     reports:
       junit:
-        - target/reports/TEST-*.xml
+        - target/surefire-reports/TEST-*.xml
+        - target/failsafe-reports/TEST-*.xml
