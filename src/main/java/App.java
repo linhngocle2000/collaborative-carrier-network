@@ -66,10 +66,10 @@ public class App {
                 if (!registerUI.areAllFieldsFilled()) {
                     throw new Exception("Please fill out all fields.");
                 }
-                if (!Converter.checkPriceFormat(registerUI.getBaseRateAText()) ||
-                        !Converter.checkPriceFormat(registerUI.getBasePriceText()) ||
-                        !Converter.checkPriceFormat(registerUI.getBaseRateBText()) ||
-                        !Converter.checkPriceFormat(registerUI.getBaseInRateText())) {
+                if (Converter.checkPriceFormat(registerUI.getBaseRateAText()) ||
+                        Converter.checkPriceFormat(registerUI.getBasePriceText()) ||
+                        Converter.checkPriceFormat(registerUI.getBaseRateBText()) ||
+                        Converter.checkPriceFormat(registerUI.getBaseInRateText())) {
                     throw new Exception("Price is not entered correctly.");
                 }
                 if (!registerUI.verifyDepotInput()) {
