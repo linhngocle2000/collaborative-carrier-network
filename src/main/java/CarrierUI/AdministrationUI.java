@@ -2,6 +2,7 @@ package CarrierUI;
 
 import Auction.TransportRequest;
 import UIResource.scrollbar.ScrollBarCustom;
+import Utils.Converter;
 import Utils.TourPlanning;
 import UIResource.UIData;
 import UIResource.HTTPResource.HTTPRequests;
@@ -324,7 +325,7 @@ public class AdministrationUI extends JFrame {
         setBtn.setEnabled(false);
         setBtn.addActionListener(e -> {
             msgLabel.setText("");
-            if (checkPriceFormat(minProfitText.getText().trim()) || checkPriceFormat(maxProfitText.getText().trim())) {
+            if (Converter.checkPriceFormat(minProfitText.getText().trim()) || Converter.checkPriceFormat(maxProfitText.getText().trim())) {
                 msgLabel.setText("Invalid price format");
                 msgLabel.setForeground(errorColor);
             } else {
@@ -414,10 +415,6 @@ public class AdministrationUI extends JFrame {
         setBtn.setEnabled(value1||value2);
     }
 
-    private boolean checkPriceFormat(String s) {
-        String regex = "^[1-9][0-9]*?(\\.[0-9][0-9]?)?$";
-        return !s.matches(regex);
-    }
 
     public JButton getLogoutBtn() {
         return logoutBtn;

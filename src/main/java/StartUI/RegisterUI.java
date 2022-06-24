@@ -453,24 +453,20 @@ public class RegisterUI extends JFrame {
         return trText.getText().trim().replaceAll(" ","");
     }
 
-    public float getBaseRateAText() {
-        String s = baseRateAText.getText().trim();
-        return Float.parseFloat(s);
+    public String getBaseRateAText() {
+        return baseRateAText.getText().trim();
     }
 
-    public float getBaseRateBText() {
-        String s = baseRateBText.getText().trim();
-        return Float.parseFloat(s);
+    public String getBaseRateBText() {
+        return baseRateBText.getText().trim();
     }
 
-    public float getBasePriceText() {
-        String s = basePriceText.getText().trim();
-        return Float.parseFloat(s);
+    public String getBasePriceText() {
+        return basePriceText.getText().trim();
     }
 
-    public float getBaseInRateText() {
-        String s = baseInRateText.getText().trim();
-        return Float.parseFloat(s);
+    public String getBaseInRateText() {
+        return baseInRateText.getText().trim();
     }
 
     public float getDepotLatText() {

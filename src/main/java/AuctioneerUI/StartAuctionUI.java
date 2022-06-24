@@ -145,7 +145,6 @@ public class StartAuctionUI extends JFrame {
                             for (Bid bid : bids) {
                                 auction.addBid(bid);
                             }
-                            //Bid winningBid = auction.getWinningBid();
                             LOGGER.info("Winner for auction "+auction.getDefaultTransportRequest().getRouteString()+ " is "+ auction.getWinningBid().getBidder().getUsername());
                             auction.notifyWinner();
                         }

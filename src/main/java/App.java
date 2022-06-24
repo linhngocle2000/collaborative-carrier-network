@@ -66,25 +66,29 @@ public class App {
                 if (!registerUI.areAllFieldsFilled()) {
                     throw new Exception("Please fill out all fields.");
                 }
+                if (!Converter.checkPriceFormat(registerUI.getBaseRateAText()) ||
+                        !Converter.checkPriceFormat(registerUI.getBasePriceText()) ||
+                        !Converter.checkPriceFormat(registerUI.getBaseRateBText()) ||
+                        !Converter.checkPriceFormat(registerUI.getBaseInRateText())) {
+                    throw new Exception("Price is not entered correctly.");
+                }
+                if (!registerUI.verifyDepotInput()) {
+                    throw new Exception("Depot is not entered correctly.");
+                }
                 String name = registerUI.getNameText();
                 String username = registerUI.getUsernameText();
                 String password = registerUI.getPasswordText();
                 String transReq = registerUI.getTrText();
                 float depotX = registerUI.getDepotLatText();
                 float depotY = registerUI.getDepotLonText();
-                float pickupBaserate = registerUI.getBaseRateAText();
-                float externalTravelCost = registerUI.getBasePriceText();
-                float loadBaserate = registerUI.getBaseRateBText();
-                float internalTravelCost = registerUI.getBaseInRateText();
+                float pickupBaserate = Float.parseFloat(registerUI.getBaseRateAText());
+                float externalTravelCost = Float.parseFloat(registerUI.getBasePriceText());
+                float loadBaserate = Float.parseFloat(registerUI.getBaseRateBText());
+                float internalTravelCost = Float.parseFloat(registerUI.getBaseInRateText());
                 if(!registerUI.verifyTRInput()) {
                     throw new Exception("Transport requests are not entered correctly.");
                 }
-                if (!registerUI.verifyPriceInput()) {
-                    throw new Exception("Price is not entered correctly.");
-                }
-                if (!registerUI.verifyDepotInput()) {
-                    throw new Exception("Depot is not entered correctly.");
-                }
+
                 if (!HTTPRequests.registerCarrier(name, username, password, depotX, depotY, pickupBaserate, externalTravelCost, loadBaserate, internalTravelCost)) {
                     throw new Exception("Username " + username + " is already used.");
                 }
