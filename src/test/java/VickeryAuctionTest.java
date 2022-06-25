@@ -6,7 +6,6 @@ import Auction.Bid;
 import Auction.VickreyAuction;
 import org.junit.Before;
 import org.junit.Test;
-import org.junit.jupiter.api.DisplayName;
 
 public class VickeryAuctionTest {
 
@@ -32,7 +31,6 @@ public class VickeryAuctionTest {
 
 
     @Test
-    @DisplayName("Correct winner is chosen")
     public void testGetWinningBid() {
         auction.addBid(bidThird);
         auction.addBid(bidTop);
