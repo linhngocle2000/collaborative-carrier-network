@@ -1,7 +1,7 @@
 image: maven:3-jdk-11
 
 test:
-  stage: test
+  stage: build
   script:
     - mvn -f pom.xml test
   paths:
