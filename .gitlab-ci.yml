@@ -1,6 +1,6 @@
 image: maven:3-jdk-11
 
-test:
+junit-test:
   stage: test
   script:
     - mvn -f pom.xml test
