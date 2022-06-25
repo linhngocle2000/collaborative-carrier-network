@@ -18,4 +18,15 @@ public class Converter {
         String regex = "^[1-9][0-9]*?(\\.[0-9][0-9]?)?$";
         return !s.matches(regex);
     }
+
+    public static boolean checkTRFormat(String s) {
+        String regex = "^<\\(\\((-?)(0|([1-9][0-9]*))(\\.[0-9]+)?,(-?)(0|([1-9][0-9]*))(\\.[0-9]+)?\\),\\((-?)(0|([1-9][0-9]*))(\\.[0-9]+)?,(-?)(0|([1-9][0-9]*))(\\.[0-9]+)?\\)\\)(,\\(\\((-?)(0|([1-9][0-9]*))(\\.[0-9]+)?,(-?)(0|([1-9][0-9]*))(\\.[0-9]+)?\\),\\((-?)(0|([1-9][0-9]*))(\\.[0-9]+)?,(-?)(0|([1-9][0-9]*))(\\.[0-9]+)?\\)\\))*?>$";
+        return !s.matches(regex);
+    }
+
+
+    public static boolean checkDepotFormat(String s) {
+        String regex = "^-?[1-9][0-9]*?(\\.[0-9]+?)?$";
+        return !s.matches(regex);
+    }
 }

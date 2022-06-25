@@ -72,20 +72,21 @@ public class App {
                         Converter.checkPriceFormat(registerUI.getBaseInRateText())) {
                     throw new Exception("Price is not entered correctly.");
                 }
-                if (!registerUI.verifyDepotInput()) {
+                if (Converter.checkDepotFormat(registerUI.getDepotLonText()) ||
+                        Converter.checkDepotFormat(registerUI.getDepotLatText())) {
                     throw new Exception("Depot is not entered correctly.");
                 }
                 String name = registerUI.getNameText();
                 String username = registerUI.getUsernameText();
                 String password = registerUI.getPasswordText();
                 String transReq = registerUI.getTrText();
-                float depotX = registerUI.getDepotLatText();
-                float depotY = registerUI.getDepotLonText();
+                float depotX = Float.parseFloat(registerUI.getDepotLatText());
+                float depotY = Float.parseFloat(registerUI.getDepotLonText());
                 float pickupBaserate = Float.parseFloat(registerUI.getBaseRateAText());
                 float externalTravelCost = Float.parseFloat(registerUI.getBasePriceText());
                 float loadBaserate = Float.parseFloat(registerUI.getBaseRateBText());
                 float internalTravelCost = Float.parseFloat(registerUI.getBaseInRateText());
-                if(!registerUI.verifyTRInput()) {
+                if(Converter.checkTRFormat(registerUI.getTrText())) {
                     throw new Exception("Transport requests are not entered correctly.");
                 }
 
