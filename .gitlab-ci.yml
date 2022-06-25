@@ -1,15 +1,6 @@
-image: maven:3-jdk-11
+image: maven:3.10.1
 
-stages:
-  - test
-
-java:
+test:
   stage: test
   script:
-    - mvn verify
-  artifacts:
-    when: always
-    reports:
-      junit:
-        - target/surefire-reports/TEST-*.xml
-        - target/failsafe-reports/TEST-*.xml
+    - mvn -f project/pom.xml test
