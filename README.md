@@ -10,7 +10,7 @@ every participant in the network. In addition, carriers incur much lower costs t
 2. [Download](#download)
 3. [Logs](#logs)
 4. [User manual](#user-manual)
-   1. [Registration](#registration)
+   - [Registration](#registration)
 
 
 ## Features
