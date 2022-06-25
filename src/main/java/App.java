@@ -135,8 +135,8 @@ public class App {
                 LOGGER.info("Auctioneer logged in");
                 carrier = null;
                 auctioneerUI = new StartAuctionUI();
-                auctioneer = (AuctioneerAgent)user;
                 auctioneerUI.setVisible(true);
+                auctioneer = (AuctioneerAgent)user;
                 auctioneerUI.auctionOff();
                 auctioneerUI.startAuctions();
             } else {
