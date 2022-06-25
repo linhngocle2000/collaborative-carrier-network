@@ -3,4 +3,4 @@ image: maven:3.10.1
 test:
   stage: test
   script:
-    - mvn -f project/pom.xml test
+    - mvn -f pom.xml test
