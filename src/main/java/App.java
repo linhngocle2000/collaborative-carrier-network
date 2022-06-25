@@ -62,6 +62,7 @@ public class App {
         JButton registerRegisterBtn = registerUI.getRegisterBtn();
         registerRegisterBtn.addActionListener(e -> {
             try {
+                registerUI.hideSuccessLabel();
                 registerUI.setErrorLabel("");
                 if (!registerUI.areAllFieldsFilled()) {
                     throw new Exception("Please fill out all fields.");
@@ -100,7 +101,7 @@ public class App {
                 }
                 registerUI.setErrorLabel("");
                 registerUI.showSuccessLabel();
-                registerUI.deactivate();
+                registerUI.reset();
                 LOGGER.info("Carrier " + carrier.getUsername() + " registered");
             } catch (Exception ex) {
                 registerUI.setErrorLabel(ex.getMessage());

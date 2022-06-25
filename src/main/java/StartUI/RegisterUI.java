@@ -423,18 +423,17 @@ public class RegisterUI extends JFrame {
         return registerBtn;
     }
 
-    public void deactivate() {
-        nameText.setEditable(false);
-        usernameText.setEditable(false);
-        passwordText.setEditable(false);
-        trText.setEditable(false);
-        baseRateBText.setEditable(false);
-        baseRateAText.setEditable(false);
-        baseInRateText.setEditable(false);
-        basePriceText.setEditable(false);
-        depotLonText.setEditable(false);
-        depotLatText.setEditable(false);
-        registerBtn.setEnabled(false);
+    public void reset() {
+        nameText.setText("");
+        usernameText.setText("");
+        passwordText.setText("");
+        trText.setText("");
+        baseRateBText.setText("");
+        baseRateAText.setText("");
+        baseInRateText.setText("");
+        basePriceText.setText("");
+        depotLonText.setText("");
+        depotLatText.setText("");
     }
 
     public String getNameText() {
@@ -503,5 +502,9 @@ public class RegisterUI extends JFrame {
 
     public void showSuccessLabel() {
         successLabel.setVisible(true);
+    }
+
+    public void hideSuccessLabel() {
+        successLabel.setVisible(false);
     }
 }
