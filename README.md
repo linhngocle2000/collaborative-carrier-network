@@ -6,10 +6,11 @@ every participant in the network. In addition, carriers incur much lower costs t
 
 ## Table of contents
 
-- [Features](#features)
-- [Download](#download)
-- [Logs](#logs)
-- [User manual](#user-manual)
+1. [Features](#features)
+2. [Download](#download)
+3. [Logs](#logs)
+4. [User manual](#user-manual)
+   1. [Registration](#registration)
 
 
 ## Features
@@ -29,4 +30,17 @@ When starting the application, logs are documented in the log file created for t
 in the directory _logs_ and their names indicate which date are the logs referring to.
 
 ## User manual
+
+### Registration
+
+To register a carrier agent, choose _Register_ at the starting window. Fill out the registration form, then click on the
+_Register_ button at the bottom. Here are notations on some fields in the registration form:
+- **Transport requests**: Tranport requests are enclosed in <> and separated by commas. Each request is of the form ((x1,y1),(x2,y2)), where (x1,y1) is the coordinate of the pickup point and (x2,y2) is of the delivery point. The coordinates can be negative or contain a decimal point.
+- **Base rate A**: Base rate to reach the pickup point. The input has to be positive and can have up to two decimal digits.
+- **Base rate B**: Base rate for loading/unloading. The input has to be positive and can have up to two decimal digits.
+- **Price**: Price for 1 km. The input has to be positive and can have up to two decimal digits.
+- **Internal rate**: Internal rate for 1 km. The input has to be positive and can have up to two decimal digits.
+- **Depot latitude/longitude**: Coordinate where the carriers start their tour. Inputs can be negative and contain a decimal point.
+
+### Login as carrier
 
