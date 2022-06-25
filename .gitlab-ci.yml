@@ -1,15 +1,13 @@
 image: maven:3-jdk-11
 
-stages:
-  - test
-
-java:
+junit-test:
   stage: test
   script:
-    - mvn verify
+    - mvn -f pom.xml test
   artifacts:
-    when: always
+    paths:
+      - target/surefire-reports/TEST-*.xml
     reports:
       junit:
         - target/surefire-reports/TEST-*.xml
-        - target/failsafe-reports/TEST-*.xml
+
