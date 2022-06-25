@@ -4,7 +4,9 @@ import Agent.CarrierAgent;
 import Auction.Auction;
 import Auction.Bid;
 import Auction.VickreyAuction;
-import org.junit.jupiter.api.*;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.jupiter.api.DisplayName;
 
 public class VickeryAuctionTest {
 
@@ -16,8 +18,8 @@ public class VickeryAuctionTest {
     Bid bidSecond;
     Bid bidThird;
 
-    @BeforeEach
-    void setUp() {
+    @Before
+    public void setUp() {
         auction = new Auction(0,0);
         auction.setAuctionStrategy(new VickreyAuction());
         carrierTop = new CarrierAgent("test1", "test1", 0,0,0,0,0,0);
@@ -31,7 +33,7 @@ public class VickeryAuctionTest {
 
     @Test
     @DisplayName("Correct winner is chosen")
-    void testGetWinningBid() {
+    public void testGetWinningBid() {
         auction.addBid(bidThird);
         auction.addBid(bidTop);
         auction.addBid(bidSecond);
