@@ -137,6 +137,7 @@ public class App {
                 carrier = null;
                 auctioneerUI = new StartAuctionUI();
                 auctioneerUI.setVisible(true);
+                loginUI.setVisible(false);
                 auctioneer = (AuctioneerAgent)user;
                 auctioneerUI.auctionOff();
                 auctioneerUI.startAuctions();
@@ -147,6 +148,7 @@ public class App {
                 adminUI = new AdministrationUI(carrier);
                 adminUI.setVisible(true);
                 adminUI.getVisUI().setVisible(true);
+                loginUI.setVisible(false);
                 carrierLogoutBtn = adminUI.getLogoutBtn();
                 carrierLogoutBtn.addActionListener(event -> {
                     LOGGER.info("Carrier " + carrier.getUsername() + " logged out");
