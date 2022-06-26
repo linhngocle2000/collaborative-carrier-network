@@ -70,4 +70,8 @@ start/end point, _[Pickup]_ is the pickup location and _[Delivery]_ is the deliv
 
 ### Login as auctioneer
 
+To login as an auctioneer, choose _Login_ in the start window. Enter **auctioneer** as username <u>and</u> password, 
+then click on the _Login_ button at the bottom. After logging in, the auction process will start automatically. To
+monitor the auction process, please refer to the log file of the current date.
+
 
