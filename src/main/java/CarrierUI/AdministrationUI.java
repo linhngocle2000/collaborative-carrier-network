@@ -325,7 +325,8 @@ public class AdministrationUI extends JFrame {
         setBtn.setEnabled(false);
         setBtn.addActionListener(e -> {
             msgLabel.setText("");
-            if (Converter.checkPriceFormat(minProfitText.getText().trim()) || Converter.checkPriceFormat(maxProfitText.getText().trim())) {
+            if ((!minProfitText.getText().trim().isEmpty() && Converter.checkPriceFormat(minProfitText.getText().trim())) ||
+                    (!maxProfitText.getText().trim().isEmpty() && Converter.checkPriceFormat(maxProfitText.getText().trim()))) {
                 msgLabel.setText("Invalid price format");
                 msgLabel.setForeground(errorColor);
             } else {
