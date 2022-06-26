@@ -27,7 +27,7 @@ every participant in the network. In addition, carriers incur much lower costs t
 Download the source code as zip file from [Gitlab](https://collaborating.tuhh.de/e16/courses/software-development/ss22/group04_coop/collaborative-carrier-network).
 Unzip the downloaded file and click on _CCN.jar_ to start the application.
 
-![Download instruction](src/main/resources/ccn13.png?raw=true "download-instruction")
+![Download instruction](src/main/resources/download.png?raw=true "download-instruction")
 
 ## Logs
 When starting the application, logs are documented in the log file created for the current date. Log files are located
