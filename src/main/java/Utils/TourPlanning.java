@@ -98,6 +98,10 @@ public class TourPlanning {
       cost = null;
    }
 
+   public boolean contains(TransportRequest request) {
+      return requests != null && requests.stream().anyMatch(tr -> tr.getID() == request.getID());
+   }
+
    /**
     * Add certain list of request into current tour
     */

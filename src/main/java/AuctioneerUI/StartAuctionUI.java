@@ -17,6 +17,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.awt.*;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -115,38 +116,61 @@ public class StartAuctionUI extends JFrame {
         }
     }
 
-    public void bundleAuction() throws Exception {
-        checkCarrierList();
+    public void bundleAuction() {
+        try {
+            checkCarrierList();
 
-        // Add all transport requests to the same root auction
-        Auction auction = HTTPRequests.addAuction();
-        ExecutorService pool = Executors.newFixedThreadPool(MAX_T);
-        for (CarrierAgent carrier : bidders) {
-            pool.submit(new BundleAuctionTask(auction, carrier));
-        }
-        pool.shutdown();
-        pool.awaitTermination(Long.MAX_VALUE, TimeUnit.NANOSECONDS); // Without this call, the executor service may not
-                                                                     // finish all auction tasks!
-
-        // Generate bundles
-        List<TransportRequest> elementaryRequests = HTTPRequests.getTransportRequestsOfAuction(auction);
-        BundleHelper helper = new BundleHelper(bidders, elementaryRequests);
-        var bundles = helper.generateBundles();
-
-        // Create separate auction for each bundle
-        for (var bundle : bundles) {
-            Auction bundleAuction = HTTPRequests.addAuction();
-            for (TransportRequest request : bundle) {
-                HTTPRequests.addTransportRequestToAuction(bundleAuction, request);
+            // Add all transport requests to the same root auction
+            Auction rootAuction = HTTPRequests.addAuction();
+            ExecutorService pool = Executors.newFixedThreadPool(MAX_T);
+            for (CarrierAgent carrier : bidders) {
+                pool.submit(new BundleAuctionTask(rootAuction, carrier));
             }
+            pool.shutdown();
+            pool.awaitTermination(Long.MAX_VALUE, TimeUnit.NANOSECONDS); // Without this call, the executor service may not finish all auction tasks!
+
+            // Generate bundles
+            List<TransportRequest> elementaryRequests = HTTPRequests.getTransportRequestsOfAuction(rootAuction);
+            BundleHelper helper = new BundleHelper(bidders, elementaryRequests);
+            var bundles = helper.generateBundles();
+
+            // Create separate auction for each bundle
+            ArrayList<Auction> auctions = new ArrayList<>();
+            for (var bundle : bundles) {
+                Auction bundleAuction = HTTPRequests.addAuction();
+                for (TransportRequest request : bundle) {
+                    HTTPRequests.addTransportRequestToAuction(bundleAuction, request);
+                }
+                bundleAuction.setTransportRequests(bundle);
+                auctions.add(bundleAuction);
+            }
+
+            // Delete root auction
+            HTTPRequests.resetAuction(rootAuction);
+
+            // Generate bids
+            pool = Executors.newFixedThreadPool(MAX_T);
+            for (var bidder : bidders) {
+                for (var auction : auctions) {
+                    pool.submit(new BundleBidTask(bidder, auction));        
+                }
+            }
+            pool.shutdown();
+            pool.awaitTermination(Long.MAX_VALUE, TimeUnit.NANOSECONDS); // Without this call, the executor service may not finish all auction tasks!
+
+            // Decide who wins
+            List<Auction> winningAuctions = helper.decisionMaking(auctions);
+
+            // Transfer ownership of transport requests
+            for (Auction auction : winningAuctions) {
+                auction.notifyWinner();
+            }
+
+            // Reset auction table
+            HTTPRequests.resetAuction(null);
+        } catch (Exception e) {
+            LOGGER.warn(e.getMessage());
         }
-
-        // Delete root auction
-        HTTPRequests.resetAuction(auction);
-
-        // Generate bids
-
-        // Decide who wins
     }
 
     public void startAuctions() {
@@ -161,27 +185,22 @@ public class StartAuctionUI extends JFrame {
                     for (Auction auction : auctions) {
                         auction.setAuctionStrategy(new VickreyAuction());
                         auction.start();
-                        LOGGER.info(
-                                "Auction for " + auction.getDefaultTransportRequest().getRouteString() + " started");
+                        LOGGER.info("Auction for " + auction.getDefaultTransportRequest().getRouteString() + " started");
                         ExecutorService pool = Executors.newFixedThreadPool(MAX_T);
                         for (CarrierAgent bidder : bidders) {
                             Runnable r = new BidTask(bidder, auction);
                             pool.submit(r); // Use submit instead of execute
                         }
                         pool.shutdown();
-                        pool.awaitTermination(Long.MAX_VALUE, TimeUnit.NANOSECONDS); // Without this call, the executor
-                                                                                     // service may not finish all bid
-                                                                                     // tasks!
+                        pool.awaitTermination(Long.MAX_VALUE, TimeUnit.NANOSECONDS); // Without this call, the executor service may not finish all bid tasks!
                         auction.end();
-                        LOGGER.info(
-                                "Auction for " + auction.getDefaultTransportRequest().getRouteString() + " terminated");
+                        LOGGER.info("Auction for " + auction.getDefaultTransportRequest().getRouteString() + " terminated");
                         List<Bid> bids = HTTPRequests.getBids(auction);
                         if (bids != null) {
                             for (Bid bid : bids) {
                                 auction.addBid(bid);
                             }
-                            LOGGER.info("Winner for auction " + auction.getDefaultTransportRequest().getRouteString()
-                                    + " is " + auction.getWinningBid().getBidder().getUsername());
+                            LOGGER.info("Winner for auction " + auction.getDefaultTransportRequest().getRouteString() + " is " + auction.getWinningBid().getBidder().getUsername());
                             auction.notifyWinner();
                         }
                     }
@@ -223,7 +242,8 @@ class BidTask implements Runnable {
                 if (price >= 0) {
                     Bid bid = HTTPRequests.addBid(auction, carrier, price);
                     assert bid != null;
-                    LOGGER.info(carrier.getUsername() + " bids for request " + transReq.getRouteString() + " with " + bid.getBidPrice());
+                    LOGGER.info(carrier.getUsername() + " bids for request " + transReq.getRouteString() + " with "
+                            + bid.getBidPrice());
                 }
             }
         } catch (Exception e) {
@@ -253,6 +273,42 @@ class AuctionTask implements Runnable {
                 }
             }
             LOGGER.info("Requests of carrier " + carrier.getUsername() + " checked.");
+        } catch (Exception e) {
+            LOGGER.warn(e.getMessage());
+        }
+    }
+}
+
+class BundleBidTask implements Runnable {
+    private CarrierAgent carrier;
+    private Auction auction;
+
+    private static Logger LOGGER = LoggerFactory.getLogger(BidTask.class);
+
+    public BundleBidTask(CarrierAgent carrier, Auction auction) {
+        this.carrier = carrier;
+        this.auction = auction;
+    }
+
+    public void run() {
+        try {
+            TourPlanning tour = new TourPlanning(carrier);
+            double profit = 0;
+
+            for (var request : auction.getTransportRequests()) {
+                if (tour.contains(request)) {
+                    return;
+                }
+                tour.addRequest(request);
+                profit += tour.getProfit(request);
+            }
+            
+            if (profit >= carrier.getMinProfit()) {
+                double price = profit - carrier.getMinProfit();
+                Bid bid = HTTPRequests.addBid(auction, carrier, price);
+                assert bid != null;
+                LOGGER.info(carrier.getUsername() + " bids for auction " + auction.getID() + " with " + price);
+            }
         } catch (Exception e) {
             LOGGER.warn(e.getMessage());
         }
