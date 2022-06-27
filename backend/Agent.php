@@ -19,6 +19,8 @@ class Agent
 		$password = $db->escape_string($data['Password']);
 		$name = $db->escape_string($data['Name']);
 		$isAuctioneer = intval(boolval($data['IsAuctioneer']));
+		$minProfit = array_key_exists('MinProfit', $data) ? doubleval($data['MinProfit']) : 0;
+		$maxProfit = array_key_exists('MaxProfit', $data) ? doubleval($data['MaxProfit']) : 0;
 		$depotLat = $isAuctioneer ? 0 : floatval($data['DepotLat']);
 		$depotLon = $isAuctioneer ? 0 : floatval($data['DepotLon']);
 		$pickup = $isAuctioneer ? 0 : floatval($data['PickupBaserate']);
@@ -38,7 +40,7 @@ class Agent
 			throw new \Exception("Username $username is alread used");
 		}
 
-		$result = $db->query("INSERT INTO `Agent` (`Username`, `Name`, `Password`, `IsAuctioneer`, `DepotLat`, `DepotLon`, `PickupBaserate`, `TravelCostPerKM`, `LoadBaserate`, `InternalTravelCostPerKM`) VALUES ('$username', '$name', '$hash', $isAuctioneer, $depotLat, $depotLon, $pickup, $travelExtern, $load, $travelIntern)");
+		$result = $db->query("INSERT INTO `Agent` (`Username`, `Name`, `Password`, `IsAuctioneer`, `MinProfit`, `MaxProfit`, `DepotLat`, `DepotLon`, `PickupBaserate`, `TravelCostPerKM`, `LoadBaserate`, `InternalTravelCostPerKM`) VALUES ('$username', '$name', '$hash', $isAuctioneer, $minProfit, $maxProfit, $depotLat, $depotLon, $pickup, $travelExtern, $load, $travelIntern)");
 		if ($result === false)
 		{
 			throw new \Exception($db->error);
@@ -62,7 +64,7 @@ class Agent
 			$username = $db->escape_string($data['Username']);
 			$password = $db->escape_string($data['Password']);
 
-			$result = $db->query("SELECT `Username`, `Name`, `Password`, `IsAuctioneer`, `DepotLat`, `DepotLon`, `PickupBaserate`, `TravelCostPerKM`, `LoadBaserate`, `InternalTravelCostPerKM` FROM `Agent` WHERE `Username` LIKE '$username'");
+			$result = $db->query("SELECT `Username`, `Name`, `Password`, `IsAuctioneer`, `MinProfit`, `MaxProfit`, `DepotLat`, `DepotLon`, `PickupBaserate`, `TravelCostPerKM`, `LoadBaserate`, `InternalTravelCostPerKM` FROM `Agent` WHERE `Username` LIKE '$username'");
 			if ($result === false)
 			{
 				throw new \Exception($db->error);
@@ -114,7 +116,7 @@ class Agent
 
 		$db = Database::getConnection();
 		$username = $db->escape_string($data['Username']);
-		$result = $db->query("SELECT `Username`, `Name`, `IsAuctioneer`, `DepotLat`, `DepotLon`, `PickupBaserate`, `TravelCostPerKM`, `LoadBaserate`, `InternalTravelCostPerKM` FROM `Agent` WHERE `Username` = '$username'");
+		$result = $db->query("SELECT `Username`, `Name`, `IsAuctioneer`, `MinProfit`, `MaxProfit`, `DepotLat`, `DepotLon`, `PickupBaserate`, `TravelCostPerKM`, `LoadBaserate`, `InternalTravelCostPerKM` FROM `Agent` WHERE `Username` = '$username'");
 		if ($result === false || $result->num_rows == 0)
 		{
 			throw new \Exception("$username not found");
@@ -131,6 +133,8 @@ class Agent
 
 		if (!$isAuctioneer)
 		{
+			$agent['MinProfit'] = $row['MinProfit'];
+			$agent['MaxProfit'] = $row['MaxProfit'];
 			$agent['DepotLat'] = $row['DepotLat'];
 			$agent['DepotLon'] = $row['DepotLon'];
 			$agent['PickupBaserate'] = $row['PickupBaserate'];
@@ -148,7 +152,7 @@ class Agent
 		TokenHelper::assertToken();
 
 		$db = Database::getConnection();
-		$result = $db->query("SELECT a.Username, a.Name AS UserDisplayname, a.IsAuctioneer, a.DepotLat, a.DepotLon, a.PickupBaserate, a.TravelCostPerKM, a.LoadBaserate, a.InternalTravelCostPerKM, ac.ID AS AuctionID, ac.Name AS AuctionName FROM `Agent` a LEFT JOIN `Auction` ac ON a.Username = ac.Auctioneer");
+		$result = $db->query("SELECT Username, Name AS UserDisplayname, IsAuctioneer, MinProfit, MaxProfit, DepotLat, DepotLon, PickupBaserate, TravelCostPerKM, LoadBaserate, InternalTravelCostPerKM FROM `Agent`");
 		$agents = [];
 		while ($row = $result->fetch_assoc())
 		{
@@ -163,12 +167,10 @@ class Agent
 					'IsAuctioneer' => $isAuctioneer,
 				];
 
-				if ($isAuctioneer)
+				if (!$isAuctioneer)
 				{
-					$agents[$username]['Auctions'] = [];
-				}
-				else
-				{
+					$agents[$username]['MinProfit'] = $row['MinProfit'];
+					$agents[$username]['MaxProfit'] = $row['MaxProfit'];
 					$agents[$username]['DepotLat'] = $row['DepotLat'];
 					$agents[$username]['DepotLon'] = $row['DepotLon'];
 					$agents[$username]['PickupBaserate'] = $row['PickupBaserate'];
@@ -176,15 +178,6 @@ class Agent
 					$agents[$username]['LoadBaserate'] = $row['LoadBaserate'];
 					$agents[$username]['InternalTravelCostPerKM'] = $row['InternalTravelCostPerKM'];
 				}
-			}
-
-			if ($isAuctioneer && isset($row['AuctionID']))
-			{
-				$agents[$username]['Auctions'][] = [
-					'ID' => $row['AuctionID'],
-					'Name' => $row['AuctionName'],
-					'Auctioneer' => $username,
-				];
 			}
 		}
 		return array_values($agents);
@@ -196,7 +189,7 @@ class Agent
 		TokenHelper::assertToken();
 
 		$db = Database::getConnection();
-		$result = $db->query("SELECT a.Username, a.Name AS UserDisplayname, ac.ID AS AuctionID, ac.Name AS AuctionName FROM `Agent` a LEFT JOIN `Auction` ac ON a.Username = ac.Auctioneer WHERE a.IsAuctioneer");
+		$result = $db->query("SELECT Username, Name AS UserDisplayname FROM `Agent` WHERE IsAuctioneer");
 		$agents = [];
 		while ($row = $result->fetch_assoc())
 		{
@@ -207,16 +200,7 @@ class Agent
 				$agents[$username] = [
 					'Username' => $username,
 					'Name' => $row['UserDisplayname'],
-					'Auctions' => [],
-				];
-			}
-
-			if (isset($row['AuctionID']))
-			{
-				$agents[$username]['Auctions'][] = [
-					'ID' => $row['AuctionID'],
-					'Name' => $row['AuctionName'],
-					'Auctioneer' => $username,
+					'IsAuctioneer' => true,
 				];
 			}
 		}
@@ -229,7 +213,7 @@ class Agent
 		TokenHelper::assertToken();
 
 		$db = Database::getConnection();
-		$result = $db->query("SELECT `Username`, `Name`, `DepotLat`, `DepotLon`, `PickupBaserate`, `TravelCostPerKM`, `LoadBaserate`, `InternalTravelCostPerKM` FROM `Agent` WHERE NOT `IsAuctioneer`");
+		$result = $db->query("SELECT `Username`, `Name`, `IsAuctioneer`, `MinProfit`, `MaxProfit`, `DepotLat`, `DepotLon`, `PickupBaserate`, `TravelCostPerKM`, `LoadBaserate`, `InternalTravelCostPerKM` FROM `Agent` WHERE NOT `IsAuctioneer`");
 		$agents = [];
 		while ($row = $result->fetch_assoc())
 		{
