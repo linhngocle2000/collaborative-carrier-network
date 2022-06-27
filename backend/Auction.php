@@ -194,7 +194,16 @@ class Auction
 		TokenHelper::assertToken();
 
 		$db = Database::getConnection();
-		$result = $db->query("DELETE FROM `Auction`");
+		if (is_array($data) && array_key_exists('Auction', $data))
+		{
+			$auction = intval($data['Auction']);
+			$result = $db->query("DELETE FROM `Auction` WHERE `ID` = $auction");
+		}
+		else
+		{
+			$result = $db->query("DELETE FROM `Auction`");
+		}
+
 		if (!$result)
 		{
 			throw new \Exception("Failed to reset auctions");

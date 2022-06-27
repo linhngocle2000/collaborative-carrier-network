@@ -200,10 +200,17 @@ public class HTTPRequests {
 
     /**
      * Reset auction table
+     * @param auction If null, the entire auction table will be deleted
      */
-    public static boolean resetAuction() throws IOException, InterruptedException, JSONException {
+    public static boolean resetAuction(Auction auction) throws IOException, InterruptedException, JSONException {
         LOGGER.info("resetAuction");
-        var json = send(body("resetAuction", token, null));
+        JSONObject data = null;
+        if (auction != null)
+        {
+            data = new JSONObject();
+            data.put("Auction", auction.getID());
+        }
+        var json = send(body("resetAuction", token, data));
         boolean success = json.getBoolean("success");
         if (!success) {
             JSONObject error = json.getJSONObject("error");
