@@ -28,8 +28,8 @@ public class RegisterUI extends JFrame {
 ///////////
 
         setTitle("CCN");
-        setSize(500, 620);
-        setMinimumSize(new Dimension(500, 620));
+        setSize(500, 650);
+        setMinimumSize(new Dimension(500, 650));
         setLocationRelativeTo(null);
         setDefaultCloseOperation(EXIT_ON_CLOSE);
 
@@ -423,18 +423,17 @@ public class RegisterUI extends JFrame {
         return registerBtn;
     }
 
-    public void deactivate() {
-        nameText.setEditable(false);
-        usernameText.setEditable(false);
-        passwordText.setEditable(false);
-        trText.setEditable(false);
-        baseRateBText.setEditable(false);
-        baseRateAText.setEditable(false);
-        baseInRateText.setEditable(false);
-        basePriceText.setEditable(false);
-        depotLonText.setEditable(false);
-        depotLatText.setEditable(false);
-        registerBtn.setEnabled(false);
+    public void reset() {
+        nameText.setText("");
+        usernameText.setText("");
+        passwordText.setText("");
+        trText.setText("");
+        baseRateBText.setText("");
+        baseRateAText.setText("");
+        baseInRateText.setText("");
+        basePriceText.setText("");
+        depotLonText.setText("");
+        depotLatText.setText("");
     }
 
     public String getNameText() {
@@ -453,34 +452,28 @@ public class RegisterUI extends JFrame {
         return trText.getText().trim().replaceAll(" ","");
     }
 
-    public float getBaseRateAText() {
-        String s = baseRateAText.getText().trim();
-        return Float.parseFloat(s);
+    public String getBaseRateAText() {
+        return baseRateAText.getText().trim();
     }
 
-    public float getBaseRateBText() {
-        String s = baseRateBText.getText().trim();
-        return Float.parseFloat(s);
+    public String getBaseRateBText() {
+        return baseRateBText.getText().trim();
     }
 
-    public float getBasePriceText() {
-        String s = basePriceText.getText().trim();
-        return Float.parseFloat(s);
+    public String getBasePriceText() {
+        return basePriceText.getText().trim();
     }
 
-    public float getBaseInRateText() {
-        String s = baseInRateText.getText().trim();
-        return Float.parseFloat(s);
+    public String getBaseInRateText() {
+        return baseInRateText.getText().trim();
     }
 
-    public float getDepotLatText() {
-        String s = depotLatText.getText().trim();
-        return Float.parseFloat(s);
+    public String getDepotLatText() {
+        return depotLatText.getText().trim();
     }
 
-    public float getDepotLonText() {
-        String s = depotLonText.getText().trim();
-        return Float.parseFloat(s);
+    public String getDepotLonText() {
+        return depotLonText.getText().trim();
     }
 
 
@@ -506,31 +499,12 @@ public class RegisterUI extends JFrame {
         errorLabel.setText(s);
     }
 
-    public boolean verifyTRInput() {
-        String text = getTrText();
-        return text.matches("^<\\(\\((-?)(0|([1-9][0-9]*))(\\.[0-9]+)?,(-?)(0|([1-9][0-9]*))(\\.[0-9]+)?\\),\\((-?)(0|([1-9][0-9]*))(\\.[0-9]+)?,(-?)(0|([1-9][0-9]*))(\\.[0-9]+)?\\)\\)(,\\(\\((-?)(0|([1-9][0-9]*))(\\.[0-9]+)?,(-?)(0|([1-9][0-9]*))(\\.[0-9]+)?\\),\\((-?)(0|([1-9][0-9]*))(\\.[0-9]+)?,(-?)(0|([1-9][0-9]*))(\\.[0-9]+)?\\)\\))*?>$");
-    }
-
-    public boolean verifyPriceInput() {
-        String regex = "^[1-9][0-9]*?(\\.[0-9][0-9]?)?$";
-        String price1 = baseRateAText.getText().trim();
-        String price2 = baseRateBText.getText().trim();
-        String price3 = baseInRateText.getText().trim();
-        String price4 = basePriceText.getText().trim();
-        return price1.matches(regex) &&
-                price2.matches(regex) &&
-                price3.matches(regex) &&
-                price4.matches(regex);
-    }
-
-    public boolean verifyDepotInput() {
-        String regex = "^-?[1-9][0-9]*?(\\.[0-9]+?)?$";
-        String depotX = depotLatText.getText().trim();
-        String depotY = depotLonText.getText().trim();
-        return depotX.matches(regex) && depotY.matches(regex);
-    }
 
     public void showSuccessLabel() {
         successLabel.setVisible(true);
+    }
+
+    public void hideSuccessLabel() {
+        successLabel.setVisible(false);
     }
 }

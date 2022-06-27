@@ -12,6 +12,10 @@ import Utils.Converter;
 import javax.swing.*;
 import java.util.ArrayList;
 
+import org.apache.log4j.PropertyConfigurator;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 public class App {
 
     private static WelcomeUI welcomeUI;
@@ -24,6 +28,7 @@ public class App {
     private static CarrierAgent carrier;
 
     private static JButton carrierLogoutBtn;
+    private static Logger LOGGER = LoggerFactory.getLogger(App.class);
 
     public App() {
 
@@ -37,46 +42,55 @@ public class App {
         welcomeLoginBtn.addActionListener(e -> {
             welcomeUI.setVisible(false);
             loginUI.setVisible(true);
+            LOGGER.info("Login screen");
         });
 
         JButton welcomeRegisterBtn = welcomeUI.getRegisterBtn();
         welcomeRegisterBtn.addActionListener(e -> {
             welcomeUI.setVisible(false);
             registerUI.setVisible(true);
+            LOGGER.info("Register screen");
         });
 
         JButton loginBackBtn = loginUI.getBackBtn();
         loginBackBtn.addActionListener(e -> {
             loginUI.setVisible(false);
             welcomeUI.setVisible(true);
+            LOGGER.info("Welcome screen");
         });
 
         JButton registerRegisterBtn = registerUI.getRegisterBtn();
         registerRegisterBtn.addActionListener(e -> {
             try {
+                registerUI.hideSuccessLabel();
                 registerUI.setErrorLabel("");
                 if (!registerUI.areAllFieldsFilled()) {
                     throw new Exception("Please fill out all fields.");
+                }
+                if (Converter.checkPriceFormat(registerUI.getBaseRateAText()) ||
+                        Converter.checkPriceFormat(registerUI.getBasePriceText()) ||
+                        Converter.checkPriceFormat(registerUI.getBaseRateBText()) ||
+                        Converter.checkPriceFormat(registerUI.getBaseInRateText())) {
+                    throw new Exception("Price is not entered correctly.");
+                }
+                if (Converter.checkDepotFormat(registerUI.getDepotLonText()) ||
+                        Converter.checkDepotFormat(registerUI.getDepotLatText())) {
+                    throw new Exception("Depot is not entered correctly.");
                 }
                 String name = registerUI.getNameText();
                 String username = registerUI.getUsernameText();
                 String password = registerUI.getPasswordText();
                 String transReq = registerUI.getTrText();
-                float depotX = registerUI.getDepotLatText();
-                float depotY = registerUI.getDepotLonText();
-                float pickupBaserate = registerUI.getBaseRateAText();
-                float externalTravelCost = registerUI.getBasePriceText();
-                float loadBaserate = registerUI.getBaseRateBText();
-                float internalTravelCost = registerUI.getBaseInRateText();
-                if(!registerUI.verifyTRInput()) {
+                float depotX = Float.parseFloat(registerUI.getDepotLatText());
+                float depotY = Float.parseFloat(registerUI.getDepotLonText());
+                float pickupBaserate = Float.parseFloat(registerUI.getBaseRateAText());
+                float externalTravelCost = Float.parseFloat(registerUI.getBasePriceText());
+                float loadBaserate = Float.parseFloat(registerUI.getBaseRateBText());
+                float internalTravelCost = Float.parseFloat(registerUI.getBaseInRateText());
+                if(Converter.checkTRFormat(registerUI.getTrText())) {
                     throw new Exception("Transport requests are not entered correctly.");
                 }
-                if (!registerUI.verifyPriceInput()) {
-                    throw new Exception("Price is not entered correctly.");
-                }
-                if (!registerUI.verifyDepotInput()) {
-                    throw new Exception("Depot is not entered correctly.");
-                }
+
                 if (!HTTPRequests.registerCarrier(name, username, password, depotX, depotY, pickupBaserate, externalTravelCost, loadBaserate, internalTravelCost)) {
                     throw new Exception("Username " + username + " is already used.");
                 }
@@ -87,9 +101,11 @@ public class App {
                 }
                 registerUI.setErrorLabel("");
                 registerUI.showSuccessLabel();
-                registerUI.deactivate();
+                registerUI.reset();
+                LOGGER.info("Carrier " + carrier.getUsername() + " registered");
             } catch (Exception ex) {
                 registerUI.setErrorLabel(ex.getMessage());
+                LOGGER.warn(ex.getMessage());
             }
         });
 
@@ -97,6 +113,7 @@ public class App {
         registerBackBtn.addActionListener(e -> {
             registerUI.setVisible(false);
             welcomeUI.setVisible(true);
+            LOGGER.info("Welcome screen");
         });
 
         JButton loginLoginBtn = loginUI.getLoginBtn();
@@ -105,38 +122,47 @@ public class App {
             loginUI.setErrorLabel("");
             String username = loginUI.getNameText();
             String password = loginUI.getPasswordText();
-            Agent user = HTTPRequests.login(username, password);
+            Agent user = null;
+            try {
+                user = HTTPRequests.login(username, password);
+            } catch (Exception ex) {
+                LOGGER.warn(ex.getMessage());
+            }
             if (user == null) {
                 loginUI.setErrorLabel("Incorrect username/password.");
                 return;
             }
             if (user.isAuctioneer()) {
+                LOGGER.info("Auctioneer logged in");
                 carrier = null;
                 auctioneerUI = new StartAuctionUI();
-                auctioneer = (AuctioneerAgent)user;
                 auctioneerUI.setVisible(true);
-                //auctioneerUI.auctionOff();
-                //auctioneerUI.startAuctions();
+                loginUI.setVisible(false);
+                auctioneer = (AuctioneerAgent)user;
+                auctioneerUI.auctionOff();
+                auctioneerUI.startAuctions();
             } else {
                 auctioneer = null;
                 carrier = (CarrierAgent)user;
+                LOGGER.info("Carrier " + carrier.getUsername() + " logged in");
                 adminUI = new AdministrationUI(carrier);
                 adminUI.setVisible(true);
                 adminUI.getVisUI().setVisible(true);
+                loginUI.setVisible(false);
                 carrierLogoutBtn = adminUI.getLogoutBtn();
                 carrierLogoutBtn.addActionListener(event -> {
+                    LOGGER.info("Carrier " + carrier.getUsername() + " logged out");
                     adminUI.getVisUI().dispose();
                     adminUI.dispose();
                     HTTPRequests.logout();
                     new App();
                 });
             }
-            loginUI.setVisible(false);
-            loginUI.reset();
         });
     }
 
     static public void main(String[] args) {
+        PropertyConfigurator.configure("src/main/resources/log4j.properties");
         new App();
     }
 }

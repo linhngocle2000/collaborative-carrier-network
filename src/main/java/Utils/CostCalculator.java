@@ -109,6 +109,7 @@ public class CostCalculator {
 				distance += EuclideanDistanceCalculator.calculateDistance(pickup.getCoordinate(), deliver.getCoordinate());
 				pickup = deliver;
 			}
+            distance += EuclideanDistanceCalculator.calculateDistance(pickup.getCoordinate(), route.getStart().getLocation().getCoordinate());
 		}
 		return distance;
 	}
