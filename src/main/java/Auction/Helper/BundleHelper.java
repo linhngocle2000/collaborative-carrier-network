@@ -1,13 +1,19 @@
-package Auction.Bundle;
+package Auction.Helper;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
+import java.util.Map.Entry;
 
 import com.graphhopper.jsprit.core.problem.Location;
 import com.graphhopper.jsprit.core.util.EuclideanDistanceCalculator;
 
 import Agent.CarrierAgent;
+import Auction.Auction;
+import Auction.Bid;
 import Auction.TransportRequest;
 import UIResource.HTTPResource.HTTPRequests;
 import Utils.TourPlanning;
@@ -19,8 +25,7 @@ public class BundleHelper {
     * This method help to remove all bundle that is subset of another.
     */
    public List<List<TransportRequest>> checkAndRemoveSubset(List<List<TransportRequest>> bundleList){
-      List<List<TransportRequest>> returnBundleList = new ArrayList<>();
-      returnBundleList.addAll(bundleList);
+      List<List<TransportRequest>> returnBundleList = new ArrayList<>(bundleList);
       for (List<TransportRequest> bundle1 : bundleList) {
          if (bundleList.size() == 1) {
             break;
@@ -37,30 +42,12 @@ public class BundleHelper {
       return returnBundleList;
    }
 
-   /**
-    * Winning bundles of a carrier will be form into a map of request.
-    * This method help to remove duplicate winning request if any.
-    */
-   public HashMap<TransportRequest, Double> formWinningRequest(List<TransportRequest> bundle, double price) {
-      HashMap<TransportRequest, Double> winningRequest = new HashMap<TransportRequest, Double>();
-      double payingPrice = price / bundle.size();
-      for (TransportRequest request : bundle) {
-         if (winningRequest.containsKey(request)) {
-            if (winningRequest.get(request) < payingPrice) {
-               winningRequest.replace(request, payingPrice);
-            }
-         } else {
-            winningRequest.put(request, payingPrice);
-         }
-      }
-      return winningRequest;
-   }
 
 ////////
 //       Generating special depot location
 ////////
 
-   private double radius = 10;
+   private double radiusDepot = 10;
    private final int maximumSize = 5;
 
    /**
@@ -76,7 +63,7 @@ public class BundleHelper {
              * At this point if the same list is generated again,
              * then we can double the radius or just break the loop and accept the list.
              */
-            radius *= 2;
+            radiusDepot *= 2;
             // break;
          } else {
             specialDepotList = tempDepotList;
@@ -109,7 +96,7 @@ public class BundleHelper {
       List<Location> gatherList = new ArrayList<>();
       for (Location depot : depotList) {
          distance = EuclideanDistanceCalculator.calculateDistance(focusedDepot.getCoordinate(), depot.getCoordinate());
-         if (distance <= radius) {
+         if (distance <= radiusDepot) {
             gatherList.add(depot);
          }
       }
@@ -149,18 +136,21 @@ public class BundleHelper {
 //       With a hugh dataset, this might take time to finish.
 ////////
 
-   private double radius = 20;
-   private final int minimumSize = 5;
+   private double radiusRequest = 20;
+   // private final int minimumSize = 5;
 
    public List<List<TransportRequest>> generateBundles() {
       List<List<TransportRequest>> bundleList = new ArrayList<>();
       List<Location> specialDepotList = generateSpecialDepots();
       for (Location specialDepot : specialDepotList) {
          List<TransportRequest> bundle = formingBundle(specialDepot);
-         while (bundle.size() < minimumSize) {
-            radius *= 2;
-            bundle = formingBundle(specialDepot);
-         }
+         /**
+          * The minimum number of request within a bundle
+          */
+         // while (bundle.size() < minimumSize) {
+         //    radius *= 2;
+         //    bundle = formingBundle(specialDepot);
+         // }
          bundleList.add(bundle);
       }
       return bundleList;
@@ -205,7 +195,7 @@ public class BundleHelper {
           * Consider only the pickup location of the request.
           */
          distance = EuclideanDistanceCalculator.calculateDistance(specialDepot.getCoordinate(), request.getPickup().getCoordinate());
-         if (distance <= radius) {
+         if (distance <= radiusRequest) {
             gatherRequestList.add(request);
          }
       }
@@ -214,6 +204,80 @@ public class BundleHelper {
 
 
 ////////
-//       Generating a list of bundle using solution 2: 
+//       Decision Making part
 ////////
+
+   public List<Auction> decisionMaking(List<Auction> bundleAuctionList) {
+      List<Auction> returnList = new ArrayList<>(bundleAuctionList);
+      HashMap<List<TransportRequest>, Double> winningList = new HashMap<>();
+      List<List<TransportRequest>> bestBundleList;
+      for (Auction auction : bundleAuctionList) {
+         winningList.put(auction.getTransportRequests(), averagePayingPrice(auction.getWinningBid(), auction.getTransportRequests().size()));
+      }
+      bestBundleList = formingBestCombination(winningList);
+      for (Auction auction : bundleAuctionList) {
+         if (!bestBundleList.containsAll(auction.getTransportRequests())) {
+            returnList.remove(auction);
+         }
+      }
+      return returnList;
+   }
+   
+   private double averagePayingPrice (Bid winningBid, int bundleSize) {
+      return winningBid.getPayPrice() / bundleSize;
+   }
+
+   private List<List<TransportRequest>> formingBestCombination(HashMap<List<TransportRequest>, Double> winningList) {
+      List<TransportRequest> temp;
+      List<List<TransportRequest>> tempList = new ArrayList<>();
+      HashMap<List<List<TransportRequest>>, Double> uncommonBundleList = new HashMap<>();
+      Set<List<TransportRequest>> bundleList = new HashSet<>(winningList.keySet());
+      double totalAverageBid;
+      /**
+       * Forming all the combination of uncommons bundles
+       */
+      for (List<TransportRequest> l1 : winningList.keySet()) {
+         tempList.add(l1);
+         totalAverageBid = winningList.get(l1);
+         bundleList.remove(l1);
+         for (List<TransportRequest> l2 : bundleList) {
+            temp = new ArrayList<>(l1);
+            if (!temp.retainAll(l2)) {
+               tempList.add(l2);
+               totalAverageBid += winningList.get(l2);
+            }
+         }
+         uncommonBundleList.put(tempList, totalAverageBid);
+         tempList.clear();
+      }
+      /**
+       * Get the best combination
+       */
+      double highestPrice = (Collections.max(uncommonBundleList.values()));
+      for (Entry<List<List<TransportRequest>>, Double> entry : uncommonBundleList.entrySet()) {
+         if (entry.getValue() == highestPrice) {
+            tempList = entry.getKey();
+         }
+      }
+      return tempList;
+   }
+
+   // /**
+   //  * Winning bundles of a carrier will be form into a map of request.
+   //  * This method help to remove duplicate winning request if any.
+   //  */
+   //  public HashMap<TransportRequest, Double> formWinningRequest(List<TransportRequest> bundle, double price) {
+   //    HashMap<TransportRequest, Double> winningRequest = new HashMap<>();
+   //    double payingPrice = price / bundle.size();
+   //    for (TransportRequest request : bundle) {
+   //       if (winningRequest.containsKey(request)) {
+   //          if (winningRequest.get(request) < payingPrice) {
+   //             winningRequest.replace(request, payingPrice);
+   //          }
+   //       } else {
+   //          winningRequest.put(request, payingPrice);
+   //       }
+   //    }
+   //    return winningRequest;
+   // }
 }

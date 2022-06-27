@@ -17,10 +17,10 @@ public class VickreyAuction extends AuctionStrategy {
 		if (secondBid == null) {
 			secondBid = bid;
 		}
-		if (bid.getPrice() > topBid.getPrice()) {
+		if (bid.getBidPrice() > topBid.getBidPrice()) {
 			secondBid = topBid;
 			topBid = bid;
-		} else if (bid.getPrice() > secondBid.getPrice()) {
+		} else if (bid.getBidPrice() > secondBid.getBidPrice()) {
 			secondBid = bid;
 		}
 	}
@@ -34,7 +34,8 @@ public class VickreyAuction extends AuctionStrategy {
 		if (topBid == null) {
 			return null;
 		}
-		return new Bid(topBid.getID(), topBid.getAuction(), topBid.getBidder(), secondBid.getPrice());
+		topBid.setPayPrice(secondBid.getBidPrice());
+		return topBid;
 	}
 
 }

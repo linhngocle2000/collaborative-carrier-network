@@ -5,17 +5,18 @@ import Agent.CarrierAgent;
 public class Bid {
 
 	
-	public Bid(int id, Auction auction, CarrierAgent bidder, double price) {
+	public Bid(int id, Auction auction, CarrierAgent bidder, double bidPrice) {
 		this.id = id;
 		this.auction = auction;
 		this.bidder = bidder;
-		this.price = price;
+		this.bidPrice = bidPrice;
 	}
 	
 	// Variables 
 
 	private int id;
-	private double price;
+	private double bidPrice;
+	private double payPrice;
 	private Auction auction;
 	private CarrierAgent bidder;
 
@@ -33,8 +34,16 @@ public class Bid {
 		return auction;
 	}
 
-	public double getPrice() {
-		return price;
+	public double getBidPrice() {
+		return bidPrice;
+	}
+
+	public double getPayPrice() {
+		return payPrice;
+	}
+
+	public void setPayPrice(double payPrice) {
+		this.payPrice = payPrice;
 	}
 
 }
