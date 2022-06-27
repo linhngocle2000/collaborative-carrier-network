@@ -238,6 +238,26 @@ class Agent
 		return $agents;
 	}
 
+	public static function setMinProfit($data)
+	{
+		TokenHelper::assertToken();
+
+		$db = Database::getConnection();
+		$username = $db->escape_string($data['Username']);
+		$price = doubleval($data['Price']);
+		$result = $db->query("UPDATE `Agent` SET `MinProfit` = $price WHERE `Username` = '$username'");
+	}
+
+	public static function setMaxProfit($data)
+	{
+		TokenHelper::assertToken();
+
+		$db = Database::getConnection();
+		$username = $db->escape_string($data['Username']);
+		$price = doubleval($data['Price']);
+		$result = $db->query("UPDATE `Agent` SET `MaxProfit` = $price WHERE `Username` = '$username'");
+	}
+
 	/**
 	 * @param  string $token Session token of an auctioneer agent
 	 * @return Agent

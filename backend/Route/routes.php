@@ -16,6 +16,8 @@ $handler->register('getAgent', [Agent::class, 'getAgent']);
 $handler->register('getAgents', [Agent::class, 'getAgents']);
 $handler->register('getAuctioneers', [Agent::class, 'getAuctioneers']);
 $handler->register('getCarriers', [Agent::class, 'getCarriers']);
+$handler->register('setMinProfit', [Agent::class, 'setMinProfit']);
+$handler->register('setMaxProfit', [Agent::class, 'setMaxProfit']);
 
 // Transport request routes
 $handler->register('addRequest', [TransportRequest::class, 'addRequest']);
