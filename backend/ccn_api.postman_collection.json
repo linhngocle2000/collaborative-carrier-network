@@ -38,7 +38,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"Cmd\": \"login\",\r\n    \"Debug\": true,\r\n    \"Data\": {\r\n        \"Username\": \"hans\",\r\n        \"Password\": \"hans\"\r\n    }\r\n}",
+							"raw": "{\r\n    \"Cmd\": \"login\",\r\n    \"Debug\": true,\r\n    \"Data\": {\r\n        \"Username\": \"amy\",\r\n        \"Password\": \"amy\"\r\n    }\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -61,7 +61,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"Cmd\": \"getAgent\",\r\n    \"Token\": \"{{AuthToken}}\",\r\n    \"Debug\": true,\r\n    \"Data\": {\r\n        \"Username\": \"chris\"\r\n    }\r\n}",
+							"raw": "{\r\n    \"Cmd\": \"getAgent\",\r\n    \"Token\": \"{{AuthToken}}\",\r\n    \"Debug\": true,\r\n    \"Data\": {\r\n        \"Username\": \"pkg\"\r\n    }\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -158,7 +158,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"Cmd\": \"addRequest\",\r\n    \"Token\": \"{{AuthToken}}\",\r\n    \"Data\": [\r\n        {\r\n            \"Agent\": \"chris\",\r\n            \"PickupLat\": {{$randomLatitude}},\r\n            \"PickupLon\": {{$randomLongitude}},\r\n            \"DeliveryLat\": {{$randomLatitude}},\r\n            \"DeliveryLon\": {{$randomLongitude}}\r\n        }\r\n    ],\r\n    \"Debug\": true\r\n}",
+							"raw": "{\r\n    \"Cmd\": \"addRequest\",\r\n    \"Token\": \"{{AuthToken}}\",\r\n    \"Data\": [\r\n        {\r\n            \"Agent\": \"pkg\",\r\n            \"PickupLat\": {{$randomLatitude}},\r\n            \"PickupLon\": {{$randomLongitude}},\r\n            \"DeliveryLat\": {{$randomLatitude}},\r\n            \"DeliveryLon\": {{$randomLongitude}}\r\n        }\r\n    ],\r\n    \"Debug\": true\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -204,7 +204,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"Cmd\": \"getRequestsOfAgent\",\r\n    \"Token\": \"{{AuthToken}}\",\r\n    \"Debug\": true,\r\n    \"Data\": {\r\n        \"Agent\": \"chris\"\r\n    }\r\n}",
+							"raw": "{\r\n    \"Cmd\": \"getRequestsOfAgent\",\r\n    \"Token\": \"{{AuthToken}}\",\r\n    \"Debug\": true,\r\n    \"Data\": {\r\n        \"Agent\": \"pkg\"\r\n    }\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -227,7 +227,76 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"Cmd\": \"getRequestsOfAuction\",\r\n    \"Token\": \"{{AuthToken}}\",\r\n    \"Debug\": true,\r\n    \"Data\": {\r\n        \"Auction\": \"2\"\r\n    }\r\n}",
+							"raw": "{\r\n    \"Cmd\": \"getRequestsOfAuction\",\r\n    \"Token\": \"{{AuthToken}}\",\r\n    \"Debug\": true,\r\n    \"Data\": {\r\n        \"Auction\": 134\r\n    }\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{URL}}",
+							"host": [
+								"{{URL}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Stash requests",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"Cmd\": \"stashRequests\",\r\n    \"Token\": \"{{AuthToken}}\",\r\n    \"Debug\": true\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{URL}}",
+							"host": [
+								"{{URL}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get stashed requests",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"Cmd\": \"getStashedRequests\",\r\n    \"Token\": \"{{AuthToken}}\",\r\n    \"Debug\": true,\r\n    \"DataEx\": {\r\n        \"Agent\": \"chris\"\r\n    },\r\n    \"Comment\": \"Rename 'DataEx' to 'Data' to get stashed requests of the specified agent\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{URL}}",
+							"host": [
+								"{{URL}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Reset costs",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"Cmd\": \"resetCost\",\r\n    \"Token\": \"{{AuthToken}}\",\r\n    \"Debug\": true\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -255,7 +324,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"Cmd\": \"addAuction\",\r\n    \"Token\": \"{{AuctioneerToken}}\",\r\n    \"Debug\": true,\r\n    \"Data\": {\r\n\r\n    }\r\n}",
+							"raw": "{\r\n    \"Cmd\": \"addAuction\",\r\n    \"Token\": \"{{AuctioneerToken}}\",\r\n    \"Debug\": true,\r\n    \"Data\": {}\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -295,13 +364,151 @@
 					"response": []
 				},
 				{
-					"name": "Get auctions Copy",
+					"name": "Add request to auction",
 					"request": {
 						"method": "POST",
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"Cmd\": \"addRequestToAuction\",\r\n    \"Token\": \"{{AuctioneerToken}}\",\r\n    \"Debug\": true,\r\n    \"Data\": {\r\n        \"TransportRequest\": 4,\r\n        \"Auction\": 2\r\n    }\r\n}",
+							"raw": "{\r\n    \"Cmd\": \"addRequestToAuction\",\r\n    \"Token\": \"{{AuctioneerToken}}\",\r\n    \"Debug\": true,\r\n    \"Data\": {\r\n        \"TransportRequest\": 21,\r\n        \"Auction\": 134\r\n    }\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{URL}}",
+							"host": [
+								"{{URL}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Add bid",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"Cmd\": \"addBid\",\r\n    \"Token\": \"{{AuthToken}}\",\r\n    \"Debug\": true,\r\n    \"Data\": {\r\n        \"Auction\": 370,\r\n        \"Agent\": \"agentC\",\r\n        \"Price\": {{$randomPrice}}\r\n    }\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{URL}}",
+							"host": [
+								"{{URL}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get bids",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"Cmd\": \"getBids\",\r\n    \"Token\": \"{{AuthToken}}\",\r\n    \"Debug\": true,\r\n    \"Data\": {\r\n        \"Auction\": 2\r\n    }\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{URL}}",
+							"host": [
+								"{{URL}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Start auction",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"Cmd\": \"startAuction\",\r\n    \"Token\": \"{{AuthToken}}\",\r\n    \"Debug\": true,\r\n    \"Data\": {\r\n        \"Auction\": 2\r\n    }\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{URL}}",
+							"host": [
+								"{{URL}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "End auction",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"Cmd\": \"endAuction\",\r\n    \"Token\": \"{{AuthToken}}\",\r\n    \"Debug\": true,\r\n    \"Data\": {\r\n        \"Auction\": 2\r\n    }\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{URL}}",
+							"host": [
+								"{{URL}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Set winner",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"Cmd\": \"setWinner\",\r\n    \"Token\": \"{{AuctioneerToken}}\",\r\n    \"Debug\": true,\r\n    \"Data\": {\r\n        \"Auction\": 134,\r\n        \"Username\": \"linh\",\r\n        \"Cost\": 32\r\n    }\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{URL}}",
+							"host": [
+								"{{URL}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Reset auctions",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"Cmd\": \"resetAuction\",\r\n    \"Token\": \"{{AuctioneerToken}}\",\r\n    \"Debug\": true\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"

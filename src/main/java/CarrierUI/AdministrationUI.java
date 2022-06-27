@@ -1,12 +1,11 @@
 package CarrierUI;
 
-import Auction.Auction;
 import Auction.TransportRequest;
 import UIResource.scrollbar.ScrollBarCustom;
+import Utils.Converter;
 import Utils.TourPlanning;
 import UIResource.UIData;
 import UIResource.HTTPResource.HTTPRequests;
-import UIResource.TextIcon;
 import Agent.CarrierAgent;
 
 import javax.swing.*;
@@ -14,12 +13,12 @@ import javax.swing.border.*;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import javax.swing.table.DefaultTableCellRenderer;
-import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableColumnModel;
 import java.awt.*;
 import java.util.List;
 
-import org.openide.awt.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class AdministrationUI extends JFrame {
 
@@ -30,7 +29,7 @@ public class AdministrationUI extends JFrame {
     private JPanel leftVisualPanel, rightVisualPanel;
     private JTable table;
     private JButton logoutBtn, setBtn;
-    private JTextField minProfitText;
+    private JTextField minProfitText, maxProfitText;
     private JLabel msgLabel;
 
     private CarrierAgent carrier;
@@ -39,21 +38,26 @@ public class AdministrationUI extends JFrame {
     private Color errorColor = UIData.getErrorColor();
     private Color successColor = UIData.getSuccessColor();
 
+    private static Logger LOGGER = LoggerFactory.getLogger(AdministrationUI.class);
+
     public AdministrationUI(CarrierAgent carrier) {
         this.carrier = carrier;
-        tour = new TourPlanning(carrier);
+        try {
+            tour = new TourPlanning(carrier);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
         model = new TransportRequestTableModel(tour);
         visUI = new VisualizationUI();
         leftVisualPanel = visUI.getLeftVisualPanel();
         rightVisualPanel = visUI.getRightVisualPanel();
-        //costCalcUI = new CalculatorUI(tour);
 
 ///////////
 // Frame
 ///////////
 
-        setMinimumSize(new Dimension(630, 720));
-        setPreferredSize(new Dimension(630, 720));
+        setMinimumSize(new Dimension(630, 770));
+        setPreferredSize(new Dimension(630, 770));
         setTitle("CCN");
         setLocationRelativeTo(null);
         setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
@@ -69,6 +73,10 @@ public class AdministrationUI extends JFrame {
         JPanel bottomPanel = new JPanel();
         bottomPanel.setBackground(background);
         bottomPanel.setLayout(new GridBagLayout());
+
+        JPanel btnPanel = new JPanel();
+        btnPanel.setBackground(background);
+        btnPanel.setLayout(new GridBagLayout());
 
         JPanel totalPanel = new JPanel();
         TitledBorder totalTitle = new TitledBorder("Revenue report");
@@ -121,6 +129,7 @@ public class AdministrationUI extends JFrame {
         }
 
         JScrollPane scrollPane = new JScrollPane(table);
+
         if (model.getRowCount() <= 12) {
             scrollPane.setPreferredSize(new Dimension(530, model.getRowCount()*25+23));
         } else {
@@ -244,7 +253,7 @@ public class AdministrationUI extends JFrame {
         constraints.gridx = 0;
         constraints.gridy = 0;
         constraints.anchor = GridBagConstraints.NORTHWEST;
-        constraints.insets = new Insets(3, 0, 0, 10);
+        constraints.insets = new Insets(0, 0, 0, 10);
         bottomPanel.add(minProfit, constraints);
 
         minProfitText = new JTextField();
@@ -258,7 +267,6 @@ public class AdministrationUI extends JFrame {
 
             @Override
             public void changedUpdate(DocumentEvent e) {
-
             }
 
             @Override
@@ -272,15 +280,53 @@ public class AdministrationUI extends JFrame {
         constraints.gridx = 1;
         constraints.gridy = 0;
         constraints.anchor = GridBagConstraints.NORTHWEST;
-        constraints.insets = new Insets(3, 0, 0, 20);
+        constraints.insets = new Insets(0, 0, 0, 20);
         bottomPanel.add(minProfitText, constraints);
+
+        JLabel maxProfit = new JLabel("Max. profit to auction off (\u20AC): ");
+        maxProfit.setHorizontalAlignment(SwingConstants.CENTER);
+
+        constraints = new GridBagConstraints();
+        constraints.gridx = 0;
+        constraints.gridy = 1;
+        constraints.anchor = GridBagConstraints.NORTHWEST;
+        constraints.insets = new Insets(13, 0, 0, 10);
+        bottomPanel.add(maxProfit, constraints);
+
+        maxProfitText = new JTextField();
+        maxProfitText.setPreferredSize(new Dimension(100,22));
+        maxProfitText.setHorizontalAlignment(SwingConstants.CENTER);
+        maxProfitText.getDocument().addDocumentListener(new DocumentListener() {
+            @Override
+            public void removeUpdate(DocumentEvent e) {
+                checkBtn();
+            }
+
+            @Override
+            public void changedUpdate(DocumentEvent e) {
+            }
+
+            @Override
+            public void insertUpdate(DocumentEvent e) {
+                checkBtn();
+            }
+        });
+
+
+        constraints = new GridBagConstraints();
+        constraints.gridx = 1;
+        constraints.gridy = 1;
+        constraints.anchor = GridBagConstraints.NORTHWEST;
+        constraints.insets = new Insets(13, 0, 0, 20);
+        bottomPanel.add(maxProfitText, constraints);
 
         setBtn = new JButton("Set");
         setBtn.setFocusPainted(false);
         setBtn.setEnabled(false);
         setBtn.addActionListener(e -> {
             msgLabel.setText("");
-            if (!checkPriceFormat()) {
+            if ((!minProfitText.getText().trim().isEmpty() && Converter.checkPriceFormat(minProfitText.getText().trim())) ||
+                    (!maxProfitText.getText().trim().isEmpty() && Converter.checkPriceFormat(maxProfitText.getText().trim()))) {
                 msgLabel.setText("Invalid price format");
                 msgLabel.setForeground(errorColor);
             } else {
@@ -291,9 +337,9 @@ public class AdministrationUI extends JFrame {
 
         constraints = new GridBagConstraints();
         constraints.gridx = 2;
-        constraints.gridy = 0;
+        constraints.gridy = 1;
         constraints.anchor = GridBagConstraints.NORTHWEST;
-        constraints.insets = new Insets(0, 0, 0, 20);
+        constraints.insets = new Insets(10, 0, 0, 20);
         bottomPanel.add(setBtn, constraints);
 
         msgLabel = new JLabel();
@@ -302,10 +348,11 @@ public class AdministrationUI extends JFrame {
         msgLabel.setText("");
 
         constraints = new GridBagConstraints();
-        constraints.gridx = 3;
-        constraints.gridy = 0;
-        constraints.anchor = GridBagConstraints.NORTHWEST;
-        constraints.insets = new Insets(3, 0, 0, 0);
+        constraints.gridx = 0;
+        constraints.gridy = 2;
+        constraints.gridwidth = GridBagConstraints.REMAINDER;
+        constraints.anchor = GridBagConstraints.CENTER;
+        constraints.insets = new Insets(15, 0, 0, 0);
         bottomPanel.add(msgLabel, constraints);
 
         constraints = new GridBagConstraints();
@@ -313,7 +360,7 @@ public class AdministrationUI extends JFrame {
         constraints.gridy = 3;
         constraints.gridwidth = GridBagConstraints.REMAINDER;
         constraints.anchor = GridBagConstraints.CENTER;
-        constraints.insets = new Insets(20, 0, 20, 0);
+        constraints.insets = new Insets(20, 0, 10, 0);
         rootPanel.add(bottomPanel, constraints);
 
 
@@ -322,25 +369,31 @@ public class AdministrationUI extends JFrame {
 
         constraints = new GridBagConstraints();
         constraints.gridx = 0;
-        constraints.gridy = 4;
+        constraints.gridy = 0;
         constraints.gridwidth = GridBagConstraints.REMAINDER;
         constraints.anchor = GridBagConstraints.CENTER;
-        constraints.insets = new Insets(0, 0, 0, 0);
-        rootPanel.add(logoutBtn, constraints);
+        constraints.insets = new Insets(0, 0, 20, 0);
+        btnPanel.add(logoutBtn, constraints);
 
-
-        List<TransportRequest> oldRequests = HTTPRequests.getStashedTransportRequests(carrier);
+        List<TransportRequest> oldRequests = null;
+        try {
+            oldRequests = HTTPRequests.getStashedTransportRequests(carrier);
+        } catch (Exception e) {
+            LOGGER.warn(e.getMessage());
+        }
         TourPlanning oldTour = new TourPlanning(carrier,oldRequests);
 
 
         leftVisualPanel.removeAll();
         leftVisualPanel.add(oldTour.visualize());
         leftVisualPanel.revalidate();
+        LOGGER.info("Before tour visualized");
 
 
         rightVisualPanel.removeAll();
         rightVisualPanel.add(tour.visualize());
         rightVisualPanel.revalidate();
+        LOGGER.info("After tour visualized");
 
 
 
@@ -349,6 +402,7 @@ public class AdministrationUI extends JFrame {
 // Combine
 ///////////
         getContentPane().add(rootPanel, BorderLayout.CENTER);
+        getContentPane().add(btnPanel, BorderLayout.SOUTH);
 
         pack();
 
@@ -357,14 +411,11 @@ public class AdministrationUI extends JFrame {
     }
 
     private void checkBtn() {
-        boolean value = !minProfitText.getText().trim().isEmpty();
-        setBtn.setEnabled(value);
+        boolean value1 = !minProfitText.getText().trim().isEmpty();
+        boolean value2 = !maxProfitText.getText().trim().isEmpty();
+        setBtn.setEnabled(value1||value2);
     }
 
-    private boolean checkPriceFormat() {
-        String regex = "^[1-9][0-9]*?(\\.[0-9][0-9]?)?$";
-        return minProfitText.getText().trim().matches(regex);
-    }
 
     public JButton getLogoutBtn() {
         return logoutBtn;
