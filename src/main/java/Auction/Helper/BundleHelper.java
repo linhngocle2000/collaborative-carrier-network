@@ -216,7 +216,7 @@ public class BundleHelper {
       }
       bestBundleList = formingBestCombination(winningList);
       for (Auction auction : bundleAuctionList) {
-         if (!bestBundleList.containsAll(auction.getTransportRequests())) {
+         if (!bestBundleList.contains(auction.getTransportRequests())) {
             returnList.remove(auction);
          }
       }
@@ -234,7 +234,7 @@ public class BundleHelper {
       Set<List<TransportRequest>> bundleList = new HashSet<>(winningList.keySet());
       double totalAverageBid;
       /**
-       * Forming all the combination of uncommons bundles
+       * Forming all the combination of uncommon bundles
        */
       for (List<TransportRequest> l1 : winningList.keySet()) {
          tempList.add(l1);
