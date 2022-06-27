@@ -38,6 +38,6 @@ public class VickeryAuctionTest {
         Bid winningBid = auction.getWinningBid();
         assertEquals(bidTop.getID(), winningBid.getID(), "ID of winning bid should be of highest bid");
         assertEquals(bidTop.getBidder().getUsername(), winningBid.getBidder().getUsername(), "Bidder of winning bid should be of highest bid");
-        assertEquals(bidSecond.getBidPrice(), winningBid.getBidPrice(), "Price of winning bid should be of second highest bid");
+        assertEquals(bidSecond.getBidPrice(), winningBid.getPayPrice(), "Price of winning bid should be of second highest bid");
     }
 }
