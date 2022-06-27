@@ -80,8 +80,9 @@ public class TourPlanning {
 
    /**
     * Update list of request from carrier DB
+    * @throws Exception
     */
-   public void refreshRequests() {
+   public void refreshRequests() throws Exception {
       if (agent != null) {
          this.requests.clear();
          this.requests.addAll(HTTPRequests.getTransportRequestsOfAgent(agent));
