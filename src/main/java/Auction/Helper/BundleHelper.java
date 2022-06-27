@@ -229,7 +229,7 @@ public class BundleHelper {
 
    private List<List<TransportRequest>> formingBestCombination(HashMap<List<TransportRequest>, Double> winningList) {
       List<TransportRequest> temp;
-      List<List<TransportRequest>> tempList = new ArrayList<>();
+      List<List<TransportRequest>> tempList;
       HashMap<List<List<TransportRequest>>, Double> uncommonBundleList = new HashMap<>();
       Set<List<TransportRequest>> bundleList = new HashSet<>(winningList.keySet());
       double totalAverageBid;
@@ -237,22 +237,24 @@ public class BundleHelper {
        * Forming all the combination of uncommon bundles
        */
       for (List<TransportRequest> l1 : winningList.keySet()) {
+         tempList = new ArrayList<>();
          tempList.add(l1);
          totalAverageBid = winningList.get(l1);
          bundleList.remove(l1);
          for (List<TransportRequest> l2 : bundleList) {
             temp = new ArrayList<>(l1);
-            if (!temp.retainAll(l2)) {
+            temp.retainAll(l2);
+            if (temp.isEmpty()) {
                tempList.add(l2);
                totalAverageBid += winningList.get(l2);
             }
          }
          uncommonBundleList.put(tempList, totalAverageBid);
-         tempList.clear();
       }
       /**
        * Get the best combination
        */
+      tempList = new ArrayList<>();
       double highestPrice = (Collections.max(uncommonBundleList.values()));
       for (Entry<List<List<TransportRequest>>, Double> entry : uncommonBundleList.entrySet()) {
          if (entry.getValue() == highestPrice) {
