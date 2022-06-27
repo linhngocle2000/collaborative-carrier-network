@@ -17,6 +17,14 @@ import Utils.TourPlanning;
 
 public class BundleHelper {
 
+   private List<CarrierAgent> carriers;
+   private List<TransportRequest> requests;
+
+   public BundleHelper(List<CarrierAgent> carriers, List<TransportRequest> requests) {
+      this.carriers = carriers;
+      this.requests = requests;
+   }
+
    /**
     * Bundles are form into a list of bundle.
     * This method help to remove all bundle that is subset of another.
@@ -120,8 +128,7 @@ public class BundleHelper {
     */
    private List<Location> getDepotList() {
       List<Location> depotList = new ArrayList<>();
-      List<CarrierAgent> carrierList = HTTPRequests.getCarrierAgents();
-      for (CarrierAgent carrier : carrierList) {
+      for (CarrierAgent carrier : carriers) {
          depotList.add(Location.newInstance(carrier.getDepotX(), carrier.getDepotY()));
       }
       return depotList;
@@ -178,8 +185,7 @@ public class BundleHelper {
       // Location requestLoc;
       // double requestX, requestY;
       List<TransportRequest> gatherRequestList = new ArrayList<>();
-      List<TransportRequest> requestsOnAuction = getAllRequestOnAuction();
-      for (TransportRequest request : requestsOnAuction) {
+      for (TransportRequest request : requests) {
          /**
           * Consider a request is a location which is mean value of pickup location and deliver location.
           */

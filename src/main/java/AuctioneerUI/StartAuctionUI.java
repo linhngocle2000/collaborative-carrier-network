@@ -119,7 +119,7 @@ public class StartAuctionUI extends JFrame {
         }
     }
 
-    public void bundleAuction() {
+    public void bundleAuction() throws Exception {
         checkCarrierList();
 
         // Add all transport requests to the same root auction
@@ -131,9 +131,9 @@ public class StartAuctionUI extends JFrame {
         pool.shutdown();
         pool.awaitTermination(Long.MAX_VALUE, TimeUnit.NANOSECONDS); // Without this call, the executor service may not finish all auction tasks!
 
-        // Load list of all transport requests
+        // Generate bundles
         List<TransportRequest> elementaryRequests = HTTPRequests.getTransportRequestsOfAuction(auction);
-        BundleHelper helper = new BundleHelper();
+        BundleHelper helper = new BundleHelper(bidders, elementaryRequests);
 
         // TODO: Split all requests of the root auction into seperate auctions with bundles
         // TODO: Delete root auction
