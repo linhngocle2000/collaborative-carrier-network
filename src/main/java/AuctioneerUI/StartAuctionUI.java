@@ -9,7 +9,7 @@ import javax.swing.*;
 import Auction.Auction;
 import Auction.TransportRequest;
 import Auction.Bid;
-import Auction.Bundle.BundleHelper;
+import Auction.BundleHelper;
 import Auction.VickreyAuction;
 import Utils.TourPlanning;
 
@@ -132,7 +132,7 @@ public class StartAuctionUI extends JFrame {
         pool.awaitTermination(Long.MAX_VALUE, TimeUnit.NANOSECONDS); // Without this call, the executor service may not finish all auction tasks!
 
         // Load list of all transport requests
-        List<TransportRequests> elementaryRequests = HTTPRequests.getTransportRequestsOfAuction(auction);
+        List<TransportRequest> elementaryRequests = HTTPRequests.getTransportRequestsOfAuction(auction);
         BundleHelper helper = new BundleHelper();
 
         // TODO: Split all requests of the root auction into seperate auctions with bundles

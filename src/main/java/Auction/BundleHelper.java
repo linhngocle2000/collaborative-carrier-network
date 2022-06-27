@@ -1,4 +1,4 @@
-package Auction.Helper;
+package Auction;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -12,9 +12,6 @@ import com.graphhopper.jsprit.core.problem.Location;
 import com.graphhopper.jsprit.core.util.EuclideanDistanceCalculator;
 
 import Agent.CarrierAgent;
-import Auction.Auction;
-import Auction.Bid;
-import Auction.TransportRequest;
 import UIResource.HTTPResource.HTTPRequests;
 import Utils.TourPlanning;
 
