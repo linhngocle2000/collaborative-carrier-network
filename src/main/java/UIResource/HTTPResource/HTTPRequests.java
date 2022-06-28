@@ -442,19 +442,6 @@ public class HTTPRequests {
         return success;
     }
 
-    public static Double getMinProfitToBid(CarrierAgent carrier) throws IOException, InterruptedException, JSONException {
-        LOGGER.info("getMinProfitToBid " + carrier.getUsername());
-        var json = send(RequestBody.getMinProfitToBid(carrier, token));
-        boolean success = json.getBoolean("success");
-        if (!success) {
-            JSONObject error = json.getJSONObject("error");
-            lastError = new Exception(error.getString("message"));
-            LOGGER.warn(error.getString("message"));
-            return null;
-        }
-        return json.getDouble("data");
-    }
-
     public static boolean addMaxProfitToAuctionOff(CarrierAgent carrier, double price) throws IOException, InterruptedException, JSONException {
         LOGGER.info("addMaxProfitToAuctionOff " + carrier.getUsername());
         var json = send(RequestBody.addMaxProfitToAuctionOff(carrier, price, token));
@@ -465,19 +452,6 @@ public class HTTPRequests {
             LOGGER.warn(error.getString("message"));
         }
         return success;
-    }
-
-    public static Double getMaxProfitToAuctionOff(CarrierAgent carrier) throws IOException, InterruptedException, JSONException {
-        LOGGER.info("getMaxProfitToAuctionOff " + carrier.getUsername());
-        var json = send(RequestBody.getMaxProfitToAuctionOff(carrier, token));
-        boolean success = json.getBoolean("success");
-        if (!success) {
-            JSONObject error = json.getJSONObject("error");
-            lastError = new Exception(error.getString("message"));
-            LOGGER.warn(error.getString("message"));
-            return null;
-        }
-        return json.getDouble("data");
     }
 
     // Helper methods

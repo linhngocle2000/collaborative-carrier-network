@@ -15,8 +15,10 @@ import javax.swing.event.DocumentListener;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.TableColumnModel;
 import java.awt.*;
+import java.io.IOException;
 import java.util.List;
 
+import org.json.JSONException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -257,6 +259,7 @@ public class AdministrationUI extends JFrame {
         bottomPanel.add(minProfit, constraints);
 
         minProfitText = new JTextField();
+        minProfitText.setText(String.format("%.1f", carrier.getMinProfit()).replace(',', '.'));
         minProfitText.setPreferredSize(new Dimension(100,22));
         minProfitText.setHorizontalAlignment(SwingConstants.CENTER);
         minProfitText.getDocument().addDocumentListener(new DocumentListener() {
@@ -294,6 +297,7 @@ public class AdministrationUI extends JFrame {
         bottomPanel.add(maxProfit, constraints);
 
         maxProfitText = new JTextField();
+        maxProfitText.setText(String.format("%.1f", carrier.getMaxProfit()).replace(',', '.'));
         maxProfitText.setPreferredSize(new Dimension(100,22));
         maxProfitText.setHorizontalAlignment(SwingConstants.CENTER);
         maxProfitText.getDocument().addDocumentListener(new DocumentListener() {
@@ -330,8 +334,17 @@ public class AdministrationUI extends JFrame {
                 msgLabel.setText("Invalid price format");
                 msgLabel.setForeground(errorColor);
             } else {
-                msgLabel.setText("Profit set!");
-                msgLabel.setForeground(successColor);
+                try {
+                    HTTPRequests.addMinProfitToBid(carrier, Double.parseDouble(minProfitText.getText()));
+                    HTTPRequests.addMaxProfitToAuctionOff(carrier, Double.parseDouble(maxProfitText.getText()));
+                    msgLabel.setText("Profit set!");
+                    msgLabel.setForeground(successColor);
+                } catch (NumberFormatException | JSONException | IOException | InterruptedException e1) {
+                    LOGGER.warn(e1.getMessage());
+                    e1.printStackTrace();
+                    msgLabel.setText("An error occured. Please try again");
+                    msgLabel.setForeground(errorColor);
+                }
             }
         });
 

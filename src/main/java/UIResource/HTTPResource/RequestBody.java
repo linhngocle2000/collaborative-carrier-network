@@ -141,26 +141,14 @@ public class RequestBody {
         JSONObject data = new JSONObject();
         data.put("Username", carrier.getUsername());
         data.put("Price", price);
-        return body("addMinProfitToBid", token, data);
-    }
-
-    public static String getMinProfitToBid(CarrierAgent carrier, String token) {
-        JSONObject data = new JSONObject();
-        data.put("Username", carrier.getUsername());
-        return body("getMinProfitToBid", token, data);
+        return body("setMinProfit", token, data);
     }
 
     public static String addMaxProfitToAuctionOff(CarrierAgent carrier, double price, String token) {
         JSONObject data = new JSONObject();
         data.put("Username", carrier.getUsername());
         data.put("Price", price);
-        return body("addMaxProfitToAuctionOff", token, data);
-    }
-
-    public static String getMaxProfitToAuctionOff(CarrierAgent carrier, String token) {
-        JSONObject data = new JSONObject();
-        data.put("Username", carrier.getUsername());
-        return body("getMinProfitToBid", token, data);
+        return body("setMaxProfit", token, data);
     }
 
     // Helper
