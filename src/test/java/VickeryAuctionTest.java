@@ -21,9 +21,9 @@ public class VickeryAuctionTest {
     public void setUp() {
         auction = new Auction(0,0);
         auction.setAuctionStrategy(new VickreyAuction());
-        carrierTop = new CarrierAgent("test1", "test1", 0,0,0,0,0,0);
-        carrierSecond = new CarrierAgent("test2", "test2", 0,0,0,0,0,0);
-        carrierThird = new CarrierAgent("test3", "test3", 0,0,0,0,0,0);
+        carrierTop = new CarrierAgent("test1", "test1", 0, 0, 0,0,0,0,0,0);
+        carrierSecond = new CarrierAgent("test2", "test2", 0, 0, 0,0,0,0,0,0);
+        carrierThird = new CarrierAgent("test3", "test3", 0, 0, 0,0,0,0,0,0);
         bidTop = new Bid(1,auction,carrierTop,100.0);
         bidSecond = new Bid(2,auction,carrierSecond,90.0);
         bidThird = new Bid(3,auction,carrierThird,80.0);

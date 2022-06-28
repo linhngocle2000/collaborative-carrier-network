@@ -22,7 +22,7 @@ public class CostCalculatorTest {
 
     @Before
     public void setUp() {
-        carrier = new CarrierAgent("test", "test", 4, 5, 500,500,100,100);
+        carrier = new CarrierAgent("test", "test", 0, 0, 4, 5, 500,500,100,100);
         transportRequestList = new ArrayList<>();
         tr1 = new TransportRequest(0,carrier,3,7,5,2);
         tr2 = new TransportRequest(1,carrier,6,1,2,7);
