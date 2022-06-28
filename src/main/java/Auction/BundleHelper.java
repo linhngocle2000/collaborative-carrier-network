@@ -214,8 +214,10 @@ public class BundleHelper {
       List<Auction> returnList = new ArrayList<>(bundleAuctionList);
       HashMap<List<TransportRequest>, Double> winningList = new HashMap<>();
       List<List<TransportRequest>> bestBundleList;
+      double averagePayingPrice;
       for (Auction auction : bundleAuctionList) {
-         winningList.put(auction.getTransportRequests(), averagePayingPrice(auction.getWinningBid(), auction.getTransportRequests().size()));
+         averagePayingPrice = auction.getWinningBid().getPayPrice() / auction.getTransportRequests().size();
+         winningList.put(auction.getTransportRequests(), averagePayingPrice);
       }
       bestBundleList = formingBestCombination(winningList);
       for (Auction auction : bundleAuctionList) {
@@ -225,16 +227,12 @@ public class BundleHelper {
       }
       return returnList;
    }
-   
-   private double averagePayingPrice (Bid winningBid, int bundleSize) {
-      return winningBid.getPayPrice() / bundleSize;
-   }
 
    private List<List<TransportRequest>> formingBestCombination(HashMap<List<TransportRequest>, Double> winningList) {
       List<TransportRequest> temp;
       List<List<TransportRequest>> tempList;
-      HashMap<List<List<TransportRequest>>, Double> uncommonBundleList = new HashMap<>();
-      Set<List<TransportRequest>> bundleList = new HashSet<>(winningList.keySet());
+      List<List<List<TransportRequest>>> tempNestedList = new ArrayList<>();
+      HashMap<List<List<TransportRequest>>, Double> uncommonBundleMap = new HashMap<>();
       double totalAverageBid;
       /**
        * Forming all the combination of uncommon bundles
@@ -243,8 +241,7 @@ public class BundleHelper {
          tempList = new ArrayList<>();
          tempList.add(l1);
          totalAverageBid = winningList.get(l1);
-         bundleList.remove(l1);
-         for (List<TransportRequest> l2 : bundleList) {
+         for (List<TransportRequest> l2 : winningList.keySet()) {
             temp = new ArrayList<>(l1);
             temp.retainAll(l2);
             if (temp.isEmpty()) {
@@ -252,16 +249,28 @@ public class BundleHelper {
                totalAverageBid += winningList.get(l2);
             }
          }
-         uncommonBundleList.put(tempList, totalAverageBid);
+         uncommonBundleMap.put(tempList, totalAverageBid);
+         tempNestedList.add(tempList);
+      }
+      for (List<List<TransportRequest>> l1 : tempNestedList) {
+         tempNestedList = tempNestedList.subList(1, tempNestedList.size());
+         for (List<List<TransportRequest>> l2 : tempNestedList) {
+            if (l1.containsAll(l2)) {
+               uncommonBundleMap.remove(l1);
+            } else if (l2.containsAll(l1)) {
+               uncommonBundleMap.remove(l2);
+            }
+         }
       }
       /**
        * Get the best combination
        */
       tempList = new ArrayList<>();
-      double highestPrice = (Collections.max(uncommonBundleList.values()));
-      for (Entry<List<List<TransportRequest>>, Double> entry : uncommonBundleList.entrySet()) {
+      double highestPrice = (Collections.max(uncommonBundleMap.values()));
+      for (Entry<List<List<TransportRequest>>, Double> entry : uncommonBundleMap.entrySet()) {
          if (entry.getValue() == highestPrice) {
             tempList = entry.getKey();
+            break;
          }
       }
       return tempList;
