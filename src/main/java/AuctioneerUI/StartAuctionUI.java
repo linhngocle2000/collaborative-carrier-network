@@ -63,6 +63,7 @@ public class StartAuctionUI extends JFrame {
 
         JLabel topLabel = new JLabel("Auction is running.");
         topLabel.setFont(font.deriveFont(Font.BOLD, 14));
+        topLabel.setVisible(false);
 
         GridBagConstraints constraints = new GridBagConstraints();
         constraints.gridx = 0;
@@ -74,6 +75,7 @@ public class StartAuctionUI extends JFrame {
 
         JLabel bottomLabel = new JLabel("Window closes automatically.");
         bottomLabel.setFont(font.deriveFont(Font.BOLD, 14));
+        bottomLabel.setVisible(false);
 
         constraints = new GridBagConstraints();
         constraints.gridx = 0;
@@ -83,12 +85,26 @@ public class StartAuctionUI extends JFrame {
         constraints.insets = new java.awt.Insets(0, 0, 0, 0);
         panel.add(bottomLabel, constraints);
 
+        JButton button = new JButton();
+        button.setText("Start auction");
+        button.addActionListener(e -> {
+            topLabel.setVisible(true);
+            bottomLabel.setVisible(true);
+            button.setEnabled(false);
+            bundleAuction();        
+        });
+
+        constraints = new GridBagConstraints();
+        constraints.gridx = 0;
+        constraints.gridy = 2;
+        constraints.gridwidth = GridBagConstraints.REMAINDER;
+        constraints.anchor = GridBagConstraints.CENTER;
+        constraints.insets = new java.awt.Insets(0, 0, 0, 0);
+        panel.add(button, constraints);
+
         getContentPane().add(panel);
-
         pack();
-
         setResizable(false);
-
     }
 
     public void checkCarrierList() {
@@ -119,6 +135,8 @@ public class StartAuctionUI extends JFrame {
     public void bundleAuction() {
         try {
             checkCarrierList();
+            HTTPRequests.resetCost();
+            HTTPRequests.stashTransportRequests();
 
             // Add all transport requests to the same root auction
             Auction rootAuction = HTTPRequests.addAuction();
@@ -142,6 +160,7 @@ public class StartAuctionUI extends JFrame {
                     HTTPRequests.addTransportRequestToAuction(bundleAuction, request);
                 }
                 bundleAuction.setTransportRequests(bundle);
+                bundleAuction.setAuctionStrategy(new VickreyAuction());
                 auctions.add(bundleAuction);
             }
 
@@ -171,6 +190,9 @@ public class StartAuctionUI extends JFrame {
         } catch (Exception e) {
             LOGGER.warn(e.getMessage());
         }
+
+        HTTPRequests.logout();
+        System.exit(0);
     }
 
     public void startAuctions() {
@@ -307,7 +329,8 @@ class BundleBidTask implements Runnable {
                 double price = profit - carrier.getMinProfit();
                 Bid bid = HTTPRequests.addBid(auction, carrier, price);
                 assert bid != null;
-                LOGGER.info(carrier.getUsername() + " bids for auction " + auction.getID() + " with " + price);
+                auction.addBid(bid);
+                LOGGER.info(carrier.getUsername() + " bids " + price + " on auction " + auction.getID());
             }
         } catch (Exception e) {
             LOGGER.warn(e.getMessage());
@@ -330,8 +353,9 @@ class BundleAuctionTask implements Runnable {
         try {
             TourPlanning tour = new TourPlanning(carrier);
             for (TransportRequest tr : tour.getRequests()) {
-                if (tour.getProfit(tr) <= 0) {
+                if (tour.getProfit(tr) < carrier.getMaxProfit()) {
                     HTTPRequests.addTransportRequestToAuction(auction, tr);
+                    LOGGER.info(carrier.getUsername() + " auctions off Transport Request " + tr.getID() + ": " + tr.getRouteString());
                     System.out.println("Request " + tr.getRouteString() + " sent to auction.");
                 }
             }

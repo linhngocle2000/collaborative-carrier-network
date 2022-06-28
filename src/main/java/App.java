@@ -139,8 +139,6 @@ public class App {
                 auctioneerUI.setVisible(true);
                 loginUI.setVisible(false);
                 auctioneer = (AuctioneerAgent)user;
-                auctioneerUI.auctionOff();
-                auctioneerUI.startAuctions();
             } else {
                 auctioneer = null;
                 carrier = (CarrierAgent)user;
