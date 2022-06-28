@@ -146,8 +146,13 @@ public class BundleHelper {
    public List<List<TransportRequest>> generateBundles() {
       List<List<TransportRequest>> bundleList = new ArrayList<>();
       List<Location> specialDepotList = generateSpecialDepots();
+
+      // Form bundles depending on the special depot locations
       for (Location specialDepot : specialDepotList) {
          List<TransportRequest> bundle = formingBundle(specialDepot);
+         if (bundle.size() > 0) {
+            bundleList.add(bundle);
+         }
          /**
           * The minimum number of request within a bundle
           */
@@ -155,8 +160,17 @@ public class BundleHelper {
          //    radius *= 2;
          //    bundle = formingBundle(specialDepot);
          // }
-         bundleList.add(bundle);
       }
+
+      // Add transport requests that haven't been formed into a bundle
+      for (TransportRequest request : requests) {
+         if (bundleList.stream().noneMatch(x -> x.contains(request))) {
+            List<TransportRequest> list = new ArrayList<>();
+            list.add(request);
+            bundleList.add(list);
+         }
+      }
+
       return bundleList;
    }
 
