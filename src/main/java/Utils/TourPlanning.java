@@ -14,9 +14,7 @@ import com.graphhopper.jsprit.core.util.Solutions;
 import Agent.CarrierAgent;
 import Auction.TransportRequest;
 import UIResource.HTTPResource.HTTPRequests;
-import org.json.JSONException;
 
-import java.io.IOException;
 import java.util.*;
 
 import javax.swing.JPanel;
@@ -48,6 +46,7 @@ public class TourPlanning {
       this.fixedCost = agent.getFixedCost();
       this.internalCost = agent.getInternalCost();
       this.loadingCost = agent.getLoadingCost();
+      this.requests = new ArrayList<>();
       refreshRequests();
    }
 
@@ -160,6 +159,7 @@ public class TourPlanning {
     */
    private void setBestSolution() {
       VehicleRoutingAlgorithm algorithm = new SchrimpfFactory().createAlgorithm(problem);
+      algorithm.setMaxIterations(500);
       Collection<VehicleRoutingProblemSolution> solutions = algorithm.searchSolutions();
       bestSolution = Solutions.bestOf(solutions);
    }
