@@ -1,4 +1,13 @@
-# Generating bundle of transport request
+# Auction bundles
+
+## Table of contents
+
+1. [Generating special depot location](#generating-special-depot-location)
+2. [Bundles](#bundles)
+   - [Generating bundles](#generating-bundles)
+   - [Profit calculation](#profit-calculation)
+3. [Bidding process](#bidding-process)
+4. [Distributing bundles](#distributing-bundles)
 
 ## Generating special depot location
 
@@ -19,9 +28,9 @@ new bundle is generated until no more new bundle can be generated. A bundle that
 are elements in another bundle, in other words, a bundle that is a subset of another bundle, will be deleted.
 New bundle will then be generated based on another special depot location.
 
-> <b>Example 1:</b> Bundle A = {R1, R2, R3} and Bundle B = {R2, R4, R5}, both bundle are retained.
+> <b>Example 1:</b> If bundle **A = {R1, R2, R3}** and bundle **B = {R2, R4, R5}**, then both bundles are retained.
 
-> <b>Example 2:</b> Bundle A = {R1, R2} and Bundle B = {R1, R2, R4, R5}, Bundle A is deleted, only Bundle B is retained.
+> <b>Example 2:</b> If bundle **A = {R1, R2}** and bundle **B = {R1, R2, R4, R5}**, then bundle A is deleted, only bundle B is retained.
 
 > <b>Note</b>: Use <code>containsAll()</code> method to form all bundle into a nested list of transport request.
 
@@ -30,64 +39,59 @@ New bundle will then be generated based on another special depot location.
 Requests that make profit to a special depot location are formed into a bundle. Transport requests that don't belong to
 any bundles are auctioned off as single request.
    
-## Profit calculation
+### Profit calculation
 
-A route is defined as from pickup location to deliver location.
+The direct route of a transport request is defined as the route from pickup location straight to deliver location
+without visiting any other locations. The profit considered when forming bundles is the difference of the price
+per km multiplied with the length of the direct route and the cost that a carrier has to pay for travelling
+on the actual route based on the generated tour. The base rate to reach the pickup point and loading/unloading cost are excluded from
+the calculation as they are irrelevant to the bundle forming process. In particular, following requirements must be
+fulfilled when forming bundles 
+- All requests within a bundle have to make a positive profit.
+- The total revenue of a bundle based on a special depot location has to be positive, since the total revenue takes the total tour length into account
 
-The main profit is based on the differences between the earning per distance on a direct route with the cost per distance that carrier has to pay for travelling on actual route based on the tour generated.
+## Bidding process
 
-In this situation, the fixed earning cost and loading/unloading cost is not necessary.
+Not all transport requests within a bundle could bring profit to each carrier. In order to help carriers to maximize
+their profit while bidding for bundles, as long as <ins>the average profit of all requests within a bundle</ins>
+is higher than the value set in _Min. profit to bid_ by a carrier, this bundle is recommended for that carrier to bid.
+Automatically, carriers will always place their highest possible bid on such bundle, i.e., the difference of
+the profit and the value of _Min. profit to bid_. 
 
-* All the request within a bundle has to make positive profit.
-* The total revenue of that bundle based on the special depot location also has to be positive. (because the total revenue takes the whole tour length into accounting) ???
+> <b>Example:</b> \
+Let bundle **A = {R1, R2, R3, R4}**.\
+Carrier B set its _Min. profit to bid_ to **30**.\
+Profit gain of R1 for carrier B is _100_, R2 is _80_, R3 is _50_, and R4 is _-10_.\
+The average profit that carrier B will attain after including all requests of bundle A in its tour is **55**.\
+Carrier B will automatically bid on bundle A.
 
-# How carrier gonna bid on the bundle
+> In the above example, carrier B will bid **25** for bundle A.
 
-* Not all transport request within a bundle could make profit to the carrier.
+## Distributing bundles
 
-* In order to help the carrier to maximize their profit while bidding the bundle, as long as <u>the average profit of all requests within a bundle</u>  is higher than the wishing profit of carrier this bundle will be recommended for such carrier to bid.
+All bundles are sold at the same time. The highest bid price (winning price) on a bundle is distributed equally over all
+requests in that bundle.
 
-* In automatic way, a carrier will always bid on such bundles.
+If two or more carriers have won two or more bundles that contain some common requests, then only bundles of carrier
+paying the most are sold, the rest are deformed. The requests in unsold bundles will be put into second auction list,
+to which carriers will bid in the next iteration.
 
-> <b>Example:</b>  
-Carrier A set his/her wishing profit for automatic bid is 30.\
-Bundle B = {R1, R2, R3, R4}.\
-Profit gain on doing R1 is 100, on R2 is 80, on R3 is 50, on R4 is -10.\
-The average profit that carrier A gonna have after doing all requests in bundle B is 55.\
-Carrier A will automatically bid on bundle B.
+> <b>Example 1</b>: Bundles A, B and C have some common requests, and carrier 1 has won on bidding bundles A and B,
+carrier 2 has won bundle C, then bundles A and B are sold to carrier 1, bundle C will be deformed.
 
-> In this example situation, the carrier gonna place their highest possible bid to get such 30 profit from the bundle which is 25.
+> <b>Example 2</b>: Bundles A and B have common requests, bundles B and C have common requests,
+and these bundles are respectively won by carriers 1, 2 and 3, then bundles A and C will be sold,
+bundle B will be deformed. 
 
-# How to decide which bundles gonna be sold (not finish)
+A smart calculator is implemented to compute which bundles will be sold to maximize the profit for all sellers.
 
-* Solution 1:
+If a carrier has won 2 or more bundles that have some common transport requests, the paying price of the second bundle
+(and other bundles) will be deducted based on the number of common transport request(s).
 
-All bundle will be sold at the same time.
+> <b>Example:</b> Carrier A has won bundle B and C which has N requests. These two bundles have 2 common transport requests.\
+Carrier A then have to pay price _b_ for bundle B and price _c - <sup>c</sup>&frasl;<sub>N</sub> * 2_ for bundle C.
+Prices _b_ and _c_ are the 2<sup>nd</sup> highest bid price on each bundle and _b_ > _c_.
 
-The highest bid price (winning price) on a bundle is distributed over all requests within that bundle. This average bid price on a request will be considered (C_a).
-
-If two or more carriers have won repectively two or more bundles which contain some common requests, then only the bundle have the highest C_a will be sold, the rest will be deformed. The uncommon requests in un-sold bundles will be put back to normal bid list. (Or put into second bid list, this list will be started after the current bid list end).
-
-In case bundles A ,B and C have some common requests, and carrier 1 has won on bidding bundles A and B, carrier 2 has won bundle C, then C_a of carrier 1 will be C_a on bundle A + C_a on bundle B while C_a of carrier 2 stay remain. This time bundles A and B will be sold, C will be deformed.
-
-In case bundles A and B have common requests, bundles B and C have common requests, and these bundles are respectively bid by carriers 1, 2 and 3, then bundles A and C will be sold, B will be deformed. 
-
-We can set a profit calculator for the C_a. A smart calculator will decide which bundles gonna be sold to make the highest profit from selling bundle.
-
-* Solution 2:
-
-Set maximum number of bundle that a carrier can win on bidding is 1. 
-
-Then ???
-
-
-# A Carrier has won multiple bundles which contain common requests.
-
-* In case a carrier has won on bidding 2 or more bundles which have some common transport requests, the paying price on second bundle or other (not the 1st one) will be deducted based on number of common transport request.
-
-> <b>Example:</b> Carrier A has won on bidding bundle B and C which has N requests. These two bundles have 2 common transport requests.\
-Carrier A then have to pay for bundle B with price b and bundle C with price (c - c/N*2). Prices b and c are the 2nd highest bid price on each bundle and b > c
-
-> <b>Note:</b> We could transfer all requests in winning bundles of a carrier into a <code>HashMap</code> of winning request with the price winner has to pay. Price of a request is decided by the 2nd highest bid on that bundle over the number of requests within that bundle.
-
-> Check on add new if request is duplicated then the paying price will be replace with the higher one.
+> <b>Note:</b> All requests in winning bundles of a carrier are stored as <code>HashMap</code> of winning requests 
+and the prices winners have to pay. Price of a request is the 2<sup>nd</sup> highest bid of the bundle containing the request
+divided by the number of requests within that bundle.
