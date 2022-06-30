@@ -13,6 +13,7 @@ every participant in the network. In addition, carriers incur much lower costs t
    - [Registration](#registration)
    - [Login as carrier](#login-as-carrier)
    - [Login as auctioneer](#login-as-auctioneer)
+   - [Auction process](#auction-process)
 
 
 ## Features
@@ -74,4 +75,8 @@ To login as an auctioneer, choose _Login_ in the start window. Enter **auctionee
 then click on the _Login_ button at the bottom. After logging in, the auction process will start automatically. To
 monitor the auction process, please refer to the log file of the current date.
 
+### Auction process
+
+The auctioneer calculates the profit of each transport requests for all carriers and decides which request to auction
+off based on the value set in _Min. profit to bid_ by carriers. 
 
