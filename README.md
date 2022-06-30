@@ -78,5 +78,11 @@ monitor the auction process, please refer to the log file of the current date.
 ### Auction process
 
 The auctioneer calculates the profit of each transport requests for all carriers and decides which request to auction
-off based on the value set in _Min. profit to bid_ by carriers. 
+off based on the value set in _Max. profit to auction off_ by carriers. The auctioneer then forms possible bundles from
+transport requests that were sent to auction and carriers can bid for these bundles. The bid is calculated based on the
+value set in _Min. profit to bid_ by carriers. Finally, the auctioneer computes the best distribution of bundles to
+carriers.
+
+> Note: Want to know more about how bundles are generated and distributed? Click [here](Bundle.md).
+
 
