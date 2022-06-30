@@ -3,19 +3,37 @@ package Auction;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
+import java.util.Objects;
 import java.util.Map.Entry;
 
 import com.graphhopper.jsprit.core.problem.Location;
 import com.graphhopper.jsprit.core.util.EuclideanDistanceCalculator;
 
 import Agent.CarrierAgent;
-import UIResource.HTTPResource.HTTPRequests;
 import Utils.TourPlanning;
 
 public class BundleHelper {
+
+   private class Winning {
+      private String bidderUsername;
+      List<TransportRequest> bundle;
+      double averagePayPrice;
+
+      Winning() {}
+      
+      Winning(String username, List<TransportRequest> bundle, double averagePayPrice) {
+         this.bidderUsername = username;
+         this.bundle = new ArrayList<>(bundle);
+         this.averagePayPrice = averagePayPrice;
+      }
+
+      void setAll(Winning w) {
+         this.bidderUsername = w.bidderUsername;
+         this.bundle = new ArrayList<>(w.bundle);
+         this.averagePayPrice = w.averagePayPrice;
+      }
+   }
 
    private List<CarrierAgent> carriers;
    private List<TransportRequest> requests;
@@ -150,7 +168,7 @@ public class BundleHelper {
       // Form bundles depending on the special depot locations
       for (Location specialDepot : specialDepotList) {
          List<TransportRequest> bundle = formingBundle(specialDepot);
-         if (bundle.size() > 0) {
+         if (bundle.size() > 1) {
             bundleList.add(bundle);
          }
          /**
@@ -226,14 +244,19 @@ public class BundleHelper {
 
    public List<Auction> decisionMaking(List<Auction> bundleAuctionList) {
       List<Auction> returnList = new ArrayList<>(bundleAuctionList);
-      HashMap<List<TransportRequest>, Double> winningList = new HashMap<>();
-      List<List<TransportRequest>> bestBundleList;
+      List<Winning> winningList = new ArrayList<>();
+      String username;
       double averagePayingPrice;
+      List<List<TransportRequest>> bestBundleList = new ArrayList<>();
       for (Auction auction : bundleAuctionList) {
          averagePayingPrice = auction.getWinningBid().getPayPrice() / auction.getTransportRequests().size();
-         winningList.put(auction.getTransportRequests(), averagePayingPrice);
+         username = auction.getWinningBid().getBidder().getUsername();
+         winningList.add(new Winning(username, auction.getTransportRequests(), averagePayingPrice));
       }
-      bestBundleList = formingBestCombination(winningList);
+      winningList = formingBestCombination(winningList);
+      for (Winning w : winningList) {
+         bestBundleList.add(w.bundle);
+      }
       for (Auction auction : bundleAuctionList) {
          if (!bestBundleList.contains(auction.getTransportRequests())) {
             returnList.remove(auction);
@@ -242,70 +265,107 @@ public class BundleHelper {
       return returnList;
    }
 
-   private List<List<TransportRequest>> formingBestCombination(HashMap<List<TransportRequest>, Double> winningList) {
-      List<TransportRequest> temp;
-      List<List<TransportRequest>> tempList;
-      List<List<List<TransportRequest>>> tempNestedList = new ArrayList<>();
-      HashMap<List<List<TransportRequest>>, Double> uncommonBundleMap = new HashMap<>();
+   private List<Winning> formingBestCombination(List<Winning> winningList) {
+      Winning temp = new Winning();
+      List<Winning> tempList;
+      List<Winning> sameBidderList;
+      List<List<Winning>> tempNestedList = new ArrayList<>();
+      HashMap<List<Winning>, Double> uncommonBundleMap = new HashMap<>();
       double totalAverageBid;
       /**
        * Forming all the combination of uncommon bundles
        */
-      for (List<TransportRequest> l1 : winningList.keySet()) {
+      for (Winning w1 : winningList) {
          tempList = new ArrayList<>();
-         tempList.add(l1);
-         totalAverageBid = winningList.get(l1);
-         for (List<TransportRequest> l2 : winningList.keySet()) {
-            temp = new ArrayList<>(l1);
-            temp.retainAll(l2);
-            if (temp.isEmpty()) {
-               tempList.add(l2);
-               totalAverageBid += winningList.get(l2);
+         sameBidderList = new ArrayList<>();
+         tempList.add(w1);
+         totalAverageBid = w1.averagePayPrice;
+         for (Winning w2 : winningList) {
+            if (Objects.equals(w1, w2)) {
+               continue;
+            }
+            if (Objects.equals(w1.bidderUsername, w2.bidderUsername)) {
+               sameBidderList.add(w2);
+               continue;
+            }
+            temp.setAll(w1);
+            temp.bundle.retainAll(w2.bundle);
+            if (temp.bundle.isEmpty()) {
+               tempList.add(w2);
+               totalAverageBid += w2.averagePayPrice;
+            }
+         }
+         if (!sameBidderList.isEmpty()) {
+            List<Winning> compareList = new ArrayList<>(tempList.subList(1, tempList.size()));
+            for (Winning w21 : sameBidderList) {
+               int count = 0;
+               for (Winning w22 : compareList) {
+                  temp.setAll(w21);
+                  temp.bundle.retainAll(w22.bundle);
+                  if (!temp.bundle.isEmpty()) {
+                     count ++;
+                     temp.setAll(w22);
+                  }
+               }
+               switch (count) {
+                  case 0:
+                     tempList.add(w21);
+                     totalAverageBid += w21.averagePayPrice;
+                     break;
+                  case 1:
+                     if (sameBidderList.size() == 1) {
+                        if (w21.averagePayPrice >= temp.averagePayPrice) {
+                           tempList.remove(temp);
+                           totalAverageBid -= temp.averagePayPrice;
+                           tempList.add(w21);
+                           totalAverageBid += w21.averagePayPrice;
+                        }
+                     } else {
+                        tempList.remove(temp);
+                        totalAverageBid -= temp.averagePayPrice;
+                        tempList.add(w21);
+                        totalAverageBid += w21.averagePayPrice;
+                     }
+                     break;
+                  default:
+                     break;
+               }
+            }
+            if (sameBidderList.size() > tempList.size() - 1) {
+               compareList = new ArrayList<>(tempList.subList(1, tempList.size()));
+               tempList.removeAll(compareList);
+               for (Winning w : compareList) {
+                  totalAverageBid -= w.averagePayPrice;
+               }
+               tempList.addAll(sameBidderList);
+               for (Winning w : sameBidderList) {
+                  totalAverageBid += w.averagePayPrice;
+               }
             }
          }
          uncommonBundleMap.put(tempList, totalAverageBid);
          tempNestedList.add(tempList);
       }
-      for (List<List<TransportRequest>> l1 : tempNestedList) {
+      for (List<Winning> wl1 : tempNestedList) {
          tempNestedList = tempNestedList.subList(1, tempNestedList.size());
-         for (List<List<TransportRequest>> l2 : tempNestedList) {
-            if (l1.containsAll(l2)) {
-               uncommonBundleMap.remove(l1);
-            } else if (l2.containsAll(l1)) {
-               uncommonBundleMap.remove(l2);
+         for (List<Winning> wl2 : tempNestedList) {
+            if (wl1.containsAll(wl2)) {
+               uncommonBundleMap.remove(wl1);
+            } else if (wl2.containsAll(wl1)) {
+               uncommonBundleMap.remove(wl2);
             }
          }
       }
       /**
        * Get the best combination
        */
-      tempList = new ArrayList<>();
       double highestPrice = (Collections.max(uncommonBundleMap.values()));
-      for (Entry<List<List<TransportRequest>>, Double> entry : uncommonBundleMap.entrySet()) {
+      for (Entry<List<Winning>, Double> entry : uncommonBundleMap.entrySet()) {
          if (entry.getValue() == highestPrice) {
-            tempList = entry.getKey();
+            winningList = entry.getKey();
             break;
          }
       }
-      return tempList;
+      return winningList;
    }
-
-   // /**
-   //  * Winning bundles of a carrier will be form into a map of request.
-   //  * This method help to remove duplicate winning request if any.
-   //  */
-   //  public HashMap<TransportRequest, Double> formWinningRequest(List<TransportRequest> bundle, double price) {
-   //    HashMap<TransportRequest, Double> winningRequest = new HashMap<>();
-   //    double payingPrice = price / bundle.size();
-   //    for (TransportRequest request : bundle) {
-   //       if (winningRequest.containsKey(request)) {
-   //          if (winningRequest.get(request) < payingPrice) {
-   //             winningRequest.replace(request, payingPrice);
-   //          }
-   //       } else {
-   //          winningRequest.put(request, payingPrice);
-   //       }
-   //    }
-   //    return winningRequest;
-   // }
 }
