@@ -86,6 +86,20 @@ public class Auction {
 	}
 
 	/**
+	 * @return All transport request coordinates in String
+	 */
+	public String getTransportRequestRoutes() {
+		String res = "";
+		res += requests.get(0).getRouteString();
+		for (TransportRequest req : requests.subList(1, requests.size())) {
+			res += ",";
+			res += req.getRouteString();
+
+		}
+		return res;
+	}
+
+	/**
 	 * @return The number of iterations this auction has been started before
 	 */
 	public int getIteration() {

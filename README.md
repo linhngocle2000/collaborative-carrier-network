@@ -13,6 +13,7 @@ every participant in the network. In addition, carriers incur much lower costs t
    - [Registration](#registration)
    - [Login as carrier](#login-as-carrier)
    - [Login as auctioneer](#login-as-auctioneer)
+   - [Auction process](#auction-process)
 
 
 ## Features
@@ -73,5 +74,15 @@ start/end point, _[Pickup]_ is the pickup location and _[Delivery]_ is the deliv
 To login as an auctioneer, choose _Login_ in the start window. Enter **auctioneer** as username <ins>and</ins> password, 
 then click on the _Login_ button at the bottom. After logging in, the auction process will start automatically. To
 monitor the auction process, please refer to the log file of the current date.
+
+### Auction process
+
+The auctioneer calculates the profit of each transport requests for all carriers and decides which request to auction
+off based on the value set in _Max. profit to auction off_ by carriers. The auctioneer then forms possible bundles from
+transport requests that were sent to auction and carriers can bid for these bundles. The bid is calculated based on the
+value set in _Min. profit to bid_ by carriers. Finally, the auctioneer computes the best distribution of bundles to
+carriers.
+
+> <b>Note</b>: Want to know more about how bundles are generated and distributed? Click [here](Bundle.md).
 
 
