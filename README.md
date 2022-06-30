@@ -83,6 +83,6 @@ transport requests that were sent to auction and carriers can bid for these bund
 value set in _Min. profit to bid_ by carriers. Finally, the auctioneer computes the best distribution of bundles to
 carriers.
 
-> Note: Want to know more about how bundles are generated and distributed? Click [here](Bundle.md).
+> <b>Note</b>: Want to know more about how bundles are generated and distributed? Click [here](Bundle.md).
 
 
