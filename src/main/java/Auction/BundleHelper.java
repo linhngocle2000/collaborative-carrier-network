@@ -37,10 +37,15 @@ public class BundleHelper {
 
    private List<CarrierAgent> carriers;
    private List<TransportRequest> requests;
+   private List<TransportRequest> unsoldList;
 
    public BundleHelper(List<CarrierAgent> carriers, List<TransportRequest> requests) {
       this.carriers = carriers;
       this.requests = requests;
+   }
+
+   public List<TransportRequest> getUnsoldList() {
+      return this.unsoldList;
    }
 
    /**
@@ -242,13 +247,18 @@ public class BundleHelper {
 //       Decision Making part
 ////////
 
-   public List<Auction> decisionMaking(List<Auction> bundleAuctionList) {
-      List<Auction> returnList = new ArrayList<>(bundleAuctionList);
+   public List<Auction> decisionMaking(List<Auction> auctionList) {
+      List<Auction> bundleAuctions = new ArrayList<>();
+      for (Auction auction : auctionList) {
+         if (auction.getTransportRequests().size() != 1) {
+            bundleAuctions.add(auction);
+         }
+      }
       List<Winning> winningList = new ArrayList<>();
       String username;
       double averagePayingPrice;
       List<List<TransportRequest>> bestBundleList = new ArrayList<>();
-      for (Auction auction : bundleAuctionList) {
+      for (Auction auction : bundleAuctions) {
          averagePayingPrice = auction.getWinningBid().getPayPrice() / auction.getTransportRequests().size();
          username = auction.getWinningBid().getBidder().getUsername();
          winningList.add(new Winning(username, auction.getTransportRequests(), averagePayingPrice));
@@ -257,12 +267,25 @@ public class BundleHelper {
       for (Winning w : winningList) {
          bestBundleList.add(w.bundle);
       }
-      for (Auction auction : bundleAuctionList) {
+      unsoldList = new ArrayList<>();
+      for (Auction auction : bundleAuctions) {
          if (!bestBundleList.contains(auction.getTransportRequests())) {
-            returnList.remove(auction);
+            for (TransportRequest request : auction.getTransportRequests()) {
+               unsoldList.add(request);
+            }
+            auctionList.remove(auction);
          }
       }
-      return returnList;
+      List<TransportRequest> temp = new ArrayList<>(unsoldList);
+      for (TransportRequest request : temp) {
+         for (List<TransportRequest> bundle : bestBundleList) {
+            if (bundle.contains(request)) {
+               unsoldList.remove(request);
+               break;
+            }
+         }
+      }
+      return auctionList;
    }
 
    private List<Winning> formingBestCombination(List<Winning> winningList) {
