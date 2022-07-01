@@ -48,49 +48,30 @@ public class BundleHelper {
       return this.unsoldList;
    }
 
-   /**
-    * Bundles are form into a list of bundle.
-    * This method help to remove all bundle that is subset of another.
-    */
-   public List<List<TransportRequest>> checkAndRemoveSubset(List<List<TransportRequest>> bundleList){
-      List<List<TransportRequest>> returnBundleList = new ArrayList<>(bundleList);
-      for (List<TransportRequest> bundle1 : bundleList) {
-         if (bundleList.size() == 1) {
-            break;
-         }
-         bundleList = bundleList.subList(1, bundleList.size());
-         for (List<TransportRequest> bundle2 : bundleList) {
-            if (bundle1.containsAll(bundle2)) {
-               returnBundleList.remove(bundle2);
-            } else if (bundle2.containsAll(bundle1)) {
-               returnBundleList.remove(bundle1);
-            }
-         }
-      }
-      return returnBundleList;
-   }
-
 
 ////////
 //       Generating special depot location
 ////////
 
    private double radiusDepot = 10;
-   private final int maximumSize = 5;
+   private final int maxDepotSize = 5;
 
    /**
     * This method is used to generate the list of special depot loc
     */
-   public List<Location> generateSpecialDepots() {
+   private List<Location> generateSpecialDepots() {
       List<Location> specialDepotList = getDepotList();
       List<Location> tempDepotList;
-      while (specialDepotList.size() > maximumSize) {
+      while (specialDepotList.size() > maxDepotSize) {
          tempDepotList = generateSpecialDepots(specialDepotList);
          if (specialDepotList.equals(tempDepotList)) {
             /**
              * At this point if the same list is generated again,
              * then we can double the radius or just break the loop and accept the list.
              */
+            if (radiusDepot == 80) {
+               return specialDepotList;
+            }
             radiusDepot *= 2;
             // break;
          } else {
@@ -164,26 +145,20 @@ public class BundleHelper {
 ////////
 
    private double radiusRequest = 20;
-   // private final int minimumSize = 5;
+   private final int minBundleSize = 3;
+   private final int maxBundleSize = 5;
+   private final double minProfit = 0;
 
    public List<List<TransportRequest>> generateBundles() {
       List<List<TransportRequest>> bundleList = new ArrayList<>();
       List<Location> specialDepotList = generateSpecialDepots();
-
+      List<TransportRequest> bundle;
       // Form bundles depending on the special depot locations
       for (Location specialDepot : specialDepotList) {
-         List<TransportRequest> bundle = formingBundle(specialDepot);
-         if (bundle.size() > 1) {
-            bundleList.add(bundle);
-         }
-         /**
-          * The minimum number of request within a bundle
-          */
-         // while (bundle.size() < minimumSize) {
-         //    radius *= 2;
-         //    bundle = formingBundle(specialDepot);
-         // }
+         bundle = formingBundle(specialDepot);
+         bundleList.add(bundle);
       }
+      bundleList = checkAndRemoveSubset(bundleList);
 
       // Add transport requests that haven't been formed into a bundle
       for (TransportRequest request : requests) {
@@ -203,12 +178,23 @@ public class BundleHelper {
    private List<TransportRequest> formingBundle (Location specialDepot) {
       TourPlanning tour = new TourPlanning();
       List<TransportRequest> bundle = new ArrayList<>();
-      List<TransportRequest> gatherRequestList = gatherRequestList(specialDepot);
+      List<TransportRequest> gatherList;
       tour.setDepot(specialDepot);
-      tour.setRequests(gatherRequestList);
-      for (TransportRequest request : gatherRequestList) {
-         if (tour.getProfit(request) > 0) {
-            bundle.add(request);
+      while (bundle.size() < minBundleSize) {
+         if (radiusRequest == 50) {
+            break;
+         }
+         bundle.clear();
+         radiusRequest += 10;
+         gatherList = gatherRequestList(specialDepot);
+         tour.setRequests(gatherList);
+         for (TransportRequest request : gatherList) {
+            if (tour.getProfit(request) > minProfit) {
+               bundle.add(request);
+               if (bundle.size() == maxBundleSize) {
+                  return bundle;
+               }
+            }
          }
       }
       return bundle;
@@ -218,10 +204,10 @@ public class BundleHelper {
     * This method gathers all the request within a radius around a special depot.
     */
    private List<TransportRequest> gatherRequestList(Location specialDepot) {
-      double distance;
+      double distancePickup, distanceDeliver;
       // Location requestLoc;
       // double requestX, requestY;
-      List<TransportRequest> gatherRequestList = new ArrayList<>();
+      List<TransportRequest> gatherList = new ArrayList<>();
       for (TransportRequest request : requests) {
          /**
           * Consider a request is a location which is mean value of pickup location and deliver location.
@@ -232,14 +218,37 @@ public class BundleHelper {
          // distance = EuclideanDistanceCalculator.calculateDistance(specialDepot.getCoordinate(), requestLoc.getCoordinate());
 
          /**
-          * Consider only the pickup location of the request.
+          * Consider both pickup and deliver locations of the request.
           */
-         distance = EuclideanDistanceCalculator.calculateDistance(specialDepot.getCoordinate(), request.getPickup().getCoordinate());
-         if (distance <= radiusRequest) {
-            gatherRequestList.add(request);
+         distancePickup = EuclideanDistanceCalculator.calculateDistance(specialDepot.getCoordinate(), request.getPickup().getCoordinate());
+         distanceDeliver = EuclideanDistanceCalculator.calculateDistance(specialDepot.getCoordinate(), request.getDelivery().getCoordinate());
+         if (distancePickup <= radiusRequest && distanceDeliver <= radiusRequest) {
+            gatherList.add(request);
          }
       }
-      return gatherRequestList;
+      return gatherList;
+   }
+
+   /**
+    * Bundles are form into a list of bundle.
+    * This method help to remove all bundle that is subset of another.
+    */
+   private List<List<TransportRequest>> checkAndRemoveSubset(List<List<TransportRequest>> bundleList){
+      List<List<TransportRequest>> returnBundleList = new ArrayList<>(bundleList);
+      for (List<TransportRequest> bundle1 : bundleList) {
+         if (bundleList.size() == 1) {
+            break;
+         }
+         bundleList = bundleList.subList(1, bundleList.size());
+         for (List<TransportRequest> bundle2 : bundleList) {
+            if (bundle1.containsAll(bundle2)) {
+               returnBundleList.remove(bundle2);
+            } else if (bundle2.containsAll(bundle1)) {
+               returnBundleList.remove(bundle1);
+            }
+         }
+      }
+      return returnBundleList;
    }
 
 
