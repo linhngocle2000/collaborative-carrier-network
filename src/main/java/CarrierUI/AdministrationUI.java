@@ -15,6 +15,8 @@ import javax.swing.event.DocumentListener;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.TableColumnModel;
 import java.awt.*;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.io.IOException;
 import java.util.List;
 
@@ -30,7 +32,7 @@ public class AdministrationUI extends JFrame {
     private VisualizationUI visUI;
     private JPanel leftVisualPanel, rightVisualPanel;
     private JTable table;
-    private JButton logoutBtn, setBtn;
+    private JButton setBtn;
     private JTextField minProfitText, maxProfitText;
     private JLabel msgLabel;
 
@@ -58,11 +60,17 @@ public class AdministrationUI extends JFrame {
 // Frame
 ///////////
 
-        setMinimumSize(new Dimension(630, 770));
-        setPreferredSize(new Dimension(630, 770));
+        setMinimumSize(new Dimension(630, 720));
+        setPreferredSize(new Dimension(630, 720));
         setTitle("CCN");
         setLocationRelativeTo(null);
-        setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
+        setDefaultCloseOperation(EXIT_ON_CLOSE);
+
+        addWindowListener(new WindowAdapter() {
+            public void windowClosing(WindowEvent e) {
+                LOGGER.info("Carrier " + carrier.getUsername() + " exit");
+            }
+        } );
 
 ///////////
 // Panels
@@ -76,9 +84,6 @@ public class AdministrationUI extends JFrame {
         bottomPanel.setBackground(background);
         bottomPanel.setLayout(new GridBagLayout());
 
-        JPanel btnPanel = new JPanel();
-        btnPanel.setBackground(background);
-        btnPanel.setLayout(new GridBagLayout());
 
         JPanel totalPanel = new JPanel();
         TitledBorder totalTitle = new TitledBorder("Revenue report");
@@ -90,9 +95,6 @@ public class AdministrationUI extends JFrame {
         totalPanel.setMinimumSize(new Dimension(500, 110));
         totalPanel.setPreferredSize(new Dimension(500, 110));
 
-///////////
-// Panels
-///////////
 
 
 ///////////
@@ -255,7 +257,7 @@ public class AdministrationUI extends JFrame {
         constraints.gridx = 0;
         constraints.gridy = 0;
         constraints.anchor = GridBagConstraints.NORTHWEST;
-        constraints.insets = new Insets(0, 0, 0, 10);
+        constraints.insets = new Insets(10, 0, 0, 10);
         bottomPanel.add(minProfit, constraints);
 
         minProfitText = new JTextField();
@@ -283,7 +285,7 @@ public class AdministrationUI extends JFrame {
         constraints.gridx = 1;
         constraints.gridy = 0;
         constraints.anchor = GridBagConstraints.NORTHWEST;
-        constraints.insets = new Insets(0, 0, 0, 20);
+        constraints.insets = new Insets(10, 0, 0, 20);
         bottomPanel.add(minProfitText, constraints);
 
         JLabel maxProfit = new JLabel("Max. profit to auction off (\u20AC): ");
@@ -377,17 +379,6 @@ public class AdministrationUI extends JFrame {
         rootPanel.add(bottomPanel, constraints);
 
 
-        logoutBtn = new JButton("Logout");
-        logoutBtn.setFocusPainted(false);
-
-        constraints = new GridBagConstraints();
-        constraints.gridx = 0;
-        constraints.gridy = 0;
-        constraints.gridwidth = GridBagConstraints.REMAINDER;
-        constraints.anchor = GridBagConstraints.CENTER;
-        constraints.insets = new Insets(0, 0, 20, 0);
-        btnPanel.add(logoutBtn, constraints);
-
         List<TransportRequest> oldRequests = null;
         try {
             oldRequests = HTTPRequests.getStashedTransportRequests(carrier);
@@ -415,7 +406,6 @@ public class AdministrationUI extends JFrame {
 // Combine
 ///////////
         getContentPane().add(rootPanel, BorderLayout.CENTER);
-        getContentPane().add(btnPanel, BorderLayout.SOUTH);
 
         pack();
 
@@ -427,11 +417,6 @@ public class AdministrationUI extends JFrame {
         boolean value1 = !minProfitText.getText().trim().isEmpty();
         boolean value2 = !maxProfitText.getText().trim().isEmpty();
         setBtn.setEnabled(value1||value2);
-    }
-
-
-    public JButton getLogoutBtn() {
-        return logoutBtn;
     }
 
     public VisualizationUI getVisUI() {

@@ -97,6 +97,7 @@ public class App {
                 ArrayList<Float> tr = Converter.convertStringToTR(transReq);
                 carrier = (CarrierAgent)HTTPRequests.login(username, password);
                 for (int i = 0; i<(tr.size()); i+=4) {
+                    assert carrier != null;
                     HTTPRequests.addTransportRequest(carrier, tr.get(i), tr.get(i+1), tr.get(i+2), tr.get(i+3));
                 }
                 registerUI.setErrorLabel("");
@@ -147,19 +148,11 @@ public class App {
                 adminUI.setVisible(true);
                 adminUI.getVisUI().setVisible(true);
                 loginUI.setVisible(false);
-                carrierLogoutBtn = adminUI.getLogoutBtn();
-                carrierLogoutBtn.addActionListener(event -> {
-                    LOGGER.info("Carrier " + carrier.getUsername() + " logged out");
-                    adminUI.getVisUI().dispose();
-                    adminUI.dispose();
-                    HTTPRequests.logout();
-                    new App();
-                });
             }
         });
     }
 
-    static public void main(String[] args) {
+    public static void main(String[] args) {
         PropertyConfigurator.configure("src/main/resources/log4j.properties");
         new App();
     }
