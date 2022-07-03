@@ -81,7 +81,7 @@ The auctioneer calculates the profit of each transport requests for all carriers
 off based on the value set in _Max. profit to auction off_ by carriers. The auctioneer then forms possible bundles from
 transport requests that were sent to auction and carriers can bid for these bundles. The bid is calculated based on the
 value set in _Min. profit to bid_ by carriers. Finally, the auctioneer computes the best distribution of bundles to
-carriers. The implemented auction mechanism is _Vickery auction_.
+carriers. The implemented auction mechanism is vickery auction.
 
 > <b>Note</b>: Want to know more about how bundles are generated and distributed? Click [here](Bundle.md).
 
