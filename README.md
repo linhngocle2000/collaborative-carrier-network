@@ -62,8 +62,8 @@ of the old transport requests will be set back to 0. Below the table is a revenu
 - **Total profit**: Sum of profit of all transport requests a carrier own
 
 User can set the minimum profit of transport requests to be bid or maximum profit of transport requests to be auctioned 
-off by entering a price in the field _Min. profit to bid_ or _Max. profit to auction off_ respectively. To exit the
-application, click on the [X]-Button in the top-right corner.
+off by entering a price in the field _Min. profit to bid_ or _Max. profit to auction off_ respectively. To logout, click
+on the [X]-Button in the top-right corner.
 
 The other window visualizes the old tour before the auction process on the left panel and the new tour after the auction
 process on the right panel. Below the graphs are the corresponding coordinates of the tour. _[Depot]_ indicates the 
