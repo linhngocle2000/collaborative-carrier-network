@@ -68,6 +68,9 @@ public class AdministrationUI extends JFrame {
 
         addWindowListener(new WindowAdapter() {
             public void windowClosing(WindowEvent e) {
+                visUI.dispose();
+                dispose();
+                HTTPRequests.logout();
                 LOGGER.info("Carrier " + carrier.getUsername() + " exit");
             }
         } );
