@@ -8,6 +8,8 @@ import javax.swing.border.Border;
 import javax.swing.border.TitledBorder;
 
 import java.awt.*;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 
 public class VisualizationUI extends JFrame {
 
@@ -25,6 +27,7 @@ public class VisualizationUI extends JFrame {
         setTitle("CCN");
         setLocationRelativeTo(null);
         setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
+
 
 ///////////
 // Panels

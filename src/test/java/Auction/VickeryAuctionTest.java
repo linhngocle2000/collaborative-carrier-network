@@ -1,3 +1,5 @@
+package Auction;
+
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import Agent.CarrierAgent;

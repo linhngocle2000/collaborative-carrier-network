@@ -54,16 +54,18 @@ public class BundleHelper {
 ////////
 
    private double radiusDepot = 10;
-   private final double radiusDepotMax = 40;
+   private final double radiusDepotMax = 80;
    private final int maxDepotSize = 5;
 
    /**
     * This method is used to generate the list of special depot loc
     */
-   private List<Location> generateSpecialDepots() {
+   List<Location> generateSpecialDepots() {
       List<Location> specialDepotList = getDepotList();
       List<Location> tempDepotList;
+      // specialDepotList must have more than maxDepotSize (=5) elements
       while (specialDepotList.size() > maxDepotSize) {
+         // generate list of special depots from specialDepotList
          tempDepotList = generateSpecialDepots(specialDepotList);
          if (specialDepotList.equals(tempDepotList)) {
             /**
@@ -74,7 +76,6 @@ public class BundleHelper {
                return specialDepotList;
             }
             radiusDepot *= 2;
-            // break;
          } else {
             specialDepotList = tempDepotList;
          }
@@ -88,11 +89,15 @@ public class BundleHelper {
    private List<Location> generateSpecialDepots(List<Location> depotList) {
       List<Location> specialDepotList = new ArrayList<>();
       Location specialDepot;
+      // for each location a in depotList
       for (Location focusedDepot : depotList) {
+         // calculate special depot of a as focused loc and all locations that within 5(length unit) from a
          specialDepot = getSpecialDepot(gatherDepot(focusedDepot, depotList));
+         // check if calculated special depot already existed in result
          if (specialDepotList.contains(specialDepot)) {
             continue;
          }
+         // add to result
          specialDepotList.add(specialDepot);
       }
       return specialDepotList;
@@ -104,9 +109,12 @@ public class BundleHelper {
    private List<Location> gatherDepot (Location focusedDepot, List<Location> depotList) {
       double distance;
       List<Location> gatherList = new ArrayList<>();
+      // dor each location a in depot list
       for (Location depot : depotList) {
          distance = EuclideanDistanceCalculator.calculateDistance(focusedDepot.getCoordinate(), depot.getCoordinate());
+         // if distance between a and focused depot <= radiusDepot (=5)
          if (distance <= radiusDepot) {
+            // add to result
             gatherList.add(depot);
          }
       }
@@ -117,19 +125,22 @@ public class BundleHelper {
     * This method calculate a special depot loc from a gather list of depot loc
     */
    private Location getSpecialDepot(List<Location> gatherList) {
+      // gatherList only has 1 element -> return
       if (gatherList.size() == 1) {
          return gatherList.get(0);
       }
       double depotX = 0, depotY = 0;
+      // sum all x-coordinate and y-coordinate of all locations in gatherList
       for (Location depot : gatherList) {
          depotX += depot.getCoordinate().getX();
          depotY += depot.getCoordinate().getY();
       }
+      // return a location that has the average x and y coordinate of all locations in gatherList
       return Location.newInstance(depotX / gatherList.size(), depotY / gatherList.size());
    }
 
    /**
-    * This method get all depot of registered carrier
+    * This method get all depots of registered carrier
     */
    private List<Location> getDepotList() {
       List<Location> depotList = new ArrayList<>();
@@ -182,22 +193,30 @@ public class BundleHelper {
       List<TransportRequest> bundle = new ArrayList<>();
       List<TransportRequest> gatherList;
       tour.setDepot(specialDepot);
+      // bundle size must be smaller or equals to 3
       while (bundle.size() < minBundleSize) {
          if (radiusRequest == radiusRequestMax) {
             break;
          }
          bundle.clear();
-         radiusRequest += 10;
+
+         // gather all request within radiusRequest from specialDepot
          gatherList = gatherRequestList(specialDepot);
+         // add requests to tour
          tour.setRequests(gatherList);
+         // calculate profit of each request in tour
          for (TransportRequest request : gatherList) {
             if (tour.getProfit(request) > minProfit) {
+               // if makes profit add to result
                bundle.add(request);
+               // if bundle is full (=3) -> return
                if (bundle.size() == maxBundleSize) {
                   return bundle;
                }
             }
          }
+         // increase radiusRequest, initially 10
+         radiusRequest += 10;
       }
       return bundle;
    }
@@ -210,6 +229,7 @@ public class BundleHelper {
       // Location requestLoc;
       // double requestX, requestY;
       List<TransportRequest> gatherList = new ArrayList<>();
+      // for each transport req a
       for (TransportRequest request : requests) {
          /**
           * Consider a request is a location which is mean value of pickup location and deliver location.
@@ -224,6 +244,7 @@ public class BundleHelper {
           */
          distancePickup = EuclideanDistanceCalculator.calculateDistance(specialDepot.getCoordinate(), request.getPickup().getCoordinate());
          distanceDeliver = EuclideanDistanceCalculator.calculateDistance(specialDepot.getCoordinate(), request.getDelivery().getCoordinate());
+         // add to result if pickup and delivery of a within radiusRequest from specialDepot
          if (distancePickup <= radiusRequest && distanceDeliver <= radiusRequest) {
             gatherList.add(request);
          }
@@ -235,9 +256,10 @@ public class BundleHelper {
     * Bundles are form into a list of bundle.
     * This method help to remove all bundle that is subset of another.
     */
-   private List<List<TransportRequest>> checkAndRemoveSubset(List<List<TransportRequest>> bundleList){
+   List<List<TransportRequest>> checkAndRemoveSubset(List<List<TransportRequest>> bundleList){
       List<List<TransportRequest>> returnBundleList = new ArrayList<>(bundleList);
       for (List<TransportRequest> bundle1 : bundleList) {
+         // if bundleList contains only 1 element, don't check
          if (bundleList.size() == 1) {
             break;
          }
@@ -251,6 +273,7 @@ public class BundleHelper {
          }
       }
       return returnBundleList;
+
    }
 
 
