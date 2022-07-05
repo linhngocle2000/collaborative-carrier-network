@@ -193,7 +193,7 @@ public class BundleHelper {
       List<TransportRequest> bundle = new ArrayList<>();
       List<TransportRequest> gatherList;
       tour.setDepot(specialDepot);
-      // bundle size must be smaller or equals to 3
+      // bundle size must be smaller than 3
       while (bundle.size() < minBundleSize) {
          if (radiusRequest == radiusRequestMax) {
             break;
@@ -209,7 +209,7 @@ public class BundleHelper {
             if (tour.getProfit(request) > minProfit) {
                // if makes profit add to result
                bundle.add(request);
-               // if bundle is full (=3) -> return
+               // if bundle is full (=5) -> return
                if (bundle.size() == maxBundleSize) {
                   return bundle;
                }
@@ -231,14 +231,6 @@ public class BundleHelper {
       List<TransportRequest> gatherList = new ArrayList<>();
       // for each transport req a
       for (TransportRequest request : requests) {
-         /**
-          * Consider a request is a location which is mean value of pickup location and deliver location.
-          */
-         // requestX = (request.getPickupX() + request.getDeliveryX()) / 2;
-         // requestY = (request.getPickupY() + request.getDeliveryY()) / 2;
-         // requestLoc = Location.newInstance(requestX , requestY);
-         // distance = EuclideanDistanceCalculator.calculateDistance(specialDepot.getCoordinate(), requestLoc.getCoordinate());
-
          /**
           * Consider both pickup and deliver locations of the request.
           */
@@ -282,12 +274,14 @@ public class BundleHelper {
 ////////
 
    public List<Auction> decisionMaking(List<Auction> auctionList) {
+      // Bc single auction is considered as bundle auction with 1 request, so we only need making decision on actual bundle.
       List<Auction> bundleAuctions = new ArrayList<>();
       for (Auction auction : auctionList) {
          if (auction.getTransportRequests().size() != 1) {
             bundleAuctions.add(auction);
          }
       }
+      // Forming the best combination that give most profit for sellers.
       List<Winning> winningList = new ArrayList<>();
       String username;
       double averagePayingPrice;
@@ -301,6 +295,7 @@ public class BundleHelper {
       for (Winning w : winningList) {
          bestBundleList.add(w.bundle);
       }
+      // Deform the bundles that not in the best combination and add all those request in an unsoldlist for 2nd single bid session.
       unsoldList = new ArrayList<>();
       for (Auction auction : bundleAuctions) {
          if (!bestBundleList.contains(auction.getTransportRequests())) {
@@ -312,9 +307,19 @@ public class BundleHelper {
             auctionList.remove(auction);
          }
       }
+      List<TransportRequest> temp = new ArrayList<>(unsoldList);
+      for (TransportRequest request : temp) {
+         for (List<TransportRequest> bundle : bestBundleList) {
+            if (bundle.contains(request)) {
+               unsoldList.remove(request);
+               break;
+            }
+         }
+      }
+      // Bundles that have won by same carrier will be form into a big bundle.
+      // Paying price will be deducted base on the number of common requests.
       List<String> preUsername = new ArrayList<>();
       double payPrice;
-      List<TransportRequest> temp;
       List<TransportRequest> newBundle;
       List<List<TransportRequest>> bundleList;
       for (Winning w1 : winningList) {
@@ -350,15 +355,6 @@ public class BundleHelper {
             tempAuction.setTransportRequests(newBundle);
             tempAuction.setWinningPayPrice(payPrice);
             auctionList.add(tempAuction);
-         }
-      }
-      temp = new ArrayList<>(unsoldList);
-      for (TransportRequest request : temp) {
-         for (List<TransportRequest> bundle : bestBundleList) {
-            if (bundle.contains(request)) {
-               unsoldList.remove(request);
-               break;
-            }
          }
       }
       return auctionList;
@@ -456,7 +452,7 @@ public class BundleHelper {
          }
       }
       /**
-       * Get the best combination
+       * Get the best combination based on the highest paying price. This make most profit to sellers.
        */
       double highestPrice = (Collections.max(uncommonBundleMap.values()));
       for (Entry<List<Winning>, Double> entry : uncommonBundleMap.entrySet()) {
