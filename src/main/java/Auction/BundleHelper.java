@@ -169,9 +169,10 @@ public class BundleHelper {
          bundle = formingBundle(specialDepot);
          bundleList.add(bundle);
       }
+      // remove subsets in bundleList
       bundleList = checkAndRemoveSubset(bundleList);
 
-      // Add transport requests that haven't been formed into a bundle
+      // Add transport requests that haven't been formed into bundleList as single bundle
       for (TransportRequest request : requests) {
          if (bundleList.stream().noneMatch(x -> x.contains(request))) {
             bundle = new ArrayList<>();
