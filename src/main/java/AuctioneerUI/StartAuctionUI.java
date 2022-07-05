@@ -200,17 +200,18 @@ class BundleBidTask implements Runnable {
         try {
             TourPlanning tour = new TourPlanning(carrier);
             double profit = 0;
+            int bundleSize = auction.getTransportRequests().size();
 
             for (var request : auction.getTransportRequests()) {
                 if (tour.contains(request)) {
                     return;
                 }
-                tour.addRequest(request);
+                tour.addRequests(auction.getTransportRequests());
                 profit += tour.getProfit(request);
             }
             
-            if (profit >= carrier.getMinProfit()) {
-                double price = profit - carrier.getMinProfit();
+            if ((profit / bundleSize) >= carrier.getMinProfit()) {
+                double price = profit - (carrier.getMinProfit() * bundleSize);
                 Bid bid = HTTPRequests.addBid(auction, carrier, price);
                 assert bid != null;
                 auction.addBid(bid);

@@ -15,6 +15,8 @@ public class Auction {
 	private boolean isActive = false;
 	private AuctionStrategy strategy;
 
+	public Auction() {}
+
 	public Auction(int id, int iteration) {
 		this.id = id;
 		this.iteration = iteration;
@@ -62,6 +64,10 @@ public class Auction {
 
 	public void setAuctionStrategy(AuctionStrategy strategy) {
 		this.strategy = strategy;
+	}
+
+	public void setWinningPayPrice(double payPrice){
+		this.strategy.getWinningBid().setPayPrice(payPrice);
 	}
 
 	// Getter

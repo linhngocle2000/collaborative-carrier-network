@@ -54,6 +54,7 @@ public class BundleHelper {
 ////////
 
    private double radiusDepot = 10;
+   private final double radiusDepotMax = 40;
    private final int maxDepotSize = 5;
 
    /**
@@ -69,7 +70,7 @@ public class BundleHelper {
              * At this point if the same list is generated again,
              * then we can double the radius or just break the loop and accept the list.
              */
-            if (radiusDepot == 80) {
+            if (radiusDepot == radiusDepotMax) {
                return specialDepotList;
             }
             radiusDepot *= 2;
@@ -145,6 +146,7 @@ public class BundleHelper {
 ////////
 
    private double radiusRequest = 20;
+   private final double radiusRequestMax = 50;
    private final int minBundleSize = 3;
    private final int maxBundleSize = 5;
    private final double minProfit = 0;
@@ -163,9 +165,9 @@ public class BundleHelper {
       // Add transport requests that haven't been formed into a bundle
       for (TransportRequest request : requests) {
          if (bundleList.stream().noneMatch(x -> x.contains(request))) {
-            List<TransportRequest> list = new ArrayList<>();
-            list.add(request);
-            bundleList.add(list);
+            bundle = new ArrayList<>();
+            bundle.add(request);
+            bundleList.add(bundle);
          }
       }
 
@@ -181,7 +183,7 @@ public class BundleHelper {
       List<TransportRequest> gatherList;
       tour.setDepot(specialDepot);
       while (bundle.size() < minBundleSize) {
-         if (radiusRequest == 50) {
+         if (radiusRequest == radiusRequestMax) {
             break;
          }
          bundle.clear();
@@ -280,12 +282,54 @@ public class BundleHelper {
       for (Auction auction : bundleAuctions) {
          if (!bestBundleList.contains(auction.getTransportRequests())) {
             for (TransportRequest request : auction.getTransportRequests()) {
-               unsoldList.add(request);
+               if (!unsoldList.contains(request)) {
+                  unsoldList.add(request);
+               }
             }
             auctionList.remove(auction);
          }
       }
-      List<TransportRequest> temp = new ArrayList<>(unsoldList);
+      List<String> preUsername = new ArrayList<>();
+      double payPrice;
+      List<TransportRequest> temp;
+      List<TransportRequest> newBundle;
+      List<List<TransportRequest>> bundleList;
+      for (Winning w1 : winningList) {
+         if (preUsername.contains(w1.bidderUsername)) {
+            continue;
+         }
+         preUsername.add(w1.bidderUsername);
+         newBundle = new ArrayList<>(w1.bundle);
+         bundleList = new ArrayList<>();
+         bundleList.add(w1.bundle);
+         payPrice = w1.averagePayPrice * w1.bundle.size();
+         for (Winning w2 : winningList) {
+            if (Objects.equals(w1, w2)) {
+               continue;
+            }
+            if (Objects.equals(w1.bidderUsername, w2.bidderUsername)) {
+               temp = new ArrayList<>(newBundle);
+               bundleList.add(w2.bundle);
+               temp.retainAll(w2.bundle);
+               newBundle.removeAll(temp);
+               newBundle.addAll(w2.bundle);
+               payPrice += w2.averagePayPrice * (w2.bundle.size() - temp.size());
+            }
+         }
+         if (bundleList.size() != 1) {
+            Auction tempAuction = new Auction();
+            for (Auction auction : bundleAuctions) {
+               if (bundleList.contains(auction.getTransportRequests())) {
+                  auctionList.remove(auction);
+                  tempAuction = auction;
+               }
+            }
+            tempAuction.setTransportRequests(newBundle);
+            tempAuction.setWinningPayPrice(payPrice);
+            auctionList.add(tempAuction);
+         }
+      }
+      temp = new ArrayList<>(unsoldList);
       for (TransportRequest request : temp) {
          for (List<TransportRequest> bundle : bestBundleList) {
             if (bundle.contains(request)) {
