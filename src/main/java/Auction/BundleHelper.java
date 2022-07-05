@@ -68,10 +68,8 @@ public class BundleHelper {
          // generate list of special depots from specialDepotList
          tempDepotList = generateSpecialDepots(specialDepotList);
          if (specialDepotList.equals(tempDepotList)) {
-            /**
-             * At this point if the same list is generated again,
-             * then we can double the radius or just break the loop and accept the list.
-             */
+            //At this point if the same list is generated again,
+            //then we can double the radius or just break the loop and accept the list.
             if (radiusDepot == radiusDepotMax) {
                return specialDepotList;
             }
@@ -231,9 +229,7 @@ public class BundleHelper {
       List<TransportRequest> gatherList = new ArrayList<>();
       // for each transport req a
       for (TransportRequest request : requests) {
-         /**
-          * Consider both pickup and deliver locations of the request.
-          */
+         // Consider both pickup and deliver locations of the request.
          distancePickup = EuclideanDistanceCalculator.calculateDistance(specialDepot.getCoordinate(), request.getPickup().getCoordinate());
          distanceDeliver = EuclideanDistanceCalculator.calculateDistance(specialDepot.getCoordinate(), request.getDelivery().getCoordinate());
          // add to result if pickup and delivery of a within radiusRequest from specialDepot
@@ -250,13 +246,21 @@ public class BundleHelper {
     */
    List<List<TransportRequest>> checkAndRemoveSubset(List<List<TransportRequest>> bundleList){
       List<List<TransportRequest>> returnBundleList = new ArrayList<>(bundleList);
+      // for each bundle a
       for (List<TransportRequest> bundle1 : bundleList) {
          // if bundleList contains only 1 element, don't check
          if (bundleList.size() == 1) {
             break;
          }
+         // compare bundle a with the rest of the list
+         // bundleList is shortened by each iteration
+         // for e.g. list = {1,2,3,4}, then you take 1 can compare with {2,3,4} in the first iteration
+         // but in the next iteration you take 2 and compare with {3,4} because 1 and 2 is already
+         // compared in the first iteration
          bundleList = bundleList.subList(1, bundleList.size());
          for (List<TransportRequest> bundle2 : bundleList) {
+            // check if bundle1 and bundle2 is subset of one another
+            // if yes then remove from result
             if (bundle1.containsAll(bundle2)) {
                returnBundleList.remove(bundle2);
             } else if (bundle2.containsAll(bundle1)) {
@@ -367,9 +371,7 @@ public class BundleHelper {
       List<List<Winning>> tempNestedList = new ArrayList<>();
       HashMap<List<Winning>, Double> uncommonBundleMap = new HashMap<>();
       double totalAverageBid;
-      /**
-       * Forming all the combination of uncommon bundles
-       */
+      // Forming all the combination of uncommon bundles
       for (Winning w1 : winningList) {
          tempList = new ArrayList<>();
          sameBidderList = new ArrayList<>();
@@ -451,9 +453,7 @@ public class BundleHelper {
             }
          }
       }
-      /**
-       * Get the best combination based on the highest paying price. This make most profit to sellers.
-       */
+      // Get the best combination based on the highest paying price. This make most profit to sellers.
       double highestPrice = (Collections.max(uncommonBundleMap.values()));
       for (Entry<List<Winning>, Double> entry : uncommonBundleMap.entrySet()) {
          if (entry.getValue() == highestPrice) {

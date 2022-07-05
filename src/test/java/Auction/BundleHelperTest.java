@@ -19,27 +19,43 @@ public class BundleHelperTest {
     List<CarrierAgent> carriers;
     int[] depotXs = {27,5,16,66,13,75,96,74,60,68};
     int[] depotYs = {19,5,2, 76,77,9, 40,43,83,69};
-    List<TransportRequest> requestList1, requestList2, requestList3;
+    TransportRequest req1, req2, req3;
+    List<TransportRequest> requestList1, requestList2, requestList3, requestList4, requestList5;
     List<List<TransportRequest>> bundleList;
 
     @Before
     public void setUp() {
         carriers = new ArrayList<>();
         for (int i=0; i<10; i++) {
-            carriers.add(new CarrierAgent("carrier"+Integer.toString(i), "carrier"+Integer.toString(i),
+            carriers.add(new CarrierAgent("carrier"+ i, "carrier"+ i,
                     0, 0, depotXs[i], depotYs[i],0,0,0,0));
         }
+
+        req1 = new TransportRequest(0,carriers.get(1),0,0,0,0);
+        req2 = new TransportRequest(0,carriers.get(1),1,1,1,1);
+        req3 = new TransportRequest(0,carriers.get(1),2,2,2,2);
+
         requestList1 = new ArrayList<>();
         requestList2 = new ArrayList<>();
         requestList3 = new ArrayList<>();
+        requestList4 = new ArrayList<>();
+        requestList5 = new ArrayList<>();
         bundleList = new ArrayList<>();
 
-        requestList2.add(new TransportRequest(0,carriers.get(1),0,0,0,0));
+        requestList2.add(req1);
+        requestList3.add(req1);
+        requestList3.add(req2);
+        requestList3.add(req3);
+        requestList4.add(req2);
+        requestList4.add(req3);
+        requestList5.add(req1);
+        requestList5.add(req2);
+        requestList5.add(req3);
+
         bundleList.add(requestList2);
-        requestList3.add(new TransportRequest(0,carriers.get(1),0,0,0,0));
-        requestList3.add(new TransportRequest(0,carriers.get(1),1,1,1,1));
-        requestList3.add(new TransportRequest(0,carriers.get(1),2,2,2,2));
         bundleList.add(requestList3);
+        bundleList.add(requestList4);
+        bundleList.add(requestList5);
 
         bundleHelper1 = new BundleHelper(carriers.subList(0,5), requestList1);
         bundleHelper2 = new BundleHelper(carriers, requestList1);
@@ -70,6 +86,12 @@ public class BundleHelperTest {
         List<List<TransportRequest>> expected1 = new ArrayList<>();
         expected1.add(requestList3);
         assertEquals(expected1, bundleHelper1.checkAndRemoveSubset(bundleList));
+    }
 
+    @Test
+    public void testFormingBundle() {
+        List<List<TransportRequest>> expected1 = new ArrayList<>();
+        expected1.add(requestList3);
+        assertEquals(expected1, bundleHelper1.checkAndRemoveSubset(bundleList));
     }
 }
