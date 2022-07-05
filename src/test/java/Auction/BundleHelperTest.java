@@ -39,7 +39,7 @@ public class BundleHelperTest {
         requestList3.add(new TransportRequest(0,carriers.get(1),0,0,0,0));
         requestList3.add(new TransportRequest(0,carriers.get(1),1,1,1,1));
         requestList3.add(new TransportRequest(0,carriers.get(1),2,2,2,2));
-        bundleList.add(requestList2);
+        bundleList.add(requestList3);
 
         bundleHelper1 = new BundleHelper(carriers.subList(0,5), requestList1);
         bundleHelper2 = new BundleHelper(carriers, requestList1);
