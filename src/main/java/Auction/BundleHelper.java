@@ -166,6 +166,7 @@ public class BundleHelper {
       List<TransportRequest> bundle;
       // Form bundles depending on the special depot locations
       for (Location specialDepot : specialDepotList) {
+         radiusRequest = 20;
          bundle = formingBundle(specialDepot);
          bundleList.add(bundle);
       }
@@ -192,8 +193,9 @@ public class BundleHelper {
       List<TransportRequest> bundle = new ArrayList<>();
       List<TransportRequest> gatherList;
       tour.setDepot(specialDepot);
-      // bundle size must be smaller than 3
+      // if min bundle size (=3) is not reached
       while (bundle.size() < minBundleSize) {
+         // if max. radiusRequest is reached
          if (radiusRequest == radiusRequestMax) {
             break;
          }
@@ -214,7 +216,7 @@ public class BundleHelper {
                }
             }
          }
-         // increase radiusRequest, initially 10
+         // increase radiusRequest, initially 20
          radiusRequest += 10;
       }
       return bundle;
@@ -282,7 +284,7 @@ public class BundleHelper {
       // Bc single auction is considered as bundle auction with 1 request, so we only need making decision on actual bundle.
       List<Auction> bundleAuctions = new ArrayList<>();
       for (Auction auction : auctionList) {
-         if (auction.getTransportRequests().size() != 1) {
+         if (auction.getTransportRequests().size() > 1) {
             bundleAuctions.add(auction);
          }
       }
@@ -365,7 +367,7 @@ public class BundleHelper {
       return auctionList;
    }
 
-   private List<Winning> formingBestCombination(List<Winning> winningList) {
+   List<Winning> formingBestCombination(List<Winning> winningList) {
       Winning temp = new Winning();
       List<Winning> tempList;
       List<Winning> sameBidderList;
@@ -378,47 +380,66 @@ public class BundleHelper {
          sameBidderList = new ArrayList<>();
          tempList.add(w1);
          totalAverageBid = w1.averagePayPrice;
+         // for each winner w2
          for (Winning w2 : winningList) {
+            // skip w1
             if (Objects.equals(w1, w2)) {
                continue;
             }
+            // if same winner for different auctions -> add to sameBidderList
             if (Objects.equals(w1.bidderUsername, w2.bidderUsername)) {
                sameBidderList.add(w2);
                continue;
             }
             temp.setAll(w1);
+            // check w1's and w2's bundle for same transport request
             temp.bundle.retainAll(w2.bundle);
+            // if no duplicate
             if (temp.bundle.isEmpty()) {
+               // add w2 to tempList
                tempList.add(w2);
+               // add w2's averagePayPrice to totalAverageBid
                totalAverageBid += w2.averagePayPrice;
             }
          }
+         // if w1 won more than 1 auction
          if (!sameBidderList.isEmpty()) {
+            // comparing with other elements in tempList
             List<Winning> compareList = new ArrayList<>(tempList.subList(1, tempList.size()));
+            // for each winning w21 in sameBidderList
             for (Winning w21 : sameBidderList) {
                int count = 0;
+               // for each w22 in compareList
                for (Winning w22 : compareList) {
                   temp.setAll(w21);
+                  // check for same requests in w21 and w22
                   temp.bundle.retainAll(w22.bundle);
+                  // if exists, increase count
                   if (!temp.bundle.isEmpty()) {
-                     count ++;
+                     count++;
                      temp.setAll(w22);
                   }
                }
                switch (count) {
+                  // no same transport request -> add to tempList
                   case 0:
                      tempList.add(w21);
                      totalAverageBid += w21.averagePayPrice;
                      break;
                   case 1:
+                     // if only 1 element in sameBidderList and same request(s) exist
                      if (sameBidderList.size() == 1) {
+                        // compare averagePayPrice of w21 and w22
+                        // add the one with higher averagePayPrice to tempList
                         if (w21.averagePayPrice >= temp.averagePayPrice) {
                            tempList.remove(temp);
                            totalAverageBid -= temp.averagePayPrice;
                            tempList.add(w21);
                            totalAverageBid += w21.averagePayPrice;
                         }
+                     // if w1 won more than 2 bundles
                      } else {
+                        // add w22 and remove w21
                         tempList.remove(temp);
                         totalAverageBid -= temp.averagePayPrice;
                         tempList.add(w21);
@@ -429,6 +450,9 @@ public class BundleHelper {
                      break;
                }
             }
+            // if w1 won all bundles
+            // clear tempList
+            // form all bundles into a big bundle and add to tempList
             if (sameBidderList.size() > tempList.size() - 1) {
                compareList = new ArrayList<>(tempList.subList(1, tempList.size()));
                tempList.removeAll(compareList);
@@ -441,9 +465,12 @@ public class BundleHelper {
                }
             }
          }
+         // map tempList to totalAverageBid
          uncommonBundleMap.put(tempList, totalAverageBid);
+         // add tempList as one possible distribution
          tempNestedList.add(tempList);
       }
+      // remove all subsets from tempNestedList
       for (List<Winning> wl1 : tempNestedList) {
          tempNestedList = tempNestedList.subList(1, tempNestedList.size());
          for (List<Winning> wl2 : tempNestedList) {
