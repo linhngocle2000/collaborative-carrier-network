@@ -23,10 +23,9 @@ form bundles more fitting to each carrier depot location.
 
 A bundle is a list of transport request. A bundle has fixed size and contains only transport requests which make profit
 to a special depot location. The number of transport requests in a bundle has to be equal or smaller than the size of
-bundle (currently set to 3). There is a limit to the maximum number of bundles. As long as the amount of bundles doesn't
-exceed this limit, new bundle is generated until no more new bundle can be generated. A bundle that contains only
-transport requests that are elements in another bundle, in other words, a bundle that is a subset of another bundle,
-will be deleted. New bundle will then be generated based on another special depot location.
+bundle (currently set to 5). A bundle that contains only transport requests that are elements in another bundle, in
+other words, a bundle that is a subset of another bundle, will be deleted. New bundle will then be generated based
+on another special depot location.
 
 > <b>Example 1:</b> If bundle **A = {R1, R2, R3}** and bundle **B = {R2, R4, R5}**, then both bundles are retained.
 
@@ -36,10 +35,10 @@ will be deleted. New bundle will then be generated based on another special depo
 
 ### Generating bundles
 
-All requests within radius from a special depot location will be considered. Any of them that make profit to that special depot
-location are formed into a bundle. The number of transport requests in a bundle is set from 3 to 5 requests. If the minimum number
-is not reached, all requests within a bigger radius will be considered. Transport requests that don't belong to any bundles are 
-auctioned off as single request.
+All requests within radius from a special depot location will be considered. Any of them that make profit to that
+special depot location are formed into a bundle. The number of transport requests in a bundle is set from 3 to 5
+requests. If the minimum number of request in a bundle is not reached, the radius will be increased until it reaches
+its limit (=40). Transport requests that don't belong to any bundles are auctioned off as single request.
    
 ### Profit calculation
 
@@ -48,9 +47,10 @@ without visiting any other locations. The profit considered when forming bundles
 per km multiplied with the length of the direct route and the cost that a carrier has to pay for travelling
 on the actual route based on the generated tour. The base rate to reach the pickup point and loading/unloading cost are excluded from
 the calculation as they are irrelevant to the bundle forming process. In particular, following requirements must be
-fulfilled when forming bundles 
+fulfilled when forming bundles:
 - All requests within a bundle have to make a positive profit.
-- The total revenue of a bundle based on a special depot location has to be positive, since the total revenue takes the total tour length into account
+- The total revenue of a bundle based on a special depot location has to be positive,
+since the total revenue takes the total tour length into account
 
 ## Bidding process
 

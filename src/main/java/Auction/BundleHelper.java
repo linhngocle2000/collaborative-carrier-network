@@ -293,18 +293,26 @@ public class BundleHelper {
       String username;
       double averagePayingPrice;
       List<List<TransportRequest>> bestBundleList = new ArrayList<>();
+      // for each auction a
       for (Auction auction : bundleAuctions) {
+         // calculate averagePayPrice of an auction by divide pay price by number of requests
          averagePayingPrice = auction.getWinningBid().getPayPrice() / auction.getTransportRequests().size();
          username = auction.getWinningBid().getBidder().getUsername();
+         // add to auction to winningList
          winningList.add(new Winning(username, auction.getTransportRequests(), averagePayingPrice));
       }
+      // get best bundle distribution
+      // winningList now represents the optimal bundle distribution to winners
       winningList = formingBestCombination(winningList);
+      // transfer all bundles of winningList to bestBundleList
       for (Winning w : winningList) {
          bestBundleList.add(w.bundle);
       }
-      // Deform the bundles that not in the best combination and add all those request in an unsoldlist for 2nd single bid session.
+      // Deform the bundles that not in the best combination and
+      // add all those request in an unsoldlist for 2nd single bid session.
       unsoldList = new ArrayList<>();
       for (Auction auction : bundleAuctions) {
+         // check if set of requests in an auction is subset of bestBundleList
          if (!bestBundleList.contains(auction.getTransportRequests())) {
             for (TransportRequest request : auction.getTransportRequests()) {
                if (!unsoldList.contains(request)) {
@@ -315,6 +323,8 @@ public class BundleHelper {
          }
       }
       List<TransportRequest> temp = new ArrayList<>(unsoldList);
+      // iterate through EACH bundle and
+      // check if same request in unsoldList exist in a bundle of bestBundleList
       for (TransportRequest request : temp) {
          for (List<TransportRequest> bundle : bestBundleList) {
             if (bundle.contains(request)) {
@@ -330,6 +340,7 @@ public class BundleHelper {
       List<TransportRequest> newBundle;
       List<List<TransportRequest>> bundleList;
       for (Winning w1 : winningList) {
+         // if preUsername already contains w1's username then carrier with w1.username is already checked
          if (preUsername.contains(w1.bidderUsername)) {
             continue;
          }
@@ -338,16 +349,21 @@ public class BundleHelper {
          bundleList = new ArrayList<>();
          bundleList.add(w1.bundle);
          payPrice = w1.averagePayPrice * w1.bundle.size();
+         // compare with all other wins
          for (Winning w2 : winningList) {
+            // skip w1
             if (Objects.equals(w1, w2)) {
                continue;
             }
+            // if same carrier won multiple bundles
             if (Objects.equals(w1.bidderUsername, w2.bidderUsername)) {
                temp = new ArrayList<>(newBundle);
                bundleList.add(w2.bundle);
+               // find out how many time requests are duplicated
                temp.retainAll(w2.bundle);
                newBundle.removeAll(temp);
                newBundle.addAll(w2.bundle);
+               // add to pay price equals average pay price * number of requests without duplicates
                payPrice += w2.averagePayPrice * (w2.bundle.size() - temp.size());
             }
          }
