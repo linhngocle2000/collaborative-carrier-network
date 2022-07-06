@@ -319,6 +319,7 @@ public class BundleHelper {
                   unsoldList.add(request);
                }
             }
+            // remove request in unsoldList from result
             auctionList.remove(auction);
          }
       }
@@ -369,13 +370,16 @@ public class BundleHelper {
          }
          if (bundleList.size() != 1) {
             Auction tempAuction = new Auction();
+            // remove all auctions with duplicated requests from the same carrier from result
             for (Auction auction : bundleAuctions) {
                if (bundleList.contains(auction.getTransportRequests())) {
                   auctionList.remove(auction);
                   tempAuction = auction;
                }
             }
+            // add new auction for bundle of same carrier without duplicated requests
             tempAuction.setTransportRequests(newBundle);
+            // adjust pay price of newly added auction
             tempAuction.setWinningPayPrice(payPrice);
             auctionList.add(tempAuction);
          }
