@@ -50,7 +50,7 @@ public class BundleHelper {
 
 
 ////////
-//       Generating special depot location
+// Generating special depot location
 ////////
 
    private double radiusDepot = 10;
@@ -277,7 +277,7 @@ public class BundleHelper {
 
 
 ////////
-//       Decision Making part
+// Decision Making part
 ////////
 
    public List<Auction> decisionMaking(List<Auction> auctionList) {
@@ -459,7 +459,7 @@ public class BundleHelper {
                         }
                      // if w1 won more than 2 bundles
                      } else {
-                        // add w22 and remove w21
+                        // add w21 and remove w22
                         tempList.remove(temp);
                         totalAverageBid -= temp.averagePayPrice;
                         tempList.add(w21);

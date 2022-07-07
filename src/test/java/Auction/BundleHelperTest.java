@@ -3,7 +3,6 @@ package Auction;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import Agent.CarrierAgent;
-import Utils.TourPlanning;
 import com.graphhopper.jsprit.core.problem.Location;
 import org.junit.Before;
 import org.junit.Test;
@@ -118,13 +117,6 @@ public class BundleHelperTest {
         expected2.add(requestList6.subList(0,5));
         expected2.add(requestList6.subList(5,6));
         assertEquals(expected2, bundleHelper3.generateBundles());
-
-        /*TourPlanning tour = new TourPlanning();
-        tour.setRequests(requestList7);
-        tour.setDepot(Location.newInstance(13, 77));
-        for (TransportRequest request : requestList7) {
-            System.out.println(tour.getProfit(request));
-        }*/
 
         List<List<TransportRequest>> expected3 = new ArrayList<>();
         expected3.add(requestList7.subList(0,2));
