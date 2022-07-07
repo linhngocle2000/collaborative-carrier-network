@@ -40,12 +40,16 @@ in the directory _logs_ and their names indicate which date are the logs referri
 
 To register a carrier agent, choose _Register_ in the start window. Fill out the registration form, then click on the
 _Register_ button at the bottom. Here are notations on some fields in the registration form:
-- **Transport requests**: Tranport requests are enclosed in <> and separated by commas. Each request is of the form _((x1,y1),(x2,y2))_, where _(x1,y1)_ is the coordinate of the pickup point and _(x2,y2)_ is of the delivery point. Coordinates can be negative or contain a decimal point.
+
+- **Transport requests**: Tranport requests are enclosed in <> and separated by commas. Each request is of the form
+_((x1,y1),(x2,y2))_, where _(x1,y1)_ is the coordinate of the pickup point and _(x2,y2)_ is of the delivery point.
+Coordinates can be negative or contain a decimal point.
 - **Base rate A**: Base rate to reach the pickup point. The input has to be positive and can have up to two decimal digits.
 - **Base rate B**: Base rate for loading/unloading. The input has to be positive and can have up to two decimal digits.
 - **Price**: Price for 1 km. The input has to be positive and can have up to two decimal digits.
 - **Internal rate**: Internal rate for 1 km. The input has to be positive and can have up to two decimal digits.
-- **Depot latitude/longitude**: Coordinate where the carriers start their tour. Inputs can be negative and contain a decimal point.
+- **Depot latitude/longitude**: Coordinate where the carriers start their tour. Inputs can be negative and contain
+a decimal point.
 
 ### Login as carrier
 

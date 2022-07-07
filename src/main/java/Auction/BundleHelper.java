@@ -69,7 +69,7 @@ public class BundleHelper {
          tempDepotList = generateSpecialDepots(specialDepotList);
          if (specialDepotList.equals(tempDepotList)) {
             //At this point if the same list is generated again,
-            //then we can double the radius or just break the loop and accept the list.
+            //then we can double the radius or (if max radius is reached) break the loop and accept the list.
             if (radiusDepot == radiusDepotMax) {
                return specialDepotList;
             }
