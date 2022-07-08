@@ -200,6 +200,8 @@ public class BundleHelperTest {
         List<TransportRequest> expected2 = new ArrayList<>();
         expected2.add(req1);
         assertEquals(expected2,bundleHelper1.getUnsoldList(), "Unsold requests weren't put in unsoldList");
+        assertEquals(240.0, bundleHelper1.decisionMaking(auctionList1).get(0).getWinningBid().getPayPrice(),
+                "Payment is calculated correctly");
 
         List<Auction> expected3 = new ArrayList<>();
         expected3.add(auction4);
@@ -208,6 +210,8 @@ public class BundleHelperTest {
         expected4.add(req1);
         expected4.add(req4);
         assertEquals(expected4,bundleHelper2.getUnsoldList(), "Unsold requests weren't put in unsoldList");
+        assertEquals(80.0, bundleHelper2.decisionMaking(auctionList2).get(0).getWinningBid().getPayPrice(),
+                "Payment is calculated correctly");
 
         List<TransportRequest> expected5 = new ArrayList<>();
         expected5.add(req1);expected5.add(req2);expected5.add(req3);
@@ -217,6 +221,6 @@ public class BundleHelperTest {
                 "Multi-auctions-winner doesn't have same request deducted from their winning list");
         assertTrue(bundleHelper3.getUnsoldList().isEmpty(), "unsoldList isn't empty");
         assertEquals(90.0, bundleHelper3.decisionMaking(auctionList3).get(0).getWinningBid().getPayPrice(),
-                "Multi-auctions-winner doesn't have pay-price recalculated based on same requests");
+                "Multi-auctions-winner doesn't have payment recalculated based on same requests");
     }
 }
