@@ -85,12 +85,12 @@ to which carriers will bid in the next iteration.
 > carrier 1, bundle B will be deformed, because the total pay price of carrier 1 is higher.
 
 > <b>Example 2</b>: Bundles A and B have common requests, bundles B and C have common requests, 
-> and these bundles are respectively won by carrier 1 _(pay price: 20)_, carrier 2 _(pay price: 80)_ and carrier 3 
-> _(pay price: 40)_, then bundle B will be sold to carrier 2, bundle A and C will be deformed. 
+> and these bundles are respectively won by carrier 1 _(payment: 20)_, carrier 2 _(payment: 80)_ and carrier 3 
+> _(payment: 40)_, then bundle B will be sold to carrier 2, bundle A and C will be deformed. 
 
 A smart calculator is implemented to compute which bundles will be sold to maximize the profit for all sellers.
 
-If a carrier has won 2 or more bundles that have some common transport requests, the paying price of the second bundle
+If a carrier has won 2 or more bundles that have some common transport requests, the payment of the second bundle
 (and other bundles) will be deducted based on the number of common transport request(s).
 
 > <b>Example:</b> Carrier A has won bundle B and C which has N requests. These two bundles have 2 common transport requests.
