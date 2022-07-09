@@ -22,3 +22,9 @@ junit-test:
       junit:
         - target/surefire-reports/TEST-*.xml
 
+create-jar:
+  stage: deploy
+  script:
+    - mvn -f pom.xml clean package
+    - mv target/CCN.jar ./src
+
