@@ -5,26 +5,26 @@ stages:
   - test
   - deploy
 
-compile:
-  stage: build
-  script:
-    - mvn -f pom.xml clean validate
-    - mvn -f pom.xml clean compile 
+#compile:
+#  stage: build
+#  script:
+#    - mvn -f pom.xml clean validate
+#    - mvn -f pom.xml clean compile 
     
-junit-test:
-  stage: test
-  script:
-    - mvn -f pom.xml clean test
-  artifacts:
-    paths:
-      - target/surefire-reports/TEST-*.xml
-    reports:
-      junit:
-        - target/surefire-reports/TEST-*.xml
+#junit-test:
+# stage: test
+#  script:
+#    - mvn -f pom.xml clean test
+#  artifacts:
+#    paths:
+#      - target/surefire-reports/TEST-*.xml
+#    reports:
+#      junit:
+#        - target/surefire-reports/TEST-*.xml
 
 create-jar:
   stage: deploy
   script:
     - mvn -f pom.xml clean package
-    - mv target/CCN.jar ./src
+    - mv target/CCN.jar /builds/e16/courses/software-development/ss22/group04_coop/collaborative-carrier-network/
 
