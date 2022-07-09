@@ -31,4 +31,4 @@ create-jar:
     - git add -f target/CCN.jar
     - git commit -m "Add jar"
     #- git remote rm origin && git remote add origin git@gitlab.com:$CI_PROJECT_PATH.git
-    - git push origin HEAD:$CI_COMMIT_REF_NAME
+    - git push origin master
