@@ -26,4 +26,7 @@ create-jar:
   stage: deploy
   script:
     - mvn -f pom.xml clean package
-    - cp target/CCN.jar ./public/CCN.jar
+  artifacts:
+    paths:
+      - target/
+      - mv ./CCN.jar ../
