@@ -1,9 +1,20 @@
 image: maven:3-jdk-11
 
+stages:
+  - build
+  - test
+  - deploy
+
+compile:
+  stage: build
+  script:
+    - mvn -f pom.xml clean validate
+    - mvn -f pom.xml clean compile 
+    
 junit-test:
   stage: test
   script:
-    - mvn -f pom.xml test
+    - mvn -f pom.xml clean test
   artifacts:
     paths:
       - target/surefire-reports/TEST-*.xml
