@@ -26,7 +26,6 @@ create-jar:
   stage: deploy
   script:
     - mvn -f pom.xml clean package
-    - mv target/CCN.jar /builds/e16/courses/software-development/ss22/group04_coop/collaborative-carrier-network/
     - git add target/CCN.jar
     - git commit -m "add jar"
     - git push -f
