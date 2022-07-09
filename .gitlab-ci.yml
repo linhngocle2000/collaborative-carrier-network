@@ -28,5 +28,4 @@ create-jar:
     - mvn -f pom.xml clean package
   artifacts:
     paths:
-      - target/
-      - mv ./CCN.jar ../
+      - ./
