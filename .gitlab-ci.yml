@@ -26,8 +26,4 @@ create-jar:
   stage: deploy
   script:
     - mvn -f pom.xml clean package
-    - cp target/CCN.jar ./CCN.jar
-    - git add CCN.jar
-    - git commit -m "add jar"
-    - git push -f
-
+    - cp target/CCN.jar ./public/CCN.jar
