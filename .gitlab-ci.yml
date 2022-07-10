@@ -12,7 +12,7 @@ compile:
     - mvn -f pom.xml clean compile 
     
 junit-test:
- stage: test
+  stage: test
   script:
     - mvn -f pom.xml clean test
   artifacts:
@@ -26,4 +26,4 @@ create-jar:
   stage: deploy
   script:
     - mvn -f pom.xml clean package
-    - curl -ulinh.le@tuhh.de:AP5MM8FqaPB5DXMSAaKJjAzVSYnET41mDh3kgC -T target/CCN.jar "https://ccn.jfrog.io/artifactory/example-repo-local/"
+    - curl -u$REPO_USERNAME:$REPO_PASS -T target/CCN.jar "https://ccn.jfrog.io/artifactory/ccn-generic-local/"
