@@ -63,7 +63,7 @@ public class TransportRequest {
 	// Getters
 
 	public Shipment getShipmentObj() {
-      return Shipment.Builder.newInstance(Integer.toString(id)).setPickupLocation(getPickup()).setDeliveryLocation(getDelivery()).build();
+      return Shipment.Builder.newInstance(Integer.toString(id)).addSizeDimension(0, 1).setPickupLocation(getPickup()).setDeliveryLocation(getDelivery()).build();
 	}
 
 	public Location getPickup() {

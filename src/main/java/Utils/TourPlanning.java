@@ -58,7 +58,7 @@ public class TourPlanning {
       this.fixedCost = agent.getFixedCost();
       this.internalCost = agent.getInternalCost();
       this.loadingCost = agent.getLoadingCost();
-      this.requests = r;
+      this.requests = new ArrayList<>(r);
    }
 
    /**

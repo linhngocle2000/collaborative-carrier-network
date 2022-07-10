@@ -202,7 +202,11 @@ class BundleBidTask implements Runnable {
             double profit = 0;
             int bundleSize = auction.getTransportRequests().size();
 
-            tour.addRequests(auction.getTransportRequests());
+            for (var request : auction.getTransportRequests()) {
+                if (!tour.contains(request)) {
+                    tour.addRequest(request);
+                }
+            }
             for (var request : auction.getTransportRequests()) {
                 profit += tour.getProfit(request);
             }

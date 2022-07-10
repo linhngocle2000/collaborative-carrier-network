@@ -76,6 +76,7 @@ public class BundleHelper {
             radiusDepot *= 2;
          } else {
             specialDepotList = tempDepotList;
+            radiusDepot = 10;
          }
       }
       return specialDepotList;
@@ -168,7 +169,9 @@ public class BundleHelper {
       for (Location specialDepot : specialDepotList) {
          radiusRequest = 20;
          bundle = formingBundle(specialDepot);
-         bundleList.add(bundle);
+         if (bundle != null) {
+            bundleList.add(bundle);
+         }
       }
       // remove subsets in bundleList
       bundleList = checkAndRemoveSubset(bundleList);
@@ -197,15 +200,18 @@ public class BundleHelper {
       while (bundle.size() < minBundleSize) {
          // if max. radiusRequest is reached
          if (radiusRequest == radiusRequestMax) {
-            break;
+            return null;
          }
-         bundle.clear();
-
          // gather all request within radiusRequest from specialDepot
          gatherList = gatherRequestList(specialDepot);
+         if (gatherList.size() < minBundleSize) {
+            radiusRequest += 10;
+            continue;
+         }
          // add requests to tour
          tour.setRequests(gatherList);
          // calculate profit of each request in tour
+         bundle.clear();
          for (TransportRequest request : gatherList) {
             if (tour.getProfit(request) > minProfit) {
                // if makes profit add to result
