@@ -27,5 +27,5 @@ create-jar:
   script:
     - mvn -f pom.xml clean package
     - curl -u$REPO_USERNAME:$REPO_PASS -T target/CCN.jar "https://ccn.jfrog.io/artifactory/ccn-generic-local/"
-    - curl -u$REPO_USERNAME:$REPO_PASS -T README.md "https://ccn.jfrog.io/artifactory/ccn-generic-local/"
+    - curl -u$REPO_USERNAME:$REPO_PASS -XDELETE https://ccn.jfrog.io/artifactory/ccn-generic-local/README.md
     - curl -u$REPO_USERNAME:$REPO_PASS -T Bundle.md "https://ccn.jfrog.io/artifactory/ccn-generic-local/"
