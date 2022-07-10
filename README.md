@@ -25,10 +25,8 @@ every participant in the network. In addition, carriers incur much lower costs t
 
 ## Download
 
-Download the source code as zip file from [Gitlab](https://collaborating.tuhh.de/e16/courses/software-development/ss22/group04_coop/collaborative-carrier-network).
-Unzip the downloaded file and click on _CCN.jar_ to start the application.
-
-![Download instruction](src/main/resources/download.png?raw=true "download-instruction")
+Open the [repository](https://ccn.jfrog.io/ui/native/ccn-generic-local/) of the application. Click on the download link
+of _CCN.jar_ to download the application.
 
 ## Logs
 When starting the application, logs are documented in the log file created for the current date. Log files are located
@@ -40,12 +38,16 @@ in the directory _logs_ and their names indicate which date are the logs referri
 
 To register a carrier agent, choose _Register_ in the start window. Fill out the registration form, then click on the
 _Register_ button at the bottom. Here are notations on some fields in the registration form:
-- **Transport requests**: Tranport requests are enclosed in <> and separated by commas. Each request is of the form _((x1,y1),(x2,y2))_, where _(x1,y1)_ is the coordinate of the pickup point and _(x2,y2)_ is of the delivery point. Coordinates can be negative or contain a decimal point.
+
+- **Transport requests**: Tranport requests are enclosed in <> and separated by commas. Each request is of the form
+_((x1,y1),(x2,y2))_, where _(x1,y1)_ is the coordinate of the pickup point and _(x2,y2)_ is of the delivery point.
+Coordinates can be negative or contain a decimal point.
 - **Base rate A**: Base rate to reach the pickup point. The input has to be positive and can have up to two decimal digits.
 - **Base rate B**: Base rate for loading/unloading. The input has to be positive and can have up to two decimal digits.
 - **Price**: Price for 1 km. The input has to be positive and can have up to two decimal digits.
 - **Internal rate**: Internal rate for 1 km. The input has to be positive and can have up to two decimal digits.
-- **Depot latitude/longitude**: Coordinate where the carriers start their tour. Inputs can be negative and contain a decimal point.
+- **Depot latitude/longitude**: Coordinate where the carriers start their tour. Inputs can be negative and contain
+a decimal point.
 
 ### Login as carrier
 
@@ -81,7 +83,7 @@ The auctioneer calculates the profit of each transport requests for all carriers
 off based on the value set in _Max. profit to auction off_ by carriers. The auctioneer then forms possible bundles from
 transport requests that were sent to auction and carriers can bid for these bundles. The bid is calculated based on the
 value set in _Min. profit to bid_ by carriers. Finally, the auctioneer computes the best distribution of bundles to
-carriers. The implemented auction mechanism is vickery auction.
+carriers. The implemented auction mechanism is Vickery auction.
 
 > <b>Note</b>: Want to know more about how bundles are generated and distributed? Click [here](Bundle.md).
 

@@ -10,6 +10,7 @@ public class Bid {
 		this.auction = auction;
 		this.bidder = bidder;
 		this.bidPrice = bidPrice;
+		this.payPrice = bidPrice;
 	}
 	
 	// Variables 

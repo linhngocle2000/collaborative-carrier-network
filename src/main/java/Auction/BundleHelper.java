@@ -69,7 +69,7 @@ public class BundleHelper {
          tempDepotList = generateSpecialDepots(specialDepotList);
          if (specialDepotList.equals(tempDepotList)) {
             //At this point if the same list is generated again,
-            //then we can double the radius or just break the loop and accept the list.
+            //then we can double the radius or (if max radius is reached) break the loop and accept the list.
             if (radiusDepot == radiusDepotMax) {
                return specialDepotList;
             }
@@ -433,6 +433,7 @@ public class BundleHelper {
             // comparing with other elements in tempList
             List<Winning> compareList = new ArrayList<>(tempList.subList(1, tempList.size()));
             // for each winning w21 in sameBidderList
+            int countNoOverlap = 0;
             for (Winning w21 : sameBidderList) {
                int count = 0;
                // for each w22 in compareList
@@ -451,6 +452,7 @@ public class BundleHelper {
                   case 0:
                      tempList.add(w21);
                      totalAverageBid += w21.averagePayPrice;
+                     countNoOverlap++;
                      break;
                   case 1:
                      // if only 1 element in sameBidderList and same request(s) exist
@@ -479,7 +481,7 @@ public class BundleHelper {
             // if w1 won all bundles
             // clear tempList
             // form all bundles into a big bundle and add to tempList
-            if (sameBidderList.size() > tempList.size() - 1) {
+            if (sameBidderList.size() > tempList.size() - 1 - countNoOverlap) {
                compareList = new ArrayList<>(tempList.subList(1, tempList.size()));
                tempList.removeAll(compareList);
                for (Winning w : compareList) {
