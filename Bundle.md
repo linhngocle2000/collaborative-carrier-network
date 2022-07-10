@@ -77,8 +77,8 @@ All bundles are sold at the same time. The highest bid price (winning price) on 
 requests in that bundle.
 
 If two or more carriers have won two or more bundles that contain some common requests, then only bundles of carrier
-paying the most are sold, the rest are deformed. The requests in unsold bundles will be put into second auction list,
-to which carriers will bid in the next iteration.
+paying the most are sold, the rest are deformed. The unsold requests will be auctioned off individually in the next 
+iterations.
 
 > <b>Example 1</b>: Bundles A and B have some common requests. Carrier 1 has won on bidding bundles A and
 > has to pay **40** in total. Carrier 2 has won bundle B and has to pay **20** in total. Then bundle A is sold to
