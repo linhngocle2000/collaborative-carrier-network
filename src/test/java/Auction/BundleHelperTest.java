@@ -22,9 +22,9 @@ public class BundleHelperTest {
             requestList4, requestList5, requestList6, requestList7,
             auctionRequests1, auctionRequests2, auctionRequests3,
             auctionRequests4,  auctionRequests5, auctionRequests6,
-            auctionRequests7, auctionRequests8;
+            auctionRequests7, auctionRequests8, auctionRequests9;
     List<List<TransportRequest>> bundleList;
-    Auction auction1, auction2, auction3, auction4, auction5, auction6, auction7, auction8;
+    Auction auction1, auction2, auction3, auction4, auction5, auction6, auction7, auction8, auction9;
     List<Auction> auctionList1, auctionList2, auctionList3, auctionList4;
 
     @Before
@@ -72,6 +72,7 @@ public class BundleHelperTest {
         auctionRequests6 = new ArrayList<>();
         auctionRequests7 = new ArrayList<>();
         auctionRequests8 = new ArrayList<>();
+        auctionRequests9 = new ArrayList<>();
         bundleList = new ArrayList<>();
 
         requestList2.add(req1);
@@ -148,13 +149,20 @@ public class BundleHelperTest {
 
         // TestDecisionMaking 4
         auctionRequests8.add(req1);auctionRequests8.add(req2);
+        auctionRequests9.add(req3);auctionRequests9.add(req4);
 
         auction8 = new Auction();
         auction8.setAuctionStrategy(new VickreyAuction());
         auction8.setTransportRequests(auctionRequests8);
 
+        auction9 = new Auction();
+        auction9.setAuctionStrategy(new VickreyAuction());
+        auction9.setTransportRequests(auctionRequests9);
+        auction9.addBid(new Bid(auction9,carrierList1.get(0),80));
+
         auctionList4 = new ArrayList<>();
         auctionList4.add(auction8);
+        auctionList4.add(auction9);
 
         bundleHelper1 = new BundleHelper(carrierList1.subList(0,5), requestList1);
         bundleHelper2 = new BundleHelper(carrierList1, requestList1);
@@ -236,7 +244,8 @@ public class BundleHelperTest {
 
         List<TransportRequest> expected6 = new ArrayList<>();
         expected6.add(req1);expected6.add(req2);
-        List<TransportRequest> expected7 = new ArrayList<>();
+        List<Auction> expected7 = new ArrayList<>();
+        expected7.add(auction9);
         assertEquals(expected7,bundleHelper4.decisionMaking(auctionList4),
                 "Unsold bundles contain in solution");
         assertEquals(expected6,bundleHelper4.getUnsoldList(),
