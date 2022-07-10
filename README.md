@@ -28,6 +28,12 @@ every participant in the network. In addition, carriers incur much lower costs t
 Open the [repository](https://ccn.jfrog.io/ui/native/ccn-generic-local/) of the application. Click on the download link
 of _CCN.jar_ to download the application.
 
+If a login screen appears when accessing the repository or the download link, use the following credentials to log in:
+```
+Username: ccn-group4
+Password: CCN-tuhh-group4
+```
+
 ## Logs
 When starting the application, logs are documented in the log file created for the current date. Log files are located
 in the directory _logs_ and their names indicate which date are the logs referring to.
