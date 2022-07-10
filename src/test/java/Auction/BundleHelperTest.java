@@ -22,10 +22,10 @@ public class BundleHelperTest {
             requestList4, requestList5, requestList6, requestList7,
             auctionRequests1, auctionRequests2, auctionRequests3,
             auctionRequests4,  auctionRequests5, auctionRequests6,
-            auctionRequests7;
+            auctionRequests7, auctionRequests8;
     List<List<TransportRequest>> bundleList;
-    Auction auction1, auction2, auction3, auction4, auction5, auction6, auction7;
-    List<Auction> auctionList1, auctionList2, auctionList3;
+    Auction auction1, auction2, auction3, auction4, auction5, auction6, auction7, auction8;
+    List<Auction> auctionList1, auctionList2, auctionList3, auctionList4;
 
     @Before
     public void setUp() {
@@ -71,6 +71,7 @@ public class BundleHelperTest {
         auctionRequests5 = new ArrayList<>();
         auctionRequests6 = new ArrayList<>();
         auctionRequests7 = new ArrayList<>();
+        auctionRequests8 = new ArrayList<>();
         bundleList = new ArrayList<>();
 
         requestList2.add(req1);
@@ -95,12 +96,12 @@ public class BundleHelperTest {
         auction1 = new Auction();
         auction1.setAuctionStrategy(new VickreyAuction());
         auction1.setTransportRequests(auctionRequests1);
-        auction1.addBid(new Bid(0,auction1,carrierList1.get(0),120));
+        auction1.addBid(new Bid(auction1,carrierList1.get(0),120));
 
         auction2 = new Auction();
         auction2.setAuctionStrategy(new VickreyAuction());
         auction2.setTransportRequests(auctionRequests2);
-        auction2.addBid(new Bid(0,auction2,carrierList1.get(1),240));
+        auction2.addBid(new Bid(auction2,carrierList1.get(1),240));
 
         auctionList1 = new ArrayList<>();
         auctionList1.add(auction1); auctionList1.add(auction2);
@@ -113,17 +114,17 @@ public class BundleHelperTest {
         auction3 = new Auction();
         auction3.setAuctionStrategy(new VickreyAuction());
         auction3.setTransportRequests(auctionRequests3);
-        auction3.addBid(new Bid(0,auction3,carrierList1.get(0),20));
+        auction3.addBid(new Bid(auction3,carrierList1.get(0),20));
 
         auction4 = new Auction();
         auction4.setAuctionStrategy(new VickreyAuction());
         auction4.setTransportRequests(auctionRequests4);
-        auction4.addBid(new Bid(0,auction4,carrierList1.get(1),80));
+        auction4.addBid(new Bid(auction4,carrierList1.get(1),80));
 
         auction5 = new Auction();
         auction5.setAuctionStrategy(new VickreyAuction());
         auction5.setTransportRequests(auctionRequests5);
-        auction5.addBid(new Bid(0,auction5,carrierList1.get(2),40));
+        auction5.addBid(new Bid(auction5,carrierList1.get(2),40));
 
         auctionList2 = new ArrayList<>();
         auctionList2.add(auction3); auctionList2.add(auction4); auctionList2.add(auction5);
@@ -135,15 +136,25 @@ public class BundleHelperTest {
         auction6 = new Auction();
         auction6.setAuctionStrategy(new VickreyAuction());
         auction6.setTransportRequests(auctionRequests6);
-        auction6.addBid(new Bid(0,auction6,carrierList1.get(0),20));
+        auction6.addBid(new Bid(auction6,carrierList1.get(0),20));
 
         auction7 = new Auction();
         auction7.setAuctionStrategy(new VickreyAuction());
         auction7.setTransportRequests(auctionRequests7);
-        auction7.addBid(new Bid(0,auction7,carrierList1.get(0),80));
+        auction7.addBid(new Bid(auction7,carrierList1.get(0),80));
 
         auctionList3 = new ArrayList<>();
         auctionList3.add(auction6); auctionList3.add(auction7);
+
+        // TestDecisionMaking 4
+        auctionRequests8.add(req1);auctionRequests8.add(req2);
+
+        auction8 = new Auction();
+        auction8.setAuctionStrategy(new VickreyAuction());
+        auction8.setTransportRequests(auctionRequests8);
+
+        auctionList4 = new ArrayList<>();
+        auctionList4.add(auction8);
 
         bundleHelper1 = new BundleHelper(carrierList1.subList(0,5), requestList1);
         bundleHelper2 = new BundleHelper(carrierList1, requestList1);
@@ -222,5 +233,11 @@ public class BundleHelperTest {
         assertTrue(bundleHelper3.getUnsoldList().isEmpty(), "unsoldList isn't empty");
         assertEquals(90.0, bundleHelper3.decisionMaking(auctionList3).get(0).getWinningBid().getPayPrice(),
                 "Multi-auctions-winner doesn't have payment recalculated based on same requests");
+
+        List<TransportRequest> expected6 = new ArrayList<>();
+        expected6.add(req1);expected6.add(req2);
+        bundleHelper4.decisionMaking(auctionList4);
+        assertEquals(expected6,bundleHelper4.getUnsoldList(),
+                "Unsold bundles don't contain in unsoldList");
     }
 }

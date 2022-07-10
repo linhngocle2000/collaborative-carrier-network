@@ -35,9 +35,7 @@ public class VickreyAuction extends AuctionStrategy {
 			return null;
 		}
 
-		if (secondBid == null) {
-			topBid.setPayPrice(topBid.getPayPrice());
-		} else {
+		if (secondBid != null) {
 			topBid.setPayPrice(secondBid.getPayPrice());
 		}
 

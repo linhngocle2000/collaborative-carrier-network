@@ -345,7 +345,7 @@ public class AdministrationUI extends JFrame {
                     msgLabel.setText("Profit set!");
                     msgLabel.setForeground(successColor);
                 } catch (NumberFormatException | JSONException | IOException | InterruptedException e1) {
-                    LOGGER.warn(e1.getMessage());
+                    LOGGER.error("Exception :: " , e1);
                     e1.printStackTrace();
                     msgLabel.setText("An error occured. Please try again");
                     msgLabel.setForeground(errorColor);
@@ -386,7 +386,7 @@ public class AdministrationUI extends JFrame {
         try {
             oldRequests = HTTPRequests.getStashedTransportRequests(carrier);
         } catch (Exception e) {
-            LOGGER.warn(e.getMessage());
+            LOGGER.error("Exception :: " , e);
         }
         TourPlanning oldTour = new TourPlanning(carrier,oldRequests);
 

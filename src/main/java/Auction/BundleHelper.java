@@ -296,6 +296,9 @@ public class BundleHelper {
       // for each auction a
       for (Auction auction : bundleAuctions) {
          // calculate averagePayPrice of an auction by divide pay price by number of requests
+         if (auction.getWinningBid() == null) {
+            continue;
+         }
          averagePayingPrice = auction.getWinningBid().getPayPrice() / auction.getTransportRequests().size();
          username = auction.getWinningBid().getBidder().getUsername();
          // add to auction to winningList
@@ -504,11 +507,13 @@ public class BundleHelper {
          }
       }
       // Get the best combination based on the highest paying price. This make most profit to sellers.
-      double highestPrice = (Collections.max(uncommonBundleMap.values()));
-      for (Entry<List<Winning>, Double> entry : uncommonBundleMap.entrySet()) {
-         if (entry.getValue() == highestPrice) {
-            winningList = entry.getKey();
-            break;
+      if (!uncommonBundleMap.isEmpty()) {
+         double highestPrice = (Collections.max(uncommonBundleMap.values()));
+         for (Entry<List<Winning>, Double> entry : uncommonBundleMap.entrySet()) {
+            if (entry.getValue() == highestPrice) {
+               winningList = entry.getKey();
+               break;
+            }
          }
       }
       return winningList;

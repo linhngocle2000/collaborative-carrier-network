@@ -106,7 +106,7 @@ public class App {
                 LOGGER.info("Carrier " + carrier.getUsername() + " registered");
             } catch (Exception ex) {
                 registerUI.setErrorLabel(ex.getMessage());
-                LOGGER.warn(ex.getMessage());
+                LOGGER.error("Exception :: " , ex);
             }
         });
 
@@ -127,7 +127,7 @@ public class App {
             try {
                 user = HTTPRequests.login(username, password);
             } catch (Exception ex) {
-                LOGGER.warn(ex.getMessage());
+                LOGGER.error("Exception :: " , ex);
             }
             if (user == null) {
                 loginUI.setErrorLabel("Incorrect username/password.");

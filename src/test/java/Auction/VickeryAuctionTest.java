@@ -26,9 +26,9 @@ public class VickeryAuctionTest {
         carrierTop = new CarrierAgent("test1", "test1", 0, 0, 0,0,0,0,0,0);
         carrierSecond = new CarrierAgent("test2", "test2", 0, 0, 0,0,0,0,0,0);
         carrierThird = new CarrierAgent("test3", "test3", 0, 0, 0,0,0,0,0,0);
-        bidTop = new Bid(1,auction,carrierTop,100.0);
-        bidSecond = new Bid(2,auction,carrierSecond,90.0);
-        bidThird = new Bid(3,auction,carrierThird,80.0);
+        bidTop = new Bid(auction,carrierTop,100.0);
+        bidSecond = new Bid(auction,carrierSecond,90.0);
+        bidThird = new Bid(auction,carrierThird,80.0);
     }
 
 
@@ -38,7 +38,6 @@ public class VickeryAuctionTest {
         auction.addBid(bidTop);
         auction.addBid(bidSecond);
         Bid winningBid = auction.getWinningBid();
-        assertEquals(bidTop.getID(), winningBid.getID(), "ID of winning bid should be of highest bid");
         assertEquals(bidTop.getBidder().getUsername(), winningBid.getBidder().getUsername(), "Bidder of winning bid should be of highest bid");
         assertEquals(bidSecond.getBidPrice(), winningBid.getPayPrice(), "Price of winning bid should be of second highest bid");
     }

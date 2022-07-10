@@ -37,7 +37,7 @@ public class HTTPRequests {
         if (!success) {
             JSONObject error = json.getJSONObject("error");
             lastError = new Exception(error.getString("message"));
-            LOGGER.warn(error.getString("message"));
+            LOGGER.error(error.getString("message"));
         }
         return success;
     }
@@ -49,7 +49,7 @@ public class HTTPRequests {
         if (!success) {
             JSONObject error = json.getJSONObject("error");
             lastError = new Exception(error.getString("message"));
-            LOGGER.warn(error.getString("message"));
+            LOGGER.error(error.getString("message"));
             return null;
         }
         var data = json.getJSONObject("data");
@@ -70,7 +70,7 @@ public class HTTPRequests {
         if (!success) {
             JSONObject error = json.getJSONObject("error");
             lastError = new Exception(error.getString("message"));
-            LOGGER.warn(error.getString("message"));
+            LOGGER.error(error.getString("message"));
             return null;
         }
         return AgentFactory.carrierFromJSON(json.getJSONObject("data"));
@@ -97,7 +97,7 @@ public class HTTPRequests {
         if (!success) {
             JSONObject error = json.getJSONObject("error");
             lastError = new Exception(error.getString("message"));
-            LOGGER.warn(error.getString("message"));
+            LOGGER.error(error.getString("message"));
             return null;
         }
         var array = json.getJSONArray("data");
@@ -117,7 +117,7 @@ public class HTTPRequests {
         if (!success) {
             JSONObject error = json.getJSONObject("error");
             lastError = new Exception(error.getString("message"));
-            LOGGER.warn(error.getString("message"));
+            LOGGER.error(error.getString("message"));
             return null;
         }
         int id = json.getInt("data");
@@ -132,7 +132,7 @@ public class HTTPRequests {
         if (!success) {
             JSONObject error = json.getJSONObject("error");
             lastError = new Exception(error.getString("message"));
-            LOGGER.warn(error.getString("message"));
+            LOGGER.error(error.getString("message"));
             return null;
         }
         var array = json.getJSONArray("data");
@@ -157,7 +157,7 @@ public class HTTPRequests {
         if (!success) {
             JSONObject error = json.getJSONObject("error");
             lastError = new Exception(error.getString("message"));
-            LOGGER.warn(error.getString("message"));
+            LOGGER.error(error.getString("message"));
             return null;
         }
         var array = json.getJSONArray("data");
@@ -193,7 +193,7 @@ public class HTTPRequests {
         if (!success) {
             JSONObject error = json.getJSONObject("error");
             lastError = new Exception(error.getString("message"));
-            LOGGER.warn(error.getString("message"));
+            LOGGER.error(error.getString("message"));
         }
         return success;
     }
@@ -215,7 +215,7 @@ public class HTTPRequests {
         if (!success) {
             JSONObject error = json.getJSONObject("error");
             lastError = new Exception(error.getString("message"));
-            LOGGER.warn(error.getString("message"));
+            LOGGER.error(error.getString("message"));
         }
         return success;
     }
@@ -231,7 +231,7 @@ public class HTTPRequests {
         if (!success) {
             JSONObject error = json.getJSONObject("error");
             lastError = new Exception(error.getString("message"));
-            LOGGER.warn(error.getString("message"));
+            LOGGER.error(error.getString("message"));
         }
         return success;
     }
@@ -249,7 +249,7 @@ public class HTTPRequests {
         HashMap<String, CarrierAgent> map = new HashMap<>();
 
         // Prepare data
-        JSONObject data = null;
+        JSONObject data;
         data = new JSONObject();
         data.put("Agent", agent.getUsername());
 
@@ -259,7 +259,7 @@ public class HTTPRequests {
         if (!success) {
             JSONObject error = json.getJSONObject("error");
             lastError = new Exception(error.getString("message"));
-            LOGGER.warn(error.getString("message"));
+            LOGGER.error(error.getString("message"));
             return null;
         }
         var array = json.getJSONArray("data");
@@ -286,7 +286,7 @@ public class HTTPRequests {
         if (!success) {
             JSONObject error = json.getJSONObject("error");
             lastError = new Exception(error.getString("message"));
-            LOGGER.warn(error.getString("message"));
+            LOGGER.error(error.getString("message"));
             return null;
         }
         int id = json.getInt("data");
@@ -303,7 +303,7 @@ public class HTTPRequests {
         if (!success) {
             JSONObject error = json.getJSONObject("error");
             lastError = new Exception(error.getString("message"));
-            LOGGER.warn(error.getString("message"));
+            LOGGER.error(error.getString("message"));
             return null;
         }
         var array = json.getJSONArray("data");
@@ -333,12 +333,12 @@ public class HTTPRequests {
         if (!success) {
             JSONObject error = json.getJSONObject("error");
             lastError = new Exception(error.getString("message"));
-            LOGGER.warn(error.getString("message"));
+            LOGGER.error(error.getString("message"));
         }
         return success;
     }
 
-    public static Bid addBid(Auction auction, CarrierAgent agent, double price) throws IOException, InterruptedException, JSONException {
+    /*public static Bid addBid(Auction auction, CarrierAgent agent, double price) throws IOException, InterruptedException, JSONException {
         LOGGER.info("addBid " + auction.getID());
         JSONObject data = new JSONObject();
         data.put("Auction", auction.getID());
@@ -354,9 +354,9 @@ public class HTTPRequests {
         }
         int id = json.getInt("data");
         return new Bid(id, auction, agent, price);
-    }
+    }*/
 
-    public static List<Bid> getBids(Auction auction) throws IOException, InterruptedException, JSONException {
+    /*public static List<Bid> getBids(Auction auction) throws IOException, InterruptedException, JSONException {
         LOGGER.info("getBids " + auction.getID());
         // Cache agents for multiple bids by same agent
         HashMap<String, CarrierAgent> map = new HashMap<>();
@@ -392,7 +392,7 @@ public class HTTPRequests {
             result.add(new Bid(id, auction, bidder, price));
         }
         return result;
-    }
+    }*/
 
     public static boolean startAuction(Auction auction) throws IOException, InterruptedException, JSONException {
         LOGGER.info("startAuction " + auction.getID());
@@ -401,7 +401,7 @@ public class HTTPRequests {
         if (!success) {
             JSONObject error = json.getJSONObject("error");
             lastError = new Exception(error.getString("message"));
-            LOGGER.warn(error.getString("message"));
+            LOGGER.error(error.getString("message"));
         }
         return success;
     }
@@ -413,7 +413,7 @@ public class HTTPRequests {
         if (!success) {
             JSONObject error = json.getJSONObject("error");
             lastError = new Exception(error.getString("message"));
-            LOGGER.warn(error.getString("message"));
+            LOGGER.error(error.getString("message"));
         }
         return success;
     }
@@ -425,7 +425,7 @@ public class HTTPRequests {
         if (!success) {
             JSONObject error = json.getJSONObject("error");
             lastError = new Exception(error.getString("message"));
-            LOGGER.warn(error.getString("message"));
+            LOGGER.error(error.getString("message"));
         }
         return success;
     }
@@ -437,7 +437,7 @@ public class HTTPRequests {
         if (!success) {
             JSONObject error = json.getJSONObject("error");
             lastError = new Exception(error.getString("message"));
-            LOGGER.warn(error.getString("message"));
+            LOGGER.error(error.getString("message"));
         }
         return success;
     }
@@ -449,7 +449,7 @@ public class HTTPRequests {
         if (!success) {
             JSONObject error = json.getJSONObject("error");
             lastError = new Exception(error.getString("message"));
-            LOGGER.warn(error.getString("message"));
+            LOGGER.error(error.getString("message"));
         }
         return success;
     }
@@ -489,10 +489,10 @@ public class HTTPRequests {
             if (error.has("message")) {
                 String message = error.getString("message");
                 lastError = new Exception(message);
-                LOGGER.warn(error.getString("message"));
+                LOGGER.error(error.getString("message"));
             }
             if (error.has("stacktrace")) {
-                LOGGER.warn(error.getString("stacktrace"));
+                LOGGER.error(error.getString("stacktrace"));
             }
         }
         return json;
