@@ -26,9 +26,4 @@ create-jar:
   stage: deploy
   script:
     - mvn -f pom.xml clean package
-    - git config --global user.email "${CI_EMAIL}"
-    - git config --global user.name "${CI_USERNAME}"
-    - git add -f target/CCN.jar
-    - git commit -m "Add jar"
-    - git remote rm origin && git remote add origin git@collaborating.tuhh.de:e16/courses/software-development/ss22/group04_coop/collaborative-carrier-network.git
-    - git push origin HEAD:master
+    - curl -ulinh.le@tuhh.de:AP5MM8FqaPB5DXMSAaKJjAzVSYnET41mDh3kgC -T target/CCN.jar "https://ccn.jfrog.io/artifactory/example-repo-local/"
