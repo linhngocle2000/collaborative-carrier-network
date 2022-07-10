@@ -236,7 +236,9 @@ public class BundleHelperTest {
 
         List<TransportRequest> expected6 = new ArrayList<>();
         expected6.add(req1);expected6.add(req2);
-        bundleHelper4.decisionMaking(auctionList4);
+        List<TransportRequest> expected7 = new ArrayList<>();
+        assertEquals(expected7,bundleHelper4.decisionMaking(auctionList4),
+                "Unsold bundles contain in solution");
         assertEquals(expected6,bundleHelper4.getUnsoldList(),
                 "Unsold bundles don't contain in unsoldList");
     }

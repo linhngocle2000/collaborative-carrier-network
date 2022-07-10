@@ -62,46 +62,34 @@ public class StartAuctionUI extends JFrame {
         panel.setBackground(background);
         panel.setLayout(new GridBagLayout());
 
-        JLabel topLabel = new JLabel("Auction is running.");
+        JLabel topLabel = new JLabel("Auction started.");
         topLabel.setFont(font.deriveFont(Font.BOLD, 14));
         topLabel.setVisible(false);
 
         GridBagConstraints constraints = new GridBagConstraints();
         constraints.gridx = 0;
-        constraints.gridy = 0;
-        constraints.gridwidth = GridBagConstraints.REMAINDER;
-        constraints.anchor = GridBagConstraints.CENTER;
-        constraints.insets = new java.awt.Insets(0, 0, 20, 0);
-        panel.add(topLabel, constraints);
-
-        JLabel bottomLabel = new JLabel("Window closes automatically.");
-        bottomLabel.setFont(font.deriveFont(Font.BOLD, 14));
-        bottomLabel.setVisible(false);
-
-        constraints = new GridBagConstraints();
-        constraints.gridx = 0;
         constraints.gridy = 1;
         constraints.gridwidth = GridBagConstraints.REMAINDER;
         constraints.anchor = GridBagConstraints.CENTER;
-        constraints.insets = new java.awt.Insets(0, 0, 0, 0);
-        panel.add(bottomLabel, constraints);
+        constraints.insets = new java.awt.Insets(20, 0, 0, 0);
+        panel.add(topLabel, constraints);
 
         JButton button = new JButton();
+        button.setFocusPainted(false);
         button.setText("Start auction");
         button.addActionListener(e -> {
             topLabel.setVisible(true);
-            bottomLabel.setVisible(true);
             button.setEnabled(false);
             try {
                 bundleAuction();
             } catch (IOException | InterruptedException ex) {
-                LOGGER.error("Exception :: " , ex);
+                LOGGER.error("Exception :: ", ex);
             }
         });
 
         constraints = new GridBagConstraints();
         constraints.gridx = 0;
-        constraints.gridy = 2;
+        constraints.gridy = 0;
         constraints.gridwidth = GridBagConstraints.REMAINDER;
         constraints.anchor = GridBagConstraints.CENTER;
         constraints.insets = new java.awt.Insets(0, 0, 0, 0);
@@ -195,9 +183,11 @@ public class StartAuctionUI extends JFrame {
             }
 
             for (int i = 0; i < iter; i++) {
-                LOGGER.info("Unsold auctions round: " + i+1);
+                LOGGER.info("Unsold auctions round: " + (i + 1));
                 List<Auction> unsoldListAuctions = HTTPRequests.getAllAuctions();
-                if (unsoldListAuctions != null && !unsoldListAuctions.isEmpty()) {
+                if (unsoldListAuctions == null || unsoldListAuctions.isEmpty()) {
+                    break;
+                } else {
                     for (Auction auction : unsoldListAuctions) {
                         auction.setAuctionStrategy(new VickreyAuction());
                         LOGGER.info("Auction for " + auction.getDefaultTransportRequest().getRouteString() + " started");

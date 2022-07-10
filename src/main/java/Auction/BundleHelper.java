@@ -326,6 +326,16 @@ public class BundleHelper {
             auctionList.remove(auction);
          }
       }
+      List<Auction> tempAuctionList = new ArrayList<>();
+      for (Auction auction : auctionList) {
+         if (auction.getWinningBid() == null) {
+            tempAuctionList.add(auction);
+            for (TransportRequest t:auction.getTransportRequests()) {
+               unsoldList.add(t);
+            }
+         }
+      }
+      auctionList.removeAll(tempAuctionList);
       List<TransportRequest> temp = new ArrayList<>(unsoldList);
       // iterate through EACH bundle and
       // check if same request in unsoldList exist in a bundle of bestBundleList
