@@ -25,8 +25,12 @@ every participant in the network. In addition, carriers incur much lower costs t
 
 ## Download
 
-Open the [repository](https://ccn.jfrog.io/ui/native/ccn-generic-local/) of the application. Click on the download link
-of _CCN.jar_ to download the application.
+Before starting the application, please make sure you have [OpenJDK](https://adoptium.net/temurin/releases)
+(Version: 11.0.14 or later) installed on your computer. 
+
+Open the [repository](https://ccn.jfrog.io/ui/native/ccn-generic-local/) of the application. Download the file _CCN.jar_. 
+After download is completed, right-click on the file, choose _Open with_ then choose 
+_OpenJDK Platform binary_ to run the application.
 
 If a login screen appears when accessing the repository or the download link, use the following credentials to log in:
 ```
