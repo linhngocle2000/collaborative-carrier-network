@@ -87,7 +87,6 @@ public class AdministrationUI extends JFrame {
         bottomPanel.setBackground(background);
         bottomPanel.setLayout(new GridBagLayout());
 
-
         JPanel totalPanel = new JPanel();
         TitledBorder totalTitle = new TitledBorder("Revenue report");
         totalTitle.setTitleJustification(TitledBorder.CENTER);
@@ -97,8 +96,6 @@ public class AdministrationUI extends JFrame {
         totalPanel.setLayout(new GridBagLayout());
         totalPanel.setMinimumSize(new Dimension(500, 110));
         totalPanel.setPreferredSize(new Dimension(500, 110));
-
-
 
 ///////////
 // Table
@@ -136,7 +133,6 @@ public class AdministrationUI extends JFrame {
         }
 
         JScrollPane scrollPane = new JScrollPane(table);
-
         if (model.getRowCount() <= 12) {
             scrollPane.setPreferredSize(new Dimension(530, model.getRowCount()*25+23));
         } else {
@@ -151,6 +147,18 @@ public class AdministrationUI extends JFrame {
         constraints.anchor = GridBagConstraints.CENTER;
         constraints.insets = new Insets(0, 0, 0, 0);
         rootPanel.add(scrollPane, constraints);
+
+        JButton showVis = new JButton("Visualize tour");
+        showVis.addActionListener(e -> {
+            visUI.setVisible(true);
+        });
+        constraints = new GridBagConstraints();
+        constraints.gridx = 0;
+        constraints.gridy = 2;
+        constraints.gridwidth = GridBagConstraints.REMAINDER;
+        constraints.anchor = GridBagConstraints.CENTER;
+        constraints.insets = new Insets(0, 0, 0, 0);
+        rootPanel.add(showVis, constraints);
 
 ///////////
 // Report
@@ -238,7 +246,7 @@ public class AdministrationUI extends JFrame {
 
         constraints = new GridBagConstraints();
         constraints.gridx = 0;
-        constraints.gridy = 2;
+        constraints.gridy = 3;
         constraints.gridwidth = GridBagConstraints.REMAINDER;
         constraints.anchor = GridBagConstraints.CENTER;
         constraints.insets = new Insets(30, 0, 0, 0);
@@ -342,7 +350,7 @@ public class AdministrationUI extends JFrame {
                 try {
                     HTTPRequests.addMinProfitToBid(carrier, Double.parseDouble(minProfitText.getText()));
                     HTTPRequests.addMaxProfitToAuctionOff(carrier, Double.parseDouble(maxProfitText.getText()));
-                    msgLabel.setText("Profit set!");
+                    msgLabel.setText("Settings updated");
                     msgLabel.setForeground(successColor);
                 } catch (NumberFormatException | JSONException | IOException | InterruptedException e1) {
                     LOGGER.error("Exception :: " , e1);
@@ -375,7 +383,7 @@ public class AdministrationUI extends JFrame {
 
         constraints = new GridBagConstraints();
         constraints.gridx = 0;
-        constraints.gridy = 3;
+        constraints.gridy = 4;
         constraints.gridwidth = GridBagConstraints.REMAINDER;
         constraints.anchor = GridBagConstraints.CENTER;
         constraints.insets = new Insets(20, 0, 10, 0);

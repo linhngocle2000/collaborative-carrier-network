@@ -146,7 +146,7 @@ public class App {
                 LOGGER.info("Carrier " + carrier.getUsername() + " logged in");
                 adminUI = new AdministrationUI(carrier);
                 adminUI.setVisible(true);
-                adminUI.getVisUI().setVisible(true);
+                // adminUI.getVisUI().setVisible(true);
                 loginUI.setVisible(false);
             }
         });
