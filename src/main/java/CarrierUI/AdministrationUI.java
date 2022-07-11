@@ -60,8 +60,8 @@ public class AdministrationUI extends JFrame {
 // Frame
 ///////////
 
-        setMinimumSize(new Dimension(630, 720));
-        setPreferredSize(new Dimension(630, 720));
+        setMinimumSize(new Dimension(630, 730));
+        setPreferredSize(new Dimension(630, 730));
         setTitle("CCN");
         setLocationRelativeTo(null);
         setDefaultCloseOperation(EXIT_ON_CLOSE);
@@ -133,12 +133,13 @@ public class AdministrationUI extends JFrame {
         }
 
         JScrollPane scrollPane = new JScrollPane(table);
-        if (model.getRowCount() <= 12) {
+        if (model.getRowCount() <= 10) {
             scrollPane.setPreferredSize(new Dimension(530, model.getRowCount()*25+23));
         } else {
-            scrollPane.setPreferredSize(new Dimension(530, 323));
-            scrollPane.setVerticalScrollBar(new ScrollBarCustom(12, model.getRowCount()));
+            scrollPane.setPreferredSize(new Dimension(530, 10*25+23));
+            scrollPane.setVerticalScrollBar(new ScrollBarCustom(10, model.getRowCount()));
         }
+
 
         constraints = new GridBagConstraints();
         constraints.gridx = 0;
@@ -149,15 +150,14 @@ public class AdministrationUI extends JFrame {
         rootPanel.add(scrollPane, constraints);
 
         JButton showVis = new JButton("Visualize tour");
-        showVis.addActionListener(e -> {
-            visUI.setVisible(true);
-        });
+        showVis.addActionListener(e -> visUI.setVisible(true));
+        showVis.setFocusPainted(false);
         constraints = new GridBagConstraints();
         constraints.gridx = 0;
         constraints.gridy = 2;
         constraints.gridwidth = GridBagConstraints.REMAINDER;
         constraints.anchor = GridBagConstraints.CENTER;
-        constraints.insets = new Insets(0, 0, 0, 0);
+        constraints.insets = new Insets(20, 0, 0, 0);
         rootPanel.add(showVis, constraints);
 
 ///////////

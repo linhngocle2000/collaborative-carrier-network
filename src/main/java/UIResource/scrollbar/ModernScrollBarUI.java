@@ -17,7 +17,7 @@ public class ModernScrollBarUI extends BasicScrollBarUI {
     private int THUMB_SIZE;
 
     protected void setThumbSize(int max, int elems) {
-        THUMB_SIZE = (int)(((double)max/(double)elems)*(double)303);
+        THUMB_SIZE = (int)(((double)max/(double)elems)*(double)253);
     }
 
     @Override
