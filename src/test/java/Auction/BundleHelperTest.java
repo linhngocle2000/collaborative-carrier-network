@@ -4,6 +4,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import Agent.CarrierAgent;
+import Utils.TourPlanning;
 import com.graphhopper.jsprit.core.problem.Location;
 import org.junit.Before;
 import org.junit.Test;
@@ -17,7 +18,7 @@ public class BundleHelperTest {
     List<CarrierAgent> carrierList1, carrierList2;
     float[] depotXs = {27,5,16,66,13,75,96,74,60,68,(float)18.75};
     float[] depotYs = {19,5,2, 76,77,9, 40,43,83,69,(float)11.25};
-    TransportRequest req1, req2, req3, req4, req5, req6, req7, req8, req9, req10, req11, req12, req13;
+    TransportRequest req1, req2, req3, req4, req5, req6, req7, req8, req9, req10, req11, req12, req13, req14, req15;
     List<TransportRequest> requestList1, requestList2, requestList3,
             requestList4, requestList5, requestList6, requestList7,
             auctionRequests1, auctionRequests2, auctionRequests3,
@@ -54,8 +55,10 @@ public class BundleHelperTest {
         req9 = new TransportRequest(5, carrierList1.get(1),5,7,17,13);
         req10 = new TransportRequest(6, carrierList1.get(1),5,18,22,45);
         req11 = new TransportRequest(7, carrierList1.get(1),10,40,28,50);
-        req12 = new TransportRequest(8, carrierList1.get(1),11,41,29,61);
-        req13 = new TransportRequest(9, carrierList1.get(1),45,50,12,76);
+        req12 = new TransportRequest(8, carrierList1.get(1),9,39,27,50);
+        req13 = new TransportRequest(9, carrierList1.get(1),11,41,29,61);
+        req14 = new TransportRequest(10, carrierList1.get(1),10,40,30,60);
+        req15 = new TransportRequest(11, carrierList1.get(1),45,50,12,76);
 
         requestList1 = new ArrayList<>();
         requestList2 = new ArrayList<>();
@@ -88,7 +91,8 @@ public class BundleHelperTest {
         requestList6.add(req4);requestList6.add(req5);requestList6.add(req6);
         requestList6.add(req7);requestList6.add(req8);requestList6.add(req9);
 
-        requestList7.add(req10);requestList7.add(req11);requestList7.add(req12);requestList7.add(req13);
+        requestList7.add(req10);requestList7.add(req11);requestList7.add(req12);
+        requestList7.add(req13);requestList7.add(req14);requestList7.add(req15);
 
         // TestDecisionMaking 1
         auctionRequests1.add(req1);auctionRequests1.add(req2);auctionRequests1.add(req3);
@@ -200,14 +204,13 @@ public class BundleHelperTest {
     @Test
     public void testFormingBundle() {
         List<List<TransportRequest>> expected2 = new ArrayList<>();
-        expected2.add(requestList6.subList(0,5));
-        expected2.add(requestList6.subList(5,6));
-        assertEquals(expected2, bundleHelper3.generateBundles(), "Size of bundles exceeded (>5)");
+        assertEquals(5, bundleHelper3.generateBundles().get(0).size(), "Size of bundles exceeded (>5)");
+        assertEquals(1, bundleHelper3.generateBundles().get(1).size(), "Size of bundles exceeded (>5)");
 
         List<List<TransportRequest>> expected3 = new ArrayList<>();
-        expected3.add(requestList7.subList(0,2));
-        expected3.add(requestList7.subList(1,3));
-        expected3.add(requestList7.subList(3,4));
+        expected3.add(requestList7.subList(0,3));
+        expected3.add(requestList7.subList(1,5));
+        expected3.add(requestList7.subList(5,6));
         assertEquals(expected3, bundleHelper4.generateBundles(), "Bundles don't contain same requests");
     }
 
