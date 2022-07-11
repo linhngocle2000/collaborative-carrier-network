@@ -38,17 +38,14 @@ public class CostCalculatorTest {
     @Test
     public void testGetProfit() {
         double requestDist1 = EuclideanDistanceCalculator.calculateDistance(tr1.getPickup().getCoordinate(),tr1.getDelivery().getCoordinate());
-        double realDist1 = EuclideanDistanceCalculator.calculateDistance(tr1.getPickup().getCoordinate(),tr3.getPickup().getCoordinate()) +
-                EuclideanDistanceCalculator.calculateDistance(tr3.getPickup().getCoordinate(),tr2.getPickup().getCoordinate()) +
-                EuclideanDistanceCalculator.calculateDistance(tr2.getPickup().getCoordinate(),tr1.getDelivery().getCoordinate());
-        double expected1 = carrier.getFixedCost() + requestDist1*carrier.getCostPerDistance() - (carrier.getLoadingCost() + realDist1* carrier.getInternalCost());
+        double expected1 = carrier.getFixedCost() + requestDist1*carrier.getCostPerDistance() - (carrier.getLoadingCost() + requestDist1* carrier.getInternalCost());
         expected1 = Math.round(expected1 * 100.0) / 100.0;
         double result1 = Math.round(tour.getProfit(tr1) * 100.0) / 100.0;
         assertEquals(expected1, result1, "Profit 1 is calculated incorrectly");
 
         double requestDist2 = EuclideanDistanceCalculator.calculateDistance(tr2.getPickup().getCoordinate(),tr2.getDelivery().getCoordinate());
-        double realDist2 = EuclideanDistanceCalculator.calculateDistance(tr2.getPickup().getCoordinate(),tr1.getDelivery().getCoordinate()) +
-                EuclideanDistanceCalculator.calculateDistance(tr1.getDelivery().getCoordinate(),tr3.getDelivery().getCoordinate()) +
+        double realDist2 = EuclideanDistanceCalculator.calculateDistance(tr2.getPickup().getCoordinate(),tr3.getPickup().getCoordinate()) +
+                EuclideanDistanceCalculator.calculateDistance(tr3.getPickup().getCoordinate(),tr3.getDelivery().getCoordinate()) +
                 EuclideanDistanceCalculator.calculateDistance(tr3.getDelivery().getCoordinate(),tr2.getDelivery().getCoordinate());
         double expected2 = carrier.getFixedCost() + requestDist2*carrier.getCostPerDistance() - (carrier.getLoadingCost() + realDist2* carrier.getInternalCost());
         expected2 = Math.round(expected2 * 100.0) / 100.0;
@@ -56,10 +53,7 @@ public class CostCalculatorTest {
         assertEquals(expected2, result2, "Profit 2 is calculated incorrectly");
 
         double requestDist3 = EuclideanDistanceCalculator.calculateDistance(tr3.getPickup().getCoordinate(),tr3.getDelivery().getCoordinate());
-        double realDist3 = EuclideanDistanceCalculator.calculateDistance(tr3.getPickup().getCoordinate(),tr2.getPickup().getCoordinate()) +
-                EuclideanDistanceCalculator.calculateDistance(tr2.getPickup().getCoordinate(),tr1.getDelivery().getCoordinate()) +
-                EuclideanDistanceCalculator.calculateDistance(tr1.getDelivery().getCoordinate(),tr3.getDelivery().getCoordinate());
-        double expected3 = carrier.getFixedCost() + requestDist3*carrier.getCostPerDistance() - (carrier.getLoadingCost() + realDist3* carrier.getInternalCost());
+        double expected3 = carrier.getFixedCost() + requestDist3*carrier.getCostPerDistance() - (carrier.getLoadingCost() + requestDist3* carrier.getInternalCost());
         expected3 = Math.round(expected3 * 100.0) / 100.0;
         double result3 = Math.round(tour.getProfit(tr3) * 100.0) / 100.0;
         assertEquals(expected3, result3, "Profit 3 is calculated incorrectly");
@@ -72,10 +66,10 @@ public class CostCalculatorTest {
     @Test
     public void testGetRevenueTotal() {
         double tourLen = EuclideanDistanceCalculator.calculateDistance(Coordinate.newInstance(carrier.getDepotX(), carrier.getDepotY()),tr1.getPickup().getCoordinate()) +
-                EuclideanDistanceCalculator.calculateDistance(tr1.getPickup().getCoordinate(),tr3.getPickup().getCoordinate()) +
-                EuclideanDistanceCalculator.calculateDistance(tr3.getPickup().getCoordinate(),tr2.getPickup().getCoordinate()) +
-                EuclideanDistanceCalculator.calculateDistance(tr2.getPickup().getCoordinate(),tr1.getDelivery().getCoordinate()) +
-                EuclideanDistanceCalculator.calculateDistance(tr1.getDelivery().getCoordinate(),tr3.getDelivery().getCoordinate()) +
+                EuclideanDistanceCalculator.calculateDistance(tr1.getPickup().getCoordinate(),tr1.getDelivery().getCoordinate()) +
+                EuclideanDistanceCalculator.calculateDistance(tr1.getDelivery().getCoordinate(),tr2.getPickup().getCoordinate()) +
+                EuclideanDistanceCalculator.calculateDistance(tr2.getPickup().getCoordinate(),tr3.getPickup().getCoordinate()) +
+                EuclideanDistanceCalculator.calculateDistance(tr3.getPickup().getCoordinate(),tr3.getDelivery().getCoordinate()) +
                 EuclideanDistanceCalculator.calculateDistance(tr3.getDelivery().getCoordinate(),tr2.getDelivery().getCoordinate()) +
                 EuclideanDistanceCalculator.calculateDistance(tr2.getDelivery().getCoordinate(),Coordinate.newInstance(carrier.getDepotX(), carrier.getDepotY()));
         double expectedOut = 3*carrier.getLoadingCost() + tourLen*carrier.getInternalCost();
@@ -90,6 +84,6 @@ public class CostCalculatorTest {
         double resultIn = Math.round(tour.getTotalIn() * 100.0) / 100.0;
         assertEquals(expectedIn, resultIn, "Earnings is calculated incorrectly");
         double resultRevenueTotal = Math.round(tour.getRevenueTotal() * 100.0) / 100.0;
-        assertEquals(expectedIn - expectedOut, resultRevenueTotal, "Total revenue is calculated incorrectly");
+        assertEquals(Math.round((expectedIn - expectedOut) * 100.0) / 100.0, resultRevenueTotal, "Total revenue is calculated incorrectly");
     }
 }
