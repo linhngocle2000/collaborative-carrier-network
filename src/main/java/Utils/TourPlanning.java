@@ -89,12 +89,11 @@ public class TourPlanning {
 
    /**
     * Update list of request from carrier DB
-    * @throws Exception
     */
    public void refreshRequests() throws Exception {
       if (agent != null) {
          this.requests.clear();
-         this.requests.addAll(HTTPRequests.getTransportRequestsOfAgent(agent));
+         this.requests.addAll(Objects.requireNonNull(HTTPRequests.getTransportRequestsOfAgent(agent)));
          cost = null;
       }
    }
@@ -108,15 +107,19 @@ public class TourPlanning {
    }
 
    public boolean contains(TransportRequest request) {
-      return requests != null && requests.stream().anyMatch(tr -> tr.getID() == request.getID());
+      return requests != null && requests.stream().anyMatch(tr -> Objects.equals(tr.getID(), request.getID()));
    }
 
    /**
     * Add certain list of request into current tour
     */
-   public void addRequests(List<TransportRequest> request) {
-      requests.addAll(request);
-      cost = null;
+   public void addRequests(List<TransportRequest> reqs) {
+      for (TransportRequest request : reqs) {
+         if (!getRequestIDs().contains(Integer.parseInt(request.getID()))) {
+            requests.add(request);
+            cost = null;
+         }
+      }
    }
 
    /**

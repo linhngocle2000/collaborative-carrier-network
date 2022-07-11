@@ -25,12 +25,23 @@ every participant in the network. In addition, carriers incur much lower costs t
 
 ## Download
 
-Open the [repository](https://ccn.jfrog.io/ui/native/ccn-generic-local/) of the application. Click on the download link
-of _CCN.jar_ to download the application.
+Before starting the application, please make sure you have [OpenJDK](https://adoptium.net/temurin/releases)
+(Version: 11.0.14 or later) installed on your computer. 
+
+Open the [repository](https://ccn.jfrog.io/ui/native/ccn-generic-local/) of the application. Download the file _CCN.jar_. 
+After download is completed, right-click on the file, choose _Open with_ then choose 
+_OpenJDK Platform binary_ to run the application.
+
+If a login screen appears when accessing the repository or the download link, use the following credentials to log in:
+```
+Username: ccn-group4
+Password: CCN-tuhh-group4
+```
 
 ## Logs
 When starting the application, logs are documented in the log file created for the current date. Log files are located
-in the directory _logs_ and their names indicate which date are the logs referring to.
+in the directory _logs_ and their names indicate which date are the logs referring to. The directory _logs_ is located in
+the same folder as the application.
 
 ## User manual
 
@@ -74,8 +85,9 @@ start/end point, _[Pickup]_ is the pickup location and _[Delivery]_ is the deliv
 ### Login as auctioneer
 
 To login as an auctioneer, choose _Login_ in the start window. Enter **auctioneer** as username <ins>and</ins> password, 
-then click on the _Login_ button at the bottom. After logging in, the auction process will start automatically. To
-monitor the auction process, please refer to the log file of the current date.
+then click on the _Login_ button at the bottom. After logging in, click on _Start auction_ to start auction process.
+After the auction process finishes, the application will terminate automatically. To monitor the auction process,
+please refer to the log file of the current date.
 
 ### Auction process
 

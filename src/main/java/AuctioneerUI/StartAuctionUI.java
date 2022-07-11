@@ -17,6 +17,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.awt.*;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
@@ -26,7 +27,6 @@ import java.util.concurrent.TimeUnit;
 public class StartAuctionUI extends JFrame {
 
     private Color background = UIData.getBackground();
-    private Font font = UIData.getFont();
     private int width = UIData.getWidth();
     private int height = UIData.getHeight();
     static final int MAX_T = Runtime.getRuntime().availableProcessors() + 1;
@@ -39,7 +39,7 @@ public class StartAuctionUI extends JFrame {
         try {
             bidders = HTTPRequests.getCarrierAgents();
         } catch (Exception e) {
-            LOGGER.warn(e.getMessage());
+            LOGGER.error("Exception :: " , e);
         }
 
         ///////////
@@ -61,42 +61,21 @@ public class StartAuctionUI extends JFrame {
         panel.setBackground(background);
         panel.setLayout(new GridBagLayout());
 
-        JLabel topLabel = new JLabel("Auction is running.");
-        topLabel.setFont(font.deriveFont(Font.BOLD, 14));
-        topLabel.setVisible(false);
+        JButton button = new JButton();
+        button.setFocusPainted(false);
+        button.setText("Start auction");
+        button.addActionListener(e -> {
+            button.setEnabled(false);
+            try {
+                bundleAuction();
+            } catch (IOException | InterruptedException ex) {
+                LOGGER.error("Exception :: ", ex);
+            }
+        });
 
         GridBagConstraints constraints = new GridBagConstraints();
         constraints.gridx = 0;
         constraints.gridy = 0;
-        constraints.gridwidth = GridBagConstraints.REMAINDER;
-        constraints.anchor = GridBagConstraints.CENTER;
-        constraints.insets = new java.awt.Insets(0, 0, 20, 0);
-        panel.add(topLabel, constraints);
-
-        JLabel bottomLabel = new JLabel("Window closes automatically.");
-        bottomLabel.setFont(font.deriveFont(Font.BOLD, 14));
-        bottomLabel.setVisible(false);
-
-        constraints = new GridBagConstraints();
-        constraints.gridx = 0;
-        constraints.gridy = 1;
-        constraints.gridwidth = GridBagConstraints.REMAINDER;
-        constraints.anchor = GridBagConstraints.CENTER;
-        constraints.insets = new java.awt.Insets(0, 0, 0, 0);
-        panel.add(bottomLabel, constraints);
-
-        JButton button = new JButton();
-        button.setText("Start auction");
-        button.addActionListener(e -> {
-            topLabel.setVisible(true);
-            bottomLabel.setVisible(true);
-            button.setEnabled(false);
-            bundleAuction();        
-        });
-
-        constraints = new GridBagConstraints();
-        constraints.gridx = 0;
-        constraints.gridy = 2;
         constraints.gridwidth = GridBagConstraints.REMAINDER;
         constraints.anchor = GridBagConstraints.CENTER;
         constraints.insets = new java.awt.Insets(0, 0, 0, 0);
@@ -116,7 +95,7 @@ public class StartAuctionUI extends JFrame {
         }
     }
 
-    public void bundleAuction() {
+    public void bundleAuction() throws IOException, InterruptedException {
         List<TransportRequest> unsoldList;
 
         try {
@@ -190,9 +169,11 @@ public class StartAuctionUI extends JFrame {
             }
 
             for (int i = 0; i < iter; i++) {
-                LOGGER.info("Iteration " + i);
+                LOGGER.info("Unsold auctions round: " + (i + 1));
                 List<Auction> unsoldListAuctions = HTTPRequests.getAllAuctions();
-                if (unsoldListAuctions != null && !unsoldListAuctions.isEmpty()) {
+                if (unsoldListAuctions == null || unsoldListAuctions.isEmpty()) {
+                    break;
+                } else {
                     for (Auction auction : unsoldListAuctions) {
                         auction.setAuctionStrategy(new VickreyAuction());
                         LOGGER.info("Auction for " + auction.getDefaultTransportRequest().getRouteString() + " started");
@@ -204,8 +185,7 @@ public class StartAuctionUI extends JFrame {
                         unsoldListPool.shutdown();
                         unsoldListPool.awaitTermination(Long.MAX_VALUE, TimeUnit.NANOSECONDS); // Without this call, the executor service may not finish all bid tasks!
                         LOGGER.info("Auction for " + auction.getDefaultTransportRequest().getRouteString() + " terminated");
-                        List<Bid> bids = HTTPRequests.getBids(auction);
-                        if (bids != null) {
+                        if (auction.getWinningBid() != null) {
                             LOGGER.info("Winner for auction " + auction.getDefaultTransportRequest().getRouteString() + " is " + auction.getWinningBid().getBidder().getUsername());
                             auction.notifyWinner();
                         }
@@ -218,7 +198,8 @@ public class StartAuctionUI extends JFrame {
             this.dispose();
             LOGGER.info("Auction process ended");
         } catch (Exception e) {
-            LOGGER.warn(e.getMessage());
+            LOGGER.error("Exception :: " , e);
+            HTTPRequests.resetAuction(null);
         }
 
         HTTPRequests.logout();
@@ -252,16 +233,16 @@ class BundleBidTask implements Runnable {
             for (var request : auction.getTransportRequests()) {
                 profit += tour.getProfit(request);
             }
-            LOGGER.info(carrier.getUsername() + " profits " + profit + " from bundle " + auction.getTransportRequestRoutes());
+            LOGGER.info(carrier.getUsername() + " profits " + (Math.round(profit * 100.0) / 100.0) + " from bundle " + auction.getTransportRequestRoutes());
             if ((profit / bundleSize) >= carrier.getMinProfit()) {
                 double price = profit - (carrier.getMinProfit() * bundleSize);
-                Bid bid = HTTPRequests.addBid(auction, carrier, price);
-                assert bid != null;
+                price = Math.round(price * 100.0) / 100.0;
+                Bid bid = new Bid(auction, carrier, price);
                 auction.addBid(bid);
                 LOGGER.info(carrier.getUsername() + " bids " + price + " on auction " + auction.getID());
             }
         } catch (Exception e) {
-            LOGGER.warn(e.getMessage());
+            LOGGER.error("Exception :: " , e);
         }
     }
 }
@@ -288,7 +269,7 @@ class BundleAuctionTask implements Runnable {
             }
             LOGGER.info("Requests of carrier " + carrier.getUsername() + " checked.");
         } catch (Exception e) {
-            LOGGER.warn(e.getMessage());
+            LOGGER.error("Exception :: " , e);
         }
     }
 }
@@ -314,15 +295,14 @@ class SingleBidTask implements Runnable {
                 double profit = Math.round(tour.getProfit(transReq) * 100.0) / 100.0;
                 LOGGER.info(carrier.getUsername() + " profits " + profit + " from " + transReq.getRouteString());
                 if (profit >= carrier.getMinProfit()) {
-                    Bid bid = HTTPRequests.addBid(auction, carrier, profit-carrier.getMinProfit());
-                    assert bid != null;
+                    Bid bid = new Bid(auction, carrier, profit-carrier.getMinProfit());
                     auction.addBid(bid);
                     LOGGER.info(carrier.getUsername() + " bids for request " + transReq.getRouteString() + " with "
                             + bid.getBidPrice());
                 }
             }
         } catch (Exception e) {
-            LOGGER.warn(e.getMessage());
+            LOGGER.error("Exception :: " , e);
         }
 
     }
