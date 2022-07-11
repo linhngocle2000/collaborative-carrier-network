@@ -38,6 +38,9 @@ Username: ccn-group4
 Password: CCN-tuhh-group4
 ```
 
+> <b>Note</b>: Since we use a free 30-day-trial for the cloud repository, please download the file before the 8<sup>th</sup>
+of August. After that, the repository is not available any more.
+
 ## Logs
 When starting the application, logs are documented in the log file created for the current date. Log files are located
 in the directory _logs_ and their names indicate which date are the logs referring to. The directory _logs_ is located in
