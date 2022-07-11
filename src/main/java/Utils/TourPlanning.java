@@ -5,6 +5,8 @@ import com.graphhopper.jsprit.core.algorithm.box.SchrimpfFactory;
 import com.graphhopper.jsprit.core.problem.Location;
 import com.graphhopper.jsprit.core.problem.VehicleRoutingProblem;
 import com.graphhopper.jsprit.core.problem.solution.VehicleRoutingProblemSolution;
+import com.graphhopper.jsprit.core.problem.solution.route.VehicleRoute;
+import com.graphhopper.jsprit.core.problem.solution.route.activity.TourActivity;
 import com.graphhopper.jsprit.core.problem.vehicle.VehicleImpl;
 import com.graphhopper.jsprit.core.problem.vehicle.VehicleImpl.Builder;
 import com.graphhopper.jsprit.core.problem.vehicle.VehicleType;
@@ -15,8 +17,11 @@ import Agent.CarrierAgent;
 import Auction.TransportRequest;
 import UIResource.HTTPResource.HTTPRequests;
 
+import java.awt.image.BufferedImage;
 import java.util.*;
 
+import javax.swing.ImageIcon;
+import javax.swing.JLabel;
 import javax.swing.JPanel;
 
 public class TourPlanning {
@@ -33,6 +38,11 @@ public class TourPlanning {
    private VehicleRoutingProblemSolution bestSolution;
    private List<TransportRequest> requests;
    private CostCalculator cost;
+
+   private int box_minX;
+   private int box_minY;
+   private int box_maxX;
+   private int box_maxY;
 
    /**
     * Initial a tour of current carrier agent.
@@ -114,7 +124,13 @@ public class TourPlanning {
     */
    public JPanel visualize() {
       tourOptimize();
-      return new VisualView(problem, bestSolution).display();
+      // return new VisualView(problem, bestSolution).display();
+      calculateBoundingBox();
+      BufferedImage visualPlotter = new Plotter(problem, bestSolution).setBoundingBox(box_minX - 5, box_minY - 5, box_maxX + 5, box_maxY + 5).plotShipments(false).plot(null);
+      JLabel plotterLabel = new JLabel(new ImageIcon(visualPlotter));
+      JPanel returnPanel = new JPanel();
+      returnPanel.add(plotterLabel);
+      return returnPanel;
    }
 
    /**
@@ -132,8 +148,7 @@ public class TourPlanning {
     */
    private void vehicleRegister() {
       final int WEIGHT_INDEX = 0;
-      VehicleTypeImpl.Builder vehicleTypeBuilder = VehicleTypeImpl.Builder.newInstance("MiniCooper")
-            .addCapacityDimension(WEIGHT_INDEX, 2);
+      VehicleTypeImpl.Builder vehicleTypeBuilder = VehicleTypeImpl.Builder.newInstance("MiniCooper").addCapacityDimension(WEIGHT_INDEX, 2);
       VehicleType vehicleType = vehicleTypeBuilder.build();
 
       Builder vehicleBuilder = VehicleImpl.Builder.newInstance(vehicleID);
@@ -159,7 +174,7 @@ public class TourPlanning {
     */
    private void setBestSolution() {
       VehicleRoutingAlgorithm algorithm = new SchrimpfFactory().createAlgorithm(problem);
-      algorithm.setMaxIterations(500);
+      // algorithm.setMaxIterations(500);
       Collection<VehicleRoutingProblemSolution> solutions = algorithm.searchSolutions();
       bestSolution = Solutions.bestOf(solutions);
    }
@@ -172,6 +187,26 @@ public class TourPlanning {
          tourOptimize();
          cost = new CostCalculator(this);
       }
+   }
+
+   /**
+    * Bounding box calculation
+    */
+   private void calculateBoundingBox() {
+      List<Integer> valueX = new ArrayList<>();
+      List<Integer> valueY = new ArrayList<>();
+      for (VehicleRoute route : bestSolution.getRoutes()) {
+         valueX.add((int) route.getStart().getLocation().getCoordinate().getX());
+         valueY.add((int) route.getStart().getLocation().getCoordinate().getY());
+         for (TourActivity act : route.getActivities()) {
+            valueX.add((int) act.getLocation().getCoordinate().getX());
+            valueY.add((int) act.getLocation().getCoordinate().getY());
+         }
+      }
+      this.box_minX = Collections.min(valueX);
+      this.box_minY = Collections.min(valueY);
+      this.box_maxX = Collections.max(valueX);
+      this.box_maxY = Collections.max(valueY);
    }
 
    /**

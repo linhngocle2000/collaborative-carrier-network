@@ -45,13 +45,13 @@ public class VisualizationUI extends JFrame {
 
         leftVisualPanel = new JPanel();
         leftVisualPanel.setBorder(leftVisualTitle);
-        leftVisualPanel.setMinimumSize(new Dimension(600, 615));
-        leftVisualPanel.setPreferredSize(new Dimension(600, 615));
+        leftVisualPanel.setMinimumSize(new Dimension(830, 650));
+        leftVisualPanel.setPreferredSize(new Dimension(830, 650));
 
         rightVisualPanel = new JPanel();
         rightVisualPanel.setBorder(rightVisualTitle);
-        rightVisualPanel.setMinimumSize(new Dimension(600, 615));
-        rightVisualPanel.setPreferredSize(new Dimension(600, 615));
+        rightVisualPanel.setMinimumSize(new Dimension(830, 650));
+        rightVisualPanel.setPreferredSize(new Dimension(830, 650));
 
         rightPanel.add(leftVisualPanel);
         rightPanel.add(rightVisualPanel);
