@@ -128,8 +128,17 @@ public class TourPlanning {
    public JPanel visualize() {
       tourOptimize();
       // return new VisualView(problem, bestSolution).display();
-      calculateBoundingBox();
-      BufferedImage visualPlotter = new Plotter(problem, bestSolution).setBoundingBox(box_minX - 5, box_minY - 5, box_maxX + 5, box_maxY + 5).plotShipments(false).plot(null);
+      BufferedImage visualPlotter;
+      if (this.requests.isEmpty()) {
+         box_minX = (int) (depot.getCoordinate().getX() - 100);
+         box_minY = (int) (depot.getCoordinate().getY() - 100);
+         box_maxX = (int) (depot.getCoordinate().getX() + 100);
+         box_maxY = (int) (depot.getCoordinate().getY() + 100);
+         visualPlotter = new Plotter(problem).setBoundingBox(box_minX, box_minY, box_maxX, box_maxY).plotShipments(false).plot(null);
+      } else {
+         calculateBoundingBox();
+         visualPlotter = new Plotter(problem, bestSolution).setBoundingBox(box_minX - 5, box_minY - 5, box_maxX + 5, box_maxY + 5).plotShipments(false).plot(null);
+      }
       JLabel plotterLabel = new JLabel(new ImageIcon(visualPlotter));
       JPanel returnPanel = new JPanel();
       returnPanel.add(plotterLabel);
@@ -166,8 +175,10 @@ public class TourPlanning {
    private void setProblem() {
       VehicleRoutingProblem.Builder vrpBuilder = VehicleRoutingProblem.Builder.newInstance();
       vrpBuilder.addVehicle(vehicle);
-      for (TransportRequest request : requests) {
-         vrpBuilder.addJob(request.getShipmentObj());
+      if (!requests.isEmpty()) {
+         for (TransportRequest request : requests) {
+            vrpBuilder.addJob(request.getShipmentObj());
+         }
       }
       problem = vrpBuilder.build();
    }
