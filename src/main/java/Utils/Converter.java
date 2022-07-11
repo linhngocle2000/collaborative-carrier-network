@@ -15,7 +15,7 @@ public class Converter {
     }
 
     public static boolean checkPriceFormat(String s) {
-        String regex = "^[1-9][0-9]*?(\\.[0-9][0-9]?)?$";
+        String regex = "^[0-9]+?(\\.[0-9][0-9]?)?$";
         return !s.matches(regex);
     }
 
