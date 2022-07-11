@@ -153,12 +153,26 @@
 			"item": [
 				{
 					"name": "Add request",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"pm.environment.set(\"pickup_lat\", _.random(0, 70))\r",
+									"pm.environment.set(\"pickup_lon\", _.random(0, 70))\r",
+									"pm.environment.set(\"delivery_lat\", _.random(0, 70))\r",
+									"pm.environment.set(\"delivery_lon\", _.random(0, 70))"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
 					"request": {
 						"method": "POST",
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"Cmd\": \"addRequest\",\r\n    \"Token\": \"{{AuthToken}}\",\r\n    \"Data\": [\r\n        {\r\n            \"Agent\": \"pkg\",\r\n            \"PickupLat\": {{$randomLatitude}},\r\n            \"PickupLon\": {{$randomLongitude}},\r\n            \"DeliveryLat\": {{$randomLatitude}},\r\n            \"DeliveryLon\": {{$randomLongitude}}\r\n        }\r\n    ],\r\n    \"Debug\": true\r\n}",
+							"raw": "{\r\n    \"Cmd\": \"addRequest\",\r\n    \"Token\": \"{{AuthToken}}\",\r\n    \"Data\": [\r\n        {\r\n            \"Agent\": \"agentA\",\r\n            \"PickupLat\": {{pickup_lat}},\r\n            \"PickupLon\": {{pickup_lon}},\r\n            \"DeliveryLat\": {{delivery_lat}},\r\n            \"DeliveryLon\": {{delivery_lon}}\r\n        }\r\n    ],\r\n    \"Debug\": true\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -525,6 +539,32 @@
 					"response": []
 				}
 			]
+		},
+		{
+			"name": "Init",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"Cmd\": \"init\",\r\n    \"Debug\": true\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{URL}}",
+					"host": [
+						"{{URL}}"
+					]
+				}
+			},
+			"response": []
 		}
 	],
 	"event": [
@@ -555,12 +595,12 @@
 		},
 		{
 			"key": "AuthToken",
-			"value": "39426cdc28c5290f625b839848622365",
+			"value": "5437192aa81b6bb0bc25d036eabe2fdb",
 			"type": "default"
 		},
 		{
 			"key": "AuctioneerToken",
-			"value": "6a1604ea536a3d3e88e01b91bf54d3ba",
+			"value": "5437192aa81b6bb0bc25d036eabe2fdb",
 			"type": "default"
 		}
 	]
