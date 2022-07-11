@@ -63,11 +63,12 @@ a decimal point.
 ### Login as carrier
 
 To login as a carrier agent, choose _Login_ in the start window. Enter a valid username/password, then click on the
-_Login_ button at the bottom. After logging in successfully, two windows will appear.
+_Login_ button at the bottom.
 
-One window contains a table of all transport requests of the logged in carrier. Column _Price_ shows the price the 
-carrier has to pay if the corresponding transport request was won in an auction. In the next auction process, the prices
-of the old transport requests will be set back to 0. Below the table is a revenue report displaying:
+After logging in successfully, a window displaying an overview of all transport requests of the carrier appears.
+Column _Price_ shows the price the carrier has to pay if the corresponding transport request was won in an auction.
+In the next auction process, the prices of the old transport requests will be set back to 0. Below the table is a
+revenue report displaying:
 
 - **Total cost**: Cost that a carrier has to pay for delivering all requests on a tour
 - **Total earning**: Earning that a carrier will get from shippers after delivering all requests
@@ -78,9 +79,9 @@ User can set the minimum profit of transport requests to be bid or maximum profi
 off by entering a price in the field _Min. profit to bid_ or _Max. profit to auction off_ respectively. To logout, click
 on the [X]-Button in the top-right corner.
 
-The other window visualizes the old tour before the auction process on the left panel and the new tour after the auction
-process on the right panel. Below the graphs are the corresponding coordinates of the tour. _[Depot]_ indicates the 
-start/end point, _[Pickup]_ is the pickup location and _[Delivery]_ is the delivery location.
+By clicking on the button _Visualize tour_ (underneath the table), the current tour is visualized in a new window 
+on the right panel. On the left panel is the old tour of the carrier before joining the last auction process.
+Below are the notations of what each symbol in the plot represents.
 
 ### Login as auctioneer
 
