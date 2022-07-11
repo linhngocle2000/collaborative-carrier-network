@@ -38,7 +38,7 @@ public class ConverterTest {
         assertFalse(Converter.checkPriceFormat("9999.12"),"Price: 9999.12");
         assertFalse(Converter.checkPriceFormat("2.9"),"Price: 2.9");
         assertFalse(Converter.checkPriceFormat("2.12"),"Price: 2.12");
-        assertTrue(Converter.checkPriceFormat("01"),"Price: 01");
+        assertFalse(Converter.checkPriceFormat("01"),"Price: 01");
         assertTrue(Converter.checkPriceFormat("2.123456"),"Price: 2.123456");
         assertTrue(Converter.checkPriceFormat("letters"),"Price: letters");
         assertTrue(Converter.checkPriceFormat("lettersWith0123"),"Price: lettersWith0123");
