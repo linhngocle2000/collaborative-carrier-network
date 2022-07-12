@@ -9,7 +9,7 @@
 			"name": "Launch CCN",
 			"request": "launch",
 			"mainClass": "App", 
-			"projectName": "collaborative-carrier-network"
+			"projectName": "CCN"
 		},
 		{
 			"type": "java",

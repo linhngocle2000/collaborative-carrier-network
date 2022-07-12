@@ -64,10 +64,10 @@ class TransportRequest
 
 		$db = Database::getConnection();
 		$username = $db->escape_string($data['Agent']);
-		$result = $db->query("SELECT DISTINCT `ID`, `Owner`, `Cost`, `PickupLat`, `PickupLon`, `DeliveryLat`, `DeliveryLon`, `Auction` IS NOT NULL AS `IsInAuction`
+		$result = $db->query("SELECT `ID`, `Owner`, `Cost`, `PickupLat`, `PickupLon`, `DeliveryLat`, `DeliveryLon`
 			FROM `TransportRequest`
-			LEFT JOIN `AuctionRequests` ON `TransportRequest`.ID = `AuctionRequests`.TransportRequest
-			WHERE `Owner` = '$username'");
+			WHERE `Owner` = '$username' AND
+			      `ID` NOT IN (SELECT `TransportRequest` FROM `AuctionRequests`)");
 
 		$requests = [];
 		while ($row = $result->fetch_assoc())
